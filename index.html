@@ -168,11 +168,6 @@ textarea{resize:vertical;min-height:110px}
 }
 </style>
 </head><body>
-.dbtn-day{background:#D1FAE5;color:#065F46}
-.dbtn-juliana{background:#FEF3C7;color:#92400E}
-.dbtn-priscila{background:#DBEAFE;color:#1E40AF}
-.dbtn-none{background:#F3F4F6;color:#6B7280}
-</style>
 </head><body>
 
 <!-- LOGIN -->
@@ -280,7 +275,11 @@ textarea{resize:vertical;min-height:110px}
 
     <!-- Campos PP/IVPP -->
     <div class="g2 ao" id="row-pp-valor" style="display:none">
-      <div class="fg"><label>Valor total (R$)</label><input id="f-valor-pp" type="number" step="0.01" placeholder="Calculado automaticamente" readonly></div>
+      <div class="fg"><label>Valor dos itens (R$)</label><input id="f-valor-pp" type="number" step="0.01" placeholder="Calculado automaticamente" readonly></div>
+      <div class="fg"><label>Frete (R$)</label><input id="f-frete" type="number" step="0.01" placeholder="0,00" oninput="updTotalPP()"></div>
+    </div>
+    <div id="row-total-pp" style="display:none;margin-bottom:10px">
+      <div class="fg"><label>Valor total com frete (R$)</label><input id="f-total-pp" type="number" step="0.01" readonly style="background:var(--cr);color:var(--pl);font-weight:500;font-size:15px"></div>
     </div>
     <div class="fg" id="row-obs-pp" style="display:none"><label>Observações</label><input id="f-obs-pp" placeholder="Informações extras, SEDEX..."></div>
   </div>
@@ -291,7 +290,6 @@ textarea{resize:vertical;min-height:110px}
     <div class="g2"><div class="fg"><label>Nome do destinatário</label><input id="e-nome"></div><div class="fg"><label>CEP</label><input id="e-cep" placeholder="00000-000" maxlength="9" oninput="buscaCep(this)"></div></div>
     <div class="g3"><div class="fg"><label>Logradouro</label><input id="e-rua"></div><div class="fg"><label>Número</label><input id="e-num"></div><div class="fg"><label>Complemento</label><input id="e-comp"></div></div>
     <div class="g3"><div class="fg"><label>Bairro</label><input id="e-bairro"></div><div class="fg"><label>Cidade</label><input id="e-cidade"></div><div class="fg"><label>Estado</label><input id="e-uf" placeholder="PR"></div></div>
-    <div class="fg" style="margin-top:6px"><label>Tipo de envio</label><select id="e-envio"><option>PAC</option><option>SEDEX</option><option>Retirada</option><option>Motoboy</option><option>A definir</option></select></div>
   </div>
 
   <!-- Brinde -->
@@ -338,7 +336,7 @@ textarea{resize:vertical;min-height:110px}
     <div class="tots ao" id="tots"></div>
     <hr class="dv">
     <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
-      <div class="fg" style="flex:1;min-width:170px"><label>Etapa inicial</label><select id="f-etapa"><option>Produzindo Artes</option><option>Início do processo</option><option>Gabarito</option><option>Pedido feito nas gráficas</option><option>Produzindo blocos</option><option>Esperando terceiros</option><option>Pronto para embalar</option><option>Emitir etiqueta</option><option>Enviado</option></select></div>
+      <div class="fg" style="flex:1;min-width:170px"><label>Etapa inicial</label><select id="f-etapa"><option>Produzindo Id. Visual</option><option>Passar para Yses</option><option>Produzindo Artes</option><option>Início do processo</option><option>Gabarito</option><option>Pedido feito nas gráficas</option><option>Produzindo blocos</option><option>Esperando terceiros</option><option>Pronto para embalar</option><option>Emitir etiqueta</option><option>Enviado</option></select></div>
       <button class="btn p" onclick="salvar()">Salvar pedido ↗</button>
     </div>
   </div>
@@ -604,6 +602,11 @@ async function init(){
   popBrd();
 }
 
+function updTotalPP(){
+  const itens=parseFloat(document.getElementById('f-valor-pp').value)||0;
+  const frete=parseFloat(document.getElementById('f-frete').value)||0;
+  document.getElementById('f-total-pp').value=(itens+frete).toFixed(2);
+}
 function updValorIV(){
   if(tipoAt!=='iv')return;
   const pac=document.getElementById('f-pac').value;
@@ -676,6 +679,7 @@ function tipo(t,el){
   document.getElementById('card-iv-save').style.display=iv?'block':'none';
   document.getElementById('row-iv-campos').style.display=iv?'block':'none';
   document.getElementById('row-pp-valor').style.display=pp?'block':'none';
+  document.getElementById('row-total-pp').style.display=pp?'block':'none';
   document.getElementById('row-obs-pp').style.display=pp?'block':'none';
   document.getElementById('preco-info').style.display='none';
   items=[];if(iv)updValorIV();
@@ -746,7 +750,7 @@ function renderItens(){
 function renderTots(){
   const bi=document.getElementById('f-brd').value,bc=bi!==''&&brindes[bi]?parseFloat(brindes[bi].custo||0):0;
   const tv=items.reduce((s,i)=>s+i.price,0),tc=items.reduce((s,i)=>s+i.cost,0)+bc;const lc=tv-tc,mg=tv>0?(lc/tv*100):0;
-  if(tv>0)document.getElementById('f-valor-pp').value=tv.toFixed(2);
+  if(tv>0){document.getElementById('f-valor-pp').value=tv.toFixed(2);updTotalPP();}
   document.getElementById('tots').innerHTML=`<div class="tc"><div class="l">Total venda</div><div class="v pv">R$ ${tv.toFixed(2)}</div></div><div class="tc"><div class="l">Custo total</div><div class="v rv">R$ ${tc.toFixed(2)}</div></div><div class="tc"><div class="l">Lucro · ${mg.toFixed(1)}%</div><div class="v gv">R$ ${lc.toFixed(2)}</div></div>`;
 }
 function addItem(){items.push({name:'Novo item',variation:'',qty:1,price:0,cost:0,graficas:'—',matched:false,checked:false});document.getElementById('card-lista').style.display='block';renderItens();}
@@ -765,10 +769,12 @@ async function salvar(){
   const nome=document.getElementById('f-nome').value.trim();if(!nome){alrt('Informe o nome da cliente.','err');return;}if(!items.length){alrt('Adicione pelo menos um item.','err');return;}
   const tv=items.reduce((s,i)=>s+i.price,0),bi=document.getElementById('f-brd').value,brd=bi!==''&&brindes[bi]?brindes[bi]:null;
   const bc=brd?parseFloat(brd.custo||0):0,tc=items.reduce((s,i)=>s+i.cost,0)+bc;
-  const o={id:Date.now(),cliente:nome,data:document.getElementById('f-data').value,pgto:document.getElementById('f-pgto').value,tipo:tipoAt,obs:document.getElementById('f-obs-pp').value||'',obsCard:'',vt:tv,adic:0,custo:tc,items:JSON.parse(JSON.stringify(items)),end:buildEnd(),brd,stage:document.getElementById('f-etapa').value,cr:new Date().toISOString()};
+  const frete=parseFloat(document.getElementById('f-frete').value)||0;
+  const totalComFrete=tv+frete;
+  const o={id:Date.now(),cliente:nome,data:document.getElementById('f-data').value,pgto:document.getElementById('f-pgto').value,tipo:tipoAt,obs:document.getElementById('f-obs-pp').value||'',obsCard:'',vt:totalComFrete,frete,adic:0,custo:tc,items:JSON.parse(JSON.stringify(items)),end:buildEnd(),brd,stage:document.getElementById('f-etapa').value,cr:new Date().toISOString()};
   orders.unshift(o);await savO();alrt('✓ Pedido de '+nome+' salvo!','ok');clearAll();
 }
-function clearAll(){items=[];['f-nome','f-data','f-obs-iv','f-obs-pp','f-ent','e-nome','e-cep','e-rua','e-num','e-comp','e-bairro','e-cidade','e-uf'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});document.getElementById('f-brd').value='';document.getElementById('f-brd-c').value='';document.getElementById('f-valor').value='';document.getElementById('f-total-iv').value='';document.getElementById('f-valor-pp').value='';document.getElementById('preco-info').style.display='none';limpar();if(tipoAt==='iv')updValorIV();}
+function clearAll(){items=[];['f-nome','f-data','f-obs-iv','f-obs-pp','f-ent','e-nome','e-cep','e-rua','e-num','e-comp','e-bairro','e-cidade','e-uf'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});document.getElementById('f-brd').value='';document.getElementById('f-brd-c').value='';document.getElementById('f-valor').value='';document.getElementById('f-total-iv').value='';document.getElementById('f-valor-pp').value='';document.getElementById('f-frete').value='';document.getElementById('f-total-pp').value='';document.getElementById('preco-info').style.display='none';limpar();if(tipoAt==='iv')updValorIV();}
 
 function renderKPP(){
   document.getElementById('kdt-pp').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
