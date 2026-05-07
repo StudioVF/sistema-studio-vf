@@ -843,7 +843,31 @@ function parsearTexto(){
     td.split('\n').map(function(l){return l.trim();}).filter(function(l){return l;}).forEach(function(l){
       var mN=l.match(/^nome:\s*(.+)/i);if(mN)dNome=mN[1].trim();
       var mE=l.match(/^endere[cç]o:\s*(.+)/i);
-      if(mE){var e=mE[1].trim();var mNum=e.match(/^(.+?)\s*,\s*(\d+[a-z\s]*?)\s*(?:-\s*(.+))?$/i);if(mNum){document.getElementById('e-rua').value=mNum[1].trim();var np=mNum[2].trim();var nm=np.match(/^(\d+)\s+(.+)$/);if(nm){document.getElementById('e-num').value=nm[1];document.getElementById('e-comp').value=nm[2];}else document.getElementById('e-num').value=np;if(mNum[3])document.getElementById('e-bairro').value=mNum[3].trim();}else document.getElementById('e-rua').value=e;}
+      if(mE){
+        var endStr=mE[1].trim();
+        // Formato: "Rua X , 325 apartamento 602 - Vila Marumby"
+        // 1. Separar pelo traço " - " para pegar bairro
+        var partesBairro=endStr.split(/\s*-\s*/);
+        var endSemBairro=partesBairro[0].trim();
+        var bairro=partesBairro.length>1?partesBairro.slice(1).join(' - ').trim():'';
+        // 2. Separar pelo primeiro número para pegar rua e número+complemento
+        var mRua=endSemBairro.match(/^(.+?)[\s,]+(\d+.*)$/);
+        if(mRua){
+          document.getElementById('e-rua').value=mRua[1].replace(/,\s*$/,'').trim();
+          var restoNum=mRua[2].trim();
+          // 3. Separar o número do complemento (ex: "325 apartamento 602")
+          var mNumComp=restoNum.match(/^(\d+)\s*(.*)$/);
+          if(mNumComp){
+            document.getElementById('e-num').value=mNumComp[1].trim();
+            if(mNumComp[2])document.getElementById('e-comp').value=mNumComp[2].trim();
+          }else{
+            document.getElementById('e-num').value=restoNum;
+          }
+        }else{
+          document.getElementById('e-rua').value=endSemBairro;
+        }
+        if(bairro)document.getElementById('e-bairro').value=bairro;
+      }
       var mC=l.match(/cidade:\s*(.+?)\s+uf:\s*([a-z]{2})/i);if(mC){document.getElementById('e-cidade').value=mC[1].trim();document.getElementById('e-uf').value=mC[2].toUpperCase();}
       var mCep=l.match(/cep:\s*([\d\-]+)/i);if(mCep)document.getElementById('e-cep').value=mCep[1].replace(/\D/g,'').replace(/(\d{5})(\d{3})/,'$1-$2');
       var mCpf=l.match(/cpf[\s\/cnpj]*:\s*([\d.\-\/]+)/i);if(mCpf){var cpfVal=mCpf[1].trim();document.getElementById('e-cpf').value=cpfVal;}
@@ -1011,7 +1035,12 @@ function renderKPP(){
   var ordPP=orders.filter(function(o){return o.tipo==='pp'||o.tipo==='ivpp';});
   var MAX=80;
   ETS_PP.forEach(function(et){
-    var so=ordPP.filter(function(o){return o.stage===et;});
+    var so=ordPP.filter(function(o){return o.stage===et;}).sort(function(a,b){
+      if(!a.data&&!b.data)return 0;
+      if(!a.data)return 1;
+      if(!b.data)return -1;
+      return a.data<b.data?-1:a.data>b.data?1:0;
+    });
     var exibir=so.slice(0,MAX),excesso=so.length-exibir.length;
     var col=document.createElement('div');col.className='kcol';col.dataset.stage=et;
     col.innerHTML='<div class="khd"><span>'+et+'</span><span style="background:var(--ml);color:var(--pl);border-radius:20px;padding:1px 6px;font-size:10px">'+so.length+'</span></div><div class="kbody"></div>'+(excesso>0?'<div style="font-size:11px;color:#888;padding:4px 0;text-align:center">+'+excesso+' pedidos anteriores</div>':'');
@@ -1027,7 +1056,12 @@ function renderKIV(){
   var board=document.getElementById('kanban-iv');board.innerHTML='';
   var ordIV=orders.filter(function(o){return o.tipo==='iv';});
   ETS_IV.forEach(function(et){
-    var so=ordIV.filter(function(o){return o.stage===et;});
+    var so=ordIV.filter(function(o){return o.stage===et;}).sort(function(a,b){
+      if(!a.data&&!b.data)return 0;
+      if(!a.data)return 1;
+      if(!b.data)return -1;
+      return a.data<b.data?-1:a.data>b.data?1:0;
+    });
     var col=document.createElement('div');col.className='kcol';col.dataset.stage=et;
     col.innerHTML='<div class="khd"><span>'+et+'</span><span style="background:var(--ml);color:var(--pl);border-radius:20px;padding:1px 6px;font-size:10px">'+so.length+'</span></div><div class="kbody"></div>';
     col.addEventListener('dragover',function(e){e.preventDefault();col.classList.add('drag-over');});
