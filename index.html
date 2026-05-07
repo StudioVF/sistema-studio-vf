@@ -39,7 +39,7 @@ body{font-family:system-ui,sans-serif;font-size:16px;background:var(--cr);color:
 .fg input,.fg select,.fg textarea{font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:9px 11px;background:#fff;color:#333;width:100%}
 .fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--m)}
 .fg input[readonly]{background:var(--cr);color:var(--pl);font-weight:500}
-textarea{resize:vertical;min-height:110px}
+textarea{resize:vertical;min-height:340px;width:100%}
 .btn{padding:9px 16px;border-radius:20px;border:.5px solid rgba(138,158,123,.35);background:#fff;cursor:pointer;font-size:13px;font-family:inherit;color:var(--pl);transition:.15s}
 .btn:hover{background:var(--gl)}.btn.p{background:var(--pl);color:#F5EFE6;border-color:var(--pl)}.btn.p:hover{background:var(--m)}
 .btn.s{padding:5px 11px;font-size:12px}.btn.d{color:var(--pl);opacity:.6}.btn.d:hover{opacity:1;background:rgba(122,79,92,.1)}
@@ -291,7 +291,7 @@ textarea{resize:vertical;min-height:110px}
   <!-- Endereço -->
   <div class="card" id="card-end" style="display:none">
     <div class="lbl">Endereço de envio</div>
-    <div class="g2"><div class="fg"><label>Nome do destinatário</label><input id="e-nome"></div><div class="fg"><label>CEP</label><input id="e-cep" placeholder="00000-000" maxlength="9" oninput="buscaCep(this)"></div></div>
+    <div class="g3"><div class="fg"><label>Nome do destinatário</label><input id="e-nome"></div><div class="fg"><label>CEP</label><input id="e-cep" placeholder="00000-000" maxlength="9" oninput="buscaCep(this)"></div><div class="fg"><label>CPF do destinatário</label><input id="e-cpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCpf(this)"></div></div>
     <div class="g3"><div class="fg"><label>Logradouro</label><input id="e-rua"></div><div class="fg"><label>Número</label><input id="e-num"></div><div class="fg"><label>Complemento</label><input id="e-comp"></div></div>
     <div class="g3"><div class="fg"><label>Bairro</label><input id="e-bairro"></div><div class="fg"><label>Cidade</label><input id="e-cidade"></div><div class="fg"><label>Estado</label><input id="e-uf" placeholder="PR"></div></div>
   </div>
@@ -319,7 +319,7 @@ textarea{resize:vertical;min-height:110px}
       <p style="font-size:12px;color:#888;margin-bottom:8px">Cole o texto completo — inclua a seção <strong>Destinatário</strong> ao final para preenchimento automático.</p>
       <div class="dest-ok" id="dest-ok-txt"></div>
       <div class="wb" id="wb-txt"></div>
-      <textarea id="bagy-txt" placeholder="Bloco A5&#10;100 Folhas / Receituário simples&#10;1&#10;R$ 100,00&#10;-&#10;&#10;Destinatário&#10;Nome: Fulana de Tal&#10;Endereço: Rua X, 123 - Centro&#10;Cidade: Maringá UF: PR&#10;CEP: 87010-000"></textarea>
+      <textarea id="bagy-txt" style="min-height:400px;font-family:monospace;font-size:13px;line-height:1.6" placeholder="Bloco A5&#10;100 Folhas / Receituário simples&#10;1&#10;R$ 100,00&#10;-&#10;&#10;Destinatário&#10;Nome: Fulana de Tal&#10;Endereço: Rua X, 123 - Centro&#10;Cidade: Maringá UF: PR&#10;CEP: 87010-000&#10;CPF/CNPJ: 000.000.000-00"></textarea>
       <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn p" onclick="parsearTexto()">Interpretar pedido ↗</button>
         <button class="btn" onclick="addItem()">+ Item manual</button>
@@ -830,6 +830,7 @@ function parsearTexto(){
       if(mE){var e=mE[1].trim();var mNum=e.match(/^(.+?)\s*,\s*(\d+[a-z\s]*?)\s*(?:-\s*(.+))?$/i);if(mNum){document.getElementById('e-rua').value=mNum[1].trim();var np=mNum[2].trim();var nm=np.match(/^(\d+)\s+(.+)$/);if(nm){document.getElementById('e-num').value=nm[1];document.getElementById('e-comp').value=nm[2];}else document.getElementById('e-num').value=np;if(mNum[3])document.getElementById('e-bairro').value=mNum[3].trim();}else document.getElementById('e-rua').value=e;}
       var mC=l.match(/cidade:\s*(.+?)\s+uf:\s*([a-z]{2})/i);if(mC){document.getElementById('e-cidade').value=mC[1].trim();document.getElementById('e-uf').value=mC[2].toUpperCase();}
       var mCep=l.match(/cep:\s*([\d\-]+)/i);if(mCep)document.getElementById('e-cep').value=mCep[1].replace(/\D/g,'').replace(/(\d{5})(\d{3})/,'$1-$2');
+      var mCpf=l.match(/cpf[\s\/cnpj]*:\s*([\d.\-\/]+)/i);if(mCpf){var cpfVal=mCpf[1].trim();document.getElementById('e-cpf').value=cpfVal;}
     });
     if(dNome){document.getElementById('f-nome').value=dNome;document.getElementById('e-nome').value=dNome;}
     var dok=document.getElementById('dest-ok-txt');dok.style.display='flex';dok.innerHTML='✓ Destinatário preenchido: <strong style="margin-left:4px">'+dNome+'</strong>';
@@ -940,7 +941,8 @@ function limpar(){
   var t=document.getElementById('bagy-txt');if(t)t.value='';
   document.getElementById('pdf-ok').style.display='none';
 }
-function buildEnd(){return{nome:document.getElementById('e-nome').value,cep:document.getElementById('e-cep').value,rua:document.getElementById('e-rua').value,num:document.getElementById('e-num').value,comp:document.getElementById('e-comp').value,bairro:document.getElementById('e-bairro').value,cidade:document.getElementById('e-cidade').value,uf:document.getElementById('e-uf').value};}
+function mascaraCpf(input){var v=input.value.replace(/\D/g,'').substring(0,11);v=v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');input.value=v;}
+function buildEnd(){return{nome:document.getElementById('e-nome').value,cpf:document.getElementById('e-cpf').value,cep:document.getElementById('e-cep').value,rua:document.getElementById('e-rua').value,num:document.getElementById('e-num').value,comp:document.getElementById('e-comp').value,bairro:document.getElementById('e-bairro').value,cidade:document.getElementById('e-cidade').value,uf:document.getElementById('e-uf').value};}
 
 async function salvarIV(){
   var nome=document.getElementById('f-nome').value.trim();if(!nome){alrt('Informe o nome da cliente.','err');return;}
@@ -962,7 +964,7 @@ async function salvar(){
 }
 function clearAll(){
   items=[];brindeSelecionados=[];
-  ['f-nome','f-compra','f-data','f-obs-iv','f-obs-pp','f-ent','e-nome','e-cep','e-rua','e-num','e-comp','e-bairro','e-cidade','e-uf'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  ['f-nome','f-compra','f-data','f-obs-iv','f-obs-pp','f-ent','e-nome','e-cpf','e-cep','e-rua','e-num','e-comp','e-bairro','e-cidade','e-uf'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
   document.getElementById('f-brd').value='';
   document.getElementById('f-valor').value='';
   document.getElementById('f-total-iv').value='';
@@ -1076,7 +1078,7 @@ function openMoPed(id,kanbanType){
     html+='</select><button class="btn p s" onclick="addBrindeModal(\''+kanbanType+'\')">+ Adicionar</button></div>';
   }
   // Endereço
-  if(o.end&&o.tipo!=='iv'){var e=o.end;html+='<div class="stl">Endereço</div><div class="ab"><strong style="font-weight:500">'+(e.nome||o.cliente)+'</strong><br>'+e.rua+(e.num?', '+e.num:'')+(e.comp?' — '+e.comp:'')+'<br>'+e.bairro+' · '+e.cidade+'/'+e.uf+' · CEP '+e.cep+'</div>';}
+  if(o.end&&o.tipo!=='iv'){var e=o.end;html+='<div class="stl">Endereço</div><div class="ab"><strong style="font-weight:500">'+(e.nome||o.cliente)+'</strong>'+(e.cpf?' · CPF: '+e.cpf:'')+'<br>'+e.rua+(e.num?', '+e.num:'')+(e.comp?' — '+e.comp:'')+'<br>'+e.bairro+' · '+e.cidade+'/'+e.uf+' · CEP '+e.cep+'</div>';}
   // Etapa
   var ets=o.tipo==='iv'?ETS_IV:ETS_PP;
   html+='<div class="stl">Etapa de produção</div><select class="ssel" style="font-size:14px;padding:9px 12px;border-radius:8px;width:100%" onchange="updSmo(this.value,\''+kanbanType+'\')"><option value="">Selecione</option>';
@@ -1193,7 +1195,7 @@ function alrt(msg,tp){var a=document.getElementById('alrt');a.innerHTML='<div cl
 document.addEventListener('DOMContentLoaded',init);
 
 // ── Exposição global (necessário para onclick no HTML dinâmico) ──
-window.selecionarUser=selecionarUser;window.confirmarSenha=confirmarSenha;window.voltarUsers=voltarUsers;window.logout=logout;
+window.mascaraCpf=mascaraCpf;window.selecionarUser=selecionarUser;window.confirmarSenha=confirmarSenha;window.voltarUsers=voltarUsers;window.logout=logout;
 window.tipo=tipo;window.switchE=switchE;window.buscaCep=buscaCep;window.updValorIV=updValorIV;window.updTotalPP=updTotalPP;
 window.addBrinde=addBrinde;window.removeBrindeSel=removeBrindeSel;
 window.parsearTexto=parsearTexto;window.handlePDF=handlePDF;window.addItem=addItem;window.limpar=limpar;
