@@ -887,6 +887,24 @@ function openMoPed(id,kanbanType){
   html+=`<div style="text-align:right;margin-top:8px"><button class="btn s p" onclick="salvarItensModal(${o.id},'${kanbanType||''}')">Salvar itens</button></div>`;
   if(o.brindes&&o.brindes.length){html+=`<div class="stl">Brindes</div>`;o.brindes.forEach(b=>{html+=`<div style="font-size:14px;color:var(--g);padding:3px 0">🎁 ${b.nome}${b.desc?' — '+b.desc:''}${b.custo>0?` <span style="font-size:12px;color:#888">· R$ ${parseFloat(b.custo).toFixed(2)}</span>`:''}</div>`;});}
   else if(o.brd)html+=`<div class="stl">Brinde</div><div style="font-size:14px;color:var(--g)">🎁 ${o.brd.nome}${o.brd.desc?' — '+o.brd.desc:''}</div>`;
+  // Editor de brindes — só papelaria
+  if(o.tipo!=='iv'){
+    const brdsAtuais=(o.brindes&&o.brindes.length)?o.brindes:(o.brd?[o.brd]:[]);
+    html+=`<div class="stl">Editar brindes</div>`;
+    html+=`<div id="mo-brd-lista">${brdsAtuais.map((b,i)=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:.5px solid rgba(245,239,230,.9)">
+        <div style="font-size:14px;color:var(--pl)">🎁 <strong>${b.nome}</strong>${b.custo>0?` <span style="font-size:12px;color:#888">· R$ ${parseFloat(b.custo).toFixed(2)}</span>`:''}${b.desc?' — <span style="color:#888;font-weight:400">'+b.desc+'</span>':''}</div>
+        <button class="btn s d" onclick="removeBrindeModal(${o.id},${i},'${kanbanType||''}')">✕</button>
+      </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+      <select id="mo-brd-sel" style="flex:1;font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:8px 10px;background:#fff;color:#333;min-width:160px">
+        <option value="">— Selecionar brinde —</option>
+        ${brindes.map((b,i)=>`<option value="${i}">${b.nome}${b.custo>0?' — R$ '+parseFloat(b.custo).toFixed(2):''}</option>`).join('')}
+      </select>
+      <button class="btn p s" onclick="addBrindeModal(${o.id},'${kanbanType||''}')">+ Adicionar</button>
+    </div>`;
+  }
   if(o.end&&o.tipo!=='iv'){const e=o.end;html+=`<div class="stl">Endereço</div><div class="ab"><strong style="font-weight:500">${e.nome||o.cliente}</strong><br>${e.rua}${e.num?', '+e.num:''}${e.comp?' — '+e.comp:''}<br>${e.bairro} · ${e.cidade}/${e.uf} · CEP ${e.cep}<br><strong style="font-weight:500">Envio:</strong> ${e.envio}</div>`;}
   const ets=o.tipo==='iv'?ETS_IV:ETS_PP;
   html+=`<div class="stl">Etapa de produção</div><select class="ssel" style="font-size:14px;padding:9px 12px;border-radius:8px;width:100%" onchange="updSmo(${o.id},this.value,'${kanbanType||''}')">${ets.map(s=>`<option${s===o.stage?' selected':''}>${s}</option>`).join('')}</select>`;
@@ -896,8 +914,28 @@ function openMoPed(id,kanbanType){
 }
 async function salvarData(id){const o=orders.find(x=>x.id===id);if(!o)return;o.data=document.getElementById('modal-data').value;await savO();alrt('✓ Data atualizada!','ok');}
 async function salvarObs(id){const o=orders.find(x=>x.id===id);if(!o)return;o.obsCard=document.getElementById('obs-card-input').value;await savO();alrt('✓ Observação salva!','ok');refreshKanban();}
-async function salvarItensModal(id,kt){const o=orders.find(x=>x.id===id);if(!o)return;o.items.forEach((it,idx)=>{const n=document.getElementById(`ei-n-${idx}`),v=document.getElementById(`ei-v-${idx}`),c=document.getElementById(`ei-c-${idx}`);if(n)it.name=n.value.trim();if(v)it.variation=v.value.trim();if(c)it.cost=parseFloat(c.value)||0;});o.custo=o.items.reduce((s,i)=>s+(i.cost||0),0);await savO();alrt('✓ Itens atualizados!','ok');openMoPed(id,kt);refreshKanban();}
-async function addItemModal(id,kt){const o=orders.find(x=>x.id===id);if(!o)return;o.items.push({name:'Novo item',variation:'',qty:1,price:0,cost:0,graficas:'—',checked:false});await savO();openMoPed(id,kt);}
+async function salvarItensModal(id,kt){const o=orders.find(x=>x.id===id);if(!o)return;o.items.forEach((it,idx)=>{const n=document.getElementById(`ei-n-${idx}`),v=document.getElementById(`ei-v-${idx}`),c=document.getElementById(`ei-c-${idx}`);if(n)it.name=n.value.trim();if(v)it.variation=v.value.trim();if(c)it.cost=parseFloat(c.value)||0;});recalcCusto(o);await savO();alrt('✓ Itens atualizados!','ok');openMoPed(id,kt);refreshKanban();}
+async function addBrindeModal(id,kt){
+  const idx=document.getElementById('mo-brd-sel').value;
+  if(idx===''||!brindes[idx]){alrt('Selecione um brinde.','err');return;}
+  const o=orders.find(x=>x.id===id);if(!o)return;
+  if(!o.brindes)o.brindes=o.brd?[o.brd]:[];
+  o.brindes.push({...brindes[idx]});
+  recalcCusto(o);
+  await savO();openMoPed(id,kt);refreshKanban();alrt('✓ Brinde adicionado!','ok');
+}
+async function removeBrindeModal(id,idx,kt){
+  const o=orders.find(x=>x.id===id);if(!o)return;
+  if(!o.brindes)o.brindes=o.brd?[o.brd]:[];
+  o.brindes.splice(idx,1);
+  recalcCusto(o);
+  await savO();openMoPed(id,kt);refreshKanban();alrt('✓ Brinde removido!','ok');
+}
+function recalcCusto(o){
+  const custoBrindes=(o.brindes||[]).reduce((s,b)=>s+parseFloat(b.custo||0),0);
+  const custoItens=o.items.reduce((s,i)=>s+(i.cost||0),0);
+  o.custo=custoItens+custoBrindes;
+}const o=orders.find(x=>x.id===id);if(!o)return;o.items.push({name:'Novo item',variation:'',qty:1,price:0,cost:0,graficas:'—',checked:false});await savO();openMoPed(id,kt);}
 async function removeItemModal(id,idx,kt){const o=orders.find(x=>x.id===id);if(!o)return;o.items.splice(idx,1);await savO();openMoPed(id,kt);}
 async function chkItem(oid,idx,checked,kt){const o=orders.find(x=>x.id===oid);if(o){o.items[idx].checked=checked;await savO();openMoPed(oid,kt);refreshKanban();}}
 async function updSmo(id,s,kt){const o=orders.find(x=>x.id===id);if(o){o.stage=s;await savO();refreshKanban();}}
