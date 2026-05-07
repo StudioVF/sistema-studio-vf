@@ -1189,5 +1189,20 @@ function closeMo(id){document.getElementById(id).classList.remove('on');}
 function alrt(msg,tp){var a=document.getElementById('alrt');a.innerHTML='<div class="alrt '+tp+'">'+msg+'</div>';setTimeout(function(){a.innerHTML='';},5000);}
 
 document.addEventListener('DOMContentLoaded',init);
+
+// ── Exposição global (necessário para onclick no HTML dinâmico) ──
+window.selecionarUser=selecionarUser;window.confirmarSenha=confirmarSenha;window.voltarUsers=voltarUsers;window.logout=logout;
+window.tipo=tipo;window.switchE=switchE;window.buscaCep=buscaCep;window.updValorIV=updValorIV;window.updTotalPP=updTotalPP;
+window.addBrinde=addBrinde;window.removeBrindeSel=removeBrindeSel;
+window.parsearTexto=parsearTexto;window.handlePDF=handlePDF;window.addItem=addItem;window.limpar=limpar;
+window.salvar=salvar;window.salvarIV=salvarIV;window.pg=pg;
+window.openMoPed=openMoPed;window.salvarData=salvarData;window.salvarObs=salvarObs;
+window.salvarItensModal=salvarItensModal;window.addItemModal=addItemModal;window.removeItemModal=removeItemModal;
+window.chkItem=chkItem;window.updSmo=updSmo;window.setDesigner=setDesigner;
+window.addBrindeModal=addBrindeModal;window.removeBrindeModal=removeBrindeModal;
+window.delO=delO;window.closeMo=closeMo;window.updS=updS;
+window.renderPeds=renderPeds;window.renderFin=renderFin;window.lancarGasto=lancarGasto;window.delGasto=delGasto;
+window.openCM=openCM;window.editC=editC;window.delC=delC;window.salvaCusto=salvaCusto;
+window.openBM=openBM;window.editBrd=editBrd;window.delBrd=delBrd;window.salvaBrd=salvaBrd;
 </script>
 </body></html>
