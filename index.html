@@ -511,8 +511,56 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 async function fbGet(col){const s=await db.collection('studio_vf').doc(col).get();return s.exists?s.data().data:null;}
-async function fbSet(col,data){await db.collection('studio_vf').doc(col).set({data});}
-function fbListen(col,cb){db.collection('studio_vf').doc(col).onSnapshot(s=>{if(s.exists)cb(s.data().data);});}
+
+// ── CORREÇÃO 1: retry automático + feedback de erro de conexão ──
+async function fbSet(col,data){
+  let tentativas=0;
+  while(tentativas<3){
+    try{
+      await db.collection('studio_vf').doc(col).set({data});
+      return;
+    }catch(e){
+      tentativas++;
+      if(tentativas===3){
+        alrt('⚠ Erro ao salvar. Verifique sua conexão e tente novamente.','err');
+        console.error('fbSet falhou após 3 tentativas:',e);
+        throw e;
+      }
+      await new Promise(r=>setTimeout(r,800*tentativas));
+    }
+  }
+}
+
+// ── CORREÇÃO 2: debounce nos listeners (evita spam de re-renders) ──
+const _debounceTimers={};
+function debounce(key,fn,ms=300){
+  clearTimeout(_debounceTimers[key]);
+  _debounceTimers[key]=setTimeout(fn,ms);
+}
+
+// ── CORREÇÃO 3: listeners com referência para cancelamento ──
+const _unsubscribers=[];
+function fbListen(col,cb){
+  const unsub=db.collection('studio_vf').doc(col).onSnapshot(
+    s=>{if(s.exists)cb(s.data().data);},
+    e=>console.error('Listener erro '+col+':',e)
+  );
+  _unsubscribers.push(unsub);
+}
+function cancelarListeners(){_unsubscribers.forEach(u=>u());_unsubscribers.length=0;}
+
+// ── CORREÇÃO 4: ID único com timestamp + random (evita colisão) ──
+function gerarId(){return Date.now()+'_'+Math.random().toString(36).substr(2,9);}
+
+// ── CORREÇÃO 5: aviso de tamanho do documento ──
+function checarTamanho(){
+  const tam=JSON.stringify(orders).length;
+  if(tam>800000){
+    console.warn('⚠ Dados próximos do limite ('+Math.round(tam/1000)+'KB / 1000KB)');
+    alrt('⚠ Atenção: banco de dados próximo do limite. Entre em contato com o suporte.','err');
+  }
+}
+
 
 const ETS_PP=['Produzindo Id. Visual','Passar para Yses','Produzindo Artes','Início do processo','Gabarito','Pedido feito nas gráficas','Produzindo blocos','Esperando terceiros','Pronto para embalar','Emitir etiqueta','Enviado'];
 const ETS_IV=['Início do processo','Agendado','Finalizou','Sumiu'];
@@ -600,22 +648,44 @@ async function savG(){await fbSet('gastos',gastos);}
 function isAdmin(){return currentUser&&currentUser.role==='admin';}
 
 async function init(){
+  // ── CORREÇÃO 6: detectar offline antes de tentar conectar ──
+  if(!navigator.onLine){
+    document.body.innerHTML='<div style="position:fixed;inset:0;background:var(--pl);display:flex;align-items:center;justify-content:center"><div style="background:#fff;border-radius:16px;padding:32px;text-align:center;max-width:340px"><div style="font-size:40px;margin-bottom:12px">📡</div><div style="font-size:16px;font-family:Georgia,serif;color:var(--pl);margin-bottom:8px">Sem conexão</div><div style="font-size:14px;color:#888;margin-bottom:16px">Verifique sua internet e recarregue a página.</div><button onclick="location.reload()" style="background:var(--pl);color:#fff;border:none;border-radius:20px;padding:10px 24px;font-size:14px;cursor:pointer">Tentar novamente</button></div></div>';
+    return;
+  }
+
   const ld=document.createElement('div');
   ld.id='fb-loading';
   ld.style.cssText='position:fixed;inset:0;background:rgba(122,79,92,.6);display:flex;align-items:center;justify-content:center;z-index:9999';
   ld.innerHTML='<div style="background:#fff;border-radius:12px;padding:24px 32px;text-align:center;font-family:Georgia,serif;color:var(--pl)"><div style="font-size:28px;margin-bottom:8px">⏳</div>Conectando...</div>';
   document.body.appendChild(ld);
+
   try{
     const o=await fbGet('orders');orders=o||[];
     const c=await fbGet('costs');costs=(c&&c.length)?c:COSTS_DEFAULT;
     if(!c||!c.length)await fbSet('costs',costs);
     const b=await fbGet('brindes');brindes=b||[];
     const g=await fbGet('gastos');gastos=g||[];
-    fbListen('orders',d=>{orders=d||[];refreshKanban();});
+
+    // ── CORREÇÃO 7: listeners com debounce para evitar re-renders em cascata ──
+    fbListen('orders',d=>{
+      orders=d||[];
+      debounce('kanban',()=>refreshKanban(),250);
+    });
     fbListen('brindes',d=>{brindes=d||[];popBrd();});
     fbListen('gastos',d=>{gastos=d||[];});
     fbListen('costs',d=>{if(d&&d.length)costs=d;});
-  }catch(e){console.error('Firebase erro:',e);}
+
+    // ── CORREÇÃO 8: monitorar conexão em tempo real ──
+    window.addEventListener('offline',()=>alrt('⚠ Conexão perdida. As alterações podem não ser salvas.','err'));
+    window.addEventListener('online',()=>alrt('✓ Conexão restaurada!','ok'));
+
+    checarTamanho();
+  }catch(e){
+    console.error('Firebase erro:',e);
+    ld.innerHTML='<div style="background:#fff;border-radius:12px;padding:24px 32px;text-align:center;font-family:Georgia,serif;color:var(--pl)"><div style="font-size:28px;margin-bottom:8px">❌</div>Erro ao conectar.<br><small style="color:#888">Recarregue a página.</small><br><br><button onclick="location.reload()" style="background:var(--pl);color:#fff;border:none;border-radius:20px;padding:8px 20px;font-size:13px;cursor:pointer;margin-top:8px">Recarregar</button></div>';
+    return;
+  }
   ld.remove();
   popBrd();
 }
@@ -672,6 +742,7 @@ function entrar(uid){
 }
 function logout(){
   currentUser=null;userSelecionado=null;
+  cancelarListeners();
   document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none';
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.getElementById('step-senha').style.display='none';document.getElementById('step-user').style.display='block';
@@ -815,8 +886,8 @@ async function salvarIV(){
   const pac=document.getElementById('f-pac').value,pgto=document.getElementById('f-pgto').value;
   const isPix=PIX_PGTO.includes(pgto),info=PACOTES[pac];
   const baseVal=isPix?info.pix:info.normal,adic=parseFloat(document.getElementById('f-ent').value)||0,total=baseVal+adic;
-  const o={id:Date.now(),cliente:nome,dataCompra:document.getElementById('f-compra').value,data:document.getElementById('f-data').value,pgto,tipo:'iv',pacote:info.nome,obs:document.getElementById('f-obs-iv').value||'',obsCard:'',vt:total,valorBase:baseVal,adic,custo:info.custo,items:[{name:info.nome,variation:'Identidade Visual',qty:1,price:total,cost:info.custo,checked:false}],end:null,brd:null,stage:document.getElementById('f-etapa-iv').value,cr:new Date().toISOString()};
-  orders.unshift(o);await savO();alrt('✓ Pedido de '+nome+' salvo!','ok');clearAll();
+  const o={id:gerarId(),cliente:nome,dataCompra:document.getElementById('f-compra').value,data:document.getElementById('f-data').value,pgto,tipo:'iv',pacote:info.nome,obs:document.getElementById('f-obs-iv').value||'',obsCard:'',vt:total,valorBase:baseVal,adic,custo:info.custo,items:[{name:info.nome,variation:'Identidade Visual',qty:1,price:total,cost:info.custo,checked:false}],end:null,brindes:[],stage:document.getElementById('f-etapa-iv').value,cr:new Date().toISOString()};
+  orders.unshift(o);await savO();checarTamanho();alrt('✓ Pedido de '+nome+' salvo!','ok');clearAll();
 }
 async function salvar(){
   const nome=document.getElementById('f-nome').value.trim();if(!nome){alrt('Informe o nome da cliente.','err');return;}if(!items.length){alrt('Adicione pelo menos um item.','err');return;}
@@ -824,8 +895,8 @@ async function salvar(){
   const bc=brindeSelecionados.reduce((s,b)=>s+parseFloat(b.custo||0),0),tc=items.reduce((s,i)=>s+i.cost,0)+bc;
   const frete=parseFloat(document.getElementById('f-frete').value)||0;
   const totalComFrete=tv+frete;
-  const o={id:Date.now(),cliente:nome,dataCompra:document.getElementById('f-compra').value,data:document.getElementById('f-data').value,pgto:document.getElementById('f-pgto').value,tipo:tipoAt,obs:document.getElementById('f-obs-pp').value||'',obsCard:'',vt:totalComFrete,frete,adic:0,custo:tc,items:JSON.parse(JSON.stringify(items)),end:buildEnd(),brindes:JSON.parse(JSON.stringify(brindeSelecionados)),stage:document.getElementById('f-etapa').value,cr:new Date().toISOString()};
-  orders.unshift(o);await savO();alrt('✓ Pedido de '+nome+' salvo!','ok');clearAll();
+  const o={id:gerarId(),cliente:nome,dataCompra:document.getElementById('f-compra').value,data:document.getElementById('f-data').value,pgto:document.getElementById('f-pgto').value,tipo:tipoAt,obs:document.getElementById('f-obs-pp').value||'',obsCard:'',vt:totalComFrete,frete,adic:0,custo:tc,items:JSON.parse(JSON.stringify(items)),end:buildEnd(),brindes:JSON.parse(JSON.stringify(brindeSelecionados)),stage:document.getElementById('f-etapa').value,cr:new Date().toISOString()};
+  orders.unshift(o);await savO();checarTamanho();alrt('✓ Pedido de '+nome+' salvo!','ok');clearAll();
 }
 function clearAll(){items=[];brindeSelecionados=[];['f-nome','f-compra','f-data','f-obs-iv','f-obs-pp','f-ent','e-nome','e-cep','e-rua','e-num','e-comp','e-bairro','e-cidade','e-uf'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});document.getElementById('f-brd').value='';document.getElementById('f-valor').value='';document.getElementById('f-total-iv').value='';document.getElementById('f-valor-pp').value='';document.getElementById('f-frete').value='';document.getElementById('f-total-pp').value='';document.getElementById('preco-info').style.display='none';renderBrindesSel();limpar();if(tipoAt==='iv')updValorIV();}
 
@@ -833,14 +904,17 @@ function renderKPP(){
   document.getElementById('kdt-pp').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
   const board=document.getElementById('kanban-pp');board.innerHTML='';
   const ordPP=orders.filter(o=>o.tipo==='pp'||o.tipo==='ivpp');
+  const MAX_POR_COL=80;
   ETS_PP.forEach(et=>{
     const so=ordPP.filter(o=>o.stage===et);
+    const exibir=so.slice(0,MAX_POR_COL);
+    const excesso=so.length-exibir.length;
     const col=document.createElement('div');col.className='kcol';col.dataset.stage=et;
-    col.innerHTML=`<div class="khd"><span>${et}</span><span style="background:var(--ml);color:var(--pl);border-radius:20px;padding:1px 6px;font-size:10px">${so.length}</span></div><div class="kbody"></div>`;
+    col.innerHTML=`<div class="khd"><span>${et}</span><span style="background:var(--ml);color:var(--pl);border-radius:20px;padding:1px 6px;font-size:10px">${so.length}</span></div><div class="kbody"></div>${excesso>0?`<div style="font-size:11px;color:#888;padding:4px 0;text-align:center">+${excesso} pedidos anteriores</div>`:''}`;
     col.addEventListener('dragover',e=>{e.preventDefault();col.classList.add('drag-over');});
     col.addEventListener('dragleave',()=>col.classList.remove('drag-over'));
     col.addEventListener('drop',async e=>{e.preventDefault();col.classList.remove('drag-over');if(dragId===null)return;const o=orders.find(x=>x.id===dragId);if(o){o.stage=et;await savO();renderKPP();}});
-    board.appendChild(col);so.forEach(o=>col.querySelector('.kbody').appendChild(makeCard(o,'pp')));
+    board.appendChild(col);exibir.forEach(o=>col.querySelector('.kbody').appendChild(makeCard(o,'pp')));
   });
 }
 function renderKIV(){
@@ -891,19 +965,21 @@ function openMoPed(id,kanbanType){
   if(o.tipo!=='iv'){
     const brdsAtuais=(o.brindes&&o.brindes.length)?o.brindes:(o.brd?[o.brd]:[]);
     html+=`<div class="stl">Editar brindes</div>`;
-    html+=`<div id="mo-brd-lista">${brdsAtuais.map((b,i)=>`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:.5px solid rgba(245,239,230,.9)">
-        <div style="font-size:14px;color:var(--pl)">🎁 <strong>${b.nome}</strong>${b.custo>0?` <span style="font-size:12px;color:#888">· R$ ${parseFloat(b.custo).toFixed(2)}</span>`:''}${b.desc?' — <span style="color:#888;font-weight:400">'+b.desc+'</span>':''}</div>
-        <button class="btn s d" onclick="removeBrindeModal(${o.id},${i},'${kanbanType||''}')">✕</button>
-      </div>`).join('')}
-    </div>
-    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
-      <select id="mo-brd-sel" style="flex:1;font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:8px 10px;background:#fff;color:#333;min-width:160px">
-        <option value="">— Selecionar brinde —</option>
-        ${brindes.map((b,i)=>`<option value="${i}">${b.nome}${b.custo>0?' — R$ '+parseFloat(b.custo).toFixed(2):''}</option>`).join('')}
-      </select>
-      <button class="btn p s" onclick="addBrindeModal(${o.id},'${kanbanType||''}')">+ Adicionar</button>
-    </div>`;
+    html+=`<div id="mo-brd-lista">`;
+    brdsAtuais.forEach((b,i)=>{
+      html+=`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:.5px solid rgba(245,239,230,.9)">`;
+      html+=`<div style="font-size:14px;color:var(--pl)">🎁 <strong>${b.nome}</strong>${b.custo>0?' <span style="font-size:12px;color:#888">· R$ '+parseFloat(b.custo).toFixed(2)+'</span>':''}${b.desc?' — <span style="color:#888">'+b.desc+'</span>':''}</div>`;
+      html+=`<button class="btn s d" onclick="removeBrindeModal(${o.id},${i},'${kanbanType||''}')">✕</button>`;
+      html+=`</div>`;
+    });
+    html+=`</div>`;
+    html+=`<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">`;
+    html+=`<select id="mo-brd-sel" style="flex:1;font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:8px 10px;background:#fff;color:#333;min-width:160px">`;
+    html+=`<option value="">— Selecionar brinde —</option>`;
+    brindes.forEach((b,i)=>{html+=`<option value="${i}">${b.nome}${b.custo>0?' — R$ '+parseFloat(b.custo).toFixed(2):''}</option>`;});
+    html+=`</select>`;
+    html+=`<button class="btn p s" onclick="addBrindeModal(${o.id},'${kanbanType||''}')">+ Adicionar</button>`;
+    html+=`</div>`;
   }
   if(o.end&&o.tipo!=='iv'){const e=o.end;html+=`<div class="stl">Endereço</div><div class="ab"><strong style="font-weight:500">${e.nome||o.cliente}</strong><br>${e.rua}${e.num?', '+e.num:''}${e.comp?' — '+e.comp:''}<br>${e.bairro} · ${e.cidade}/${e.uf} · CEP ${e.cep}<br><strong style="font-weight:500">Envio:</strong> ${e.envio}</div>`;}
   const ets=o.tipo==='iv'?ETS_IV:ETS_PP;
@@ -1016,6 +1092,6 @@ async function delO(id,kt){if(!confirm('Excluir este pedido?'))return;orders=ord
 function closeMo(id){document.getElementById(id).classList.remove('on');}
 function alrt(msg,tp){const a=document.getElementById('alrt');a.innerHTML=`<div class="alrt ${tp}">${msg}</div>`;setTimeout(()=>{a.innerHTML=''},5000);}
 
-init();
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body></html>
