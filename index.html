@@ -6,7 +6,7 @@
 <style>
 :root{--g:#8A9E7B;--m:#8E6B7A;--cr:#F5EFE6;--pl:#7A4F5C;--gl:rgba(138,158,123,.15);--ml:rgba(142,107,122,.13);}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;font-size:15px;background:var(--cr);color:#333}
+body{font-family:system-ui,sans-serif;font-size:16px;background:var(--cr);color:#333}
 .login-screen{position:fixed;inset:0;background:var(--pl);display:flex;align-items:center;justify-content:center;z-index:999;padding:16px}
 .login-box{background:#fff;border-radius:16px;padding:32px;width:100%;max-width:340px;text-align:center}
 .logo-l{font-size:17px;font-family:Georgia,serif;color:var(--pl);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
@@ -23,7 +23,7 @@ body{font-family:system-ui,sans-serif;font-size:15px;background:var(--cr);color:
 .user-info{font-size:12px;color:rgba(245,239,230,.7);white-space:nowrap}
 .logout-btn{padding:5px 10px;border:.5px solid rgba(245,239,230,.3);border-radius:20px;background:none;color:rgba(245,239,230,.7);cursor:pointer;font-size:12px;font-family:inherit;margin-left:6px;white-space:nowrap}
 .logout-btn:hover{background:rgba(245,239,230,.1);color:#F5EFE6}
-.wrap{padding:14px;max-width:1200px;margin:0 auto}
+.wrap{padding:14px 20px;max-width:100%;margin:0 auto}
 .pg{display:none}.pg.on{display:block}
 .lbl{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--pl);opacity:.7;margin-bottom:8px}
 .card{background:#fff;border:.5px solid rgba(138,158,123,.22);border-radius:12px;padding:16px;margin-bottom:12px}
@@ -65,9 +65,9 @@ textarea{resize:vertical;min-height:110px}
 .tc .v{font-size:17px;font-weight:500;margin-top:4px;font-family:Georgia,serif}
 .tc .l{font-size:11px;color:var(--pl);letter-spacing:.5px;text-transform:uppercase;opacity:.7}
 .gv{color:var(--g)}.rv{color:var(--pl)}.pv{color:var(--m)}
-.kanban-wrap{overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
-.kanban-pp{display:grid;grid-template-columns:repeat(11,minmax(148px,1fr));gap:8px;min-width:1640px}
-.kanban-iv{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:8px;min-width:680px}
+.kanban-wrap{width:100%;padding-bottom:8px}
+.kanban-pp{display:grid;grid-template-columns:repeat(11,1fr);gap:6px;width:100%}
+.kanban-iv{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%}
 .kcol{background:#fff;border-radius:10px;padding:10px;border:.5px solid rgba(138,158,123,.18);transition:.15s}
 .kcol.drag-over{background:var(--ml);border-color:var(--m)}
 .khd{font-size:10px;font-weight:600;color:var(--pl);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;opacity:.8}
@@ -160,11 +160,14 @@ textarea{resize:vertical;min-height:110px}
   .edit-item-row input{font-size:13px}
   .designer-btns{gap:5px}
   .dbtn{padding:5px 10px;font-size:12px}
+  .kanban-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .kanban-pp{grid-template-columns:repeat(11,minmax(130px,1fr))}
+  .kanban-iv{grid-template-columns:repeat(4,minmax(130px,1fr))}
   .tots{grid-template-columns:repeat(3,1fr);gap:6px}
   .tc .v{font-size:15px}
 }
 @media(min-width:641px){
-  body{font-size:15px}
+  body{font-size:16px}
 }
 </style>
 </head><body>
@@ -244,8 +247,9 @@ textarea{resize:vertical;min-height:110px}
   <!-- Dados gerais -->
   <div class="card">
     <div class="lbl">Dados da cliente</div>
-    <div class="g3">
+    <div class="g4" style="margin-bottom:10px">
       <div class="fg"><label>Nome da cliente</label><input id="f-nome" placeholder="Ex: Dra. Ana Paula Maciel"></div>
+      <div class="fg"><label>Data da compra</label><input type="date" id="f-compra"></div>
       <div class="fg"><label>Prazo de entrega</label><input type="date" id="f-data"></div>
       <div class="fg ao"><label>Forma de pagamento</label>
         <select id="f-pgto" onchange="updValorIV()">
@@ -294,8 +298,17 @@ textarea{resize:vertical;min-height:110px}
 
   <!-- Brinde -->
   <div class="card" id="card-brd" style="display:none">
-    <div class="lbl">Brinde</div>
-    <div class="g2"><div class="fg"><label>Brinde incluído</label><select id="f-brd" onchange="updBrd()"><option value="">— Sem brinde —</option></select></div><div class="fg ao"><label>Custo do brinde (R$)</label><input id="f-brd-c" type="number" step="0.01" placeholder="0,00" readonly style="background:var(--cr)"></div></div>
+    <div class="lbl">Brindes</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <select id="f-brd" style="flex:1;font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:9px 11px;background:#fff;color:#333;min-width:200px">
+        <option value="">— Selecionar brinde —</option>
+      </select>
+      <button class="btn p" onclick="addBrinde()" type="button">+ Adicionar</button>
+    </div>
+    <div id="brd-lista" style="display:none">
+      <div class="lbl" style="margin-bottom:6px">Brindes selecionados</div>
+      <div id="brd-itens"></div>
+    </div>
   </div>
 
   <!-- Itens Papelaria -->
@@ -421,6 +434,11 @@ textarea{resize:vertical;min-height:110px}
       <select id="g-filtro-mes" onchange="renderFin()" style="font-family:inherit;font-size:12px;border:.5px solid rgba(138,158,123,.28);border-radius:20px;padding:4px 10px;background:#fff;color:var(--pl);cursor:pointer">
         <option value="">Todos os meses</option>
       </select>
+      <select id="g-filtro-tipo" onchange="renderFin()" style="font-family:inherit;font-size:12px;border:.5px solid rgba(138,158,123,.28);border-radius:20px;padding:4px 10px;background:#fff;color:var(--pl);cursor:pointer">
+        <option value="">Todos os tipos</option>
+        <option value="iv">ID Visual</option>
+        <option value="pp">Papelaria</option>
+      </select>
     </div>
   </div>
   <div class="otb" style="margin-bottom:16px">
@@ -458,7 +476,7 @@ textarea{resize:vertical;min-height:110px}
 </div>
 
 <!-- MODAIS -->
-<div class="mov" id="mo-ped"><div class="mo">
+<div class="mov" id="mo-ped" onclick="if(event.target===this)closeMo('mo-ped')"><div class="mo">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><h2 id="mo-tit">Pedido</h2><button class="btn s" onclick="closeMo('mo-ped')">Fechar</button></div>
   <div id="mo-body"></div><div class="mof" id="mo-foot"></div>
 </div></div>
@@ -669,8 +687,43 @@ function pg(id,el){
   if(id==='kanban-pp')renderKPP();if(id==='kanban-iv')renderKIV();
   if(id==='pedidos')renderPeds();if(id==='fin')renderFin();if(id==='custos')renderC();if(id==='brindes')renderBrd();
 }
-function popBrd(){const s=document.getElementById('f-brd'),v=s.value;s.innerHTML='<option value="">— Sem brinde —</option>';brindes.forEach((b,i)=>s.innerHTML+=`<option value="${i}">${b.nome}${b.custo>0?' — R$ '+parseFloat(b.custo).toFixed(2):''}</option>`);s.value=v;}
-function updBrd(){const i=document.getElementById('f-brd').value,e=document.getElementById('f-brd-c');if(i===''||!brindes[i]){e.value='';return;}e.value=parseFloat(brindes[i].custo||0).toFixed(2);}
+let brindeSelecionados=[];
+function popBrd(){
+  const s=document.getElementById('f-brd');
+  const v=s.value;
+  s.innerHTML='<option value="">— Selecionar brinde —</option>';
+  brindes.forEach((b,i)=>s.innerHTML+=`<option value="${i}">${b.nome}${b.custo>0?' — R$ '+parseFloat(b.custo).toFixed(2):''}</option>`);
+  s.value=v;
+}
+function addBrinde(){
+  const idx=document.getElementById('f-brd').value;
+  if(idx===''||!brindes[idx]){alrt('Selecione um brinde.','err');return;}
+  const b=brindes[idx];
+  brindeSelecionados.push({...b});
+  document.getElementById('f-brd').value='';
+  renderBrindesSel();
+}
+function removeBrindeSel(i){
+  brindeSelecionados.splice(i,1);
+  renderBrindesSel();
+}
+function renderBrindesSel(){
+  const lista=document.getElementById('brd-lista');
+  const itens=document.getElementById('brd-itens');
+  if(!brindeSelecionados.length){lista.style.display='none';itens.innerHTML='';return;}
+  lista.style.display='block';
+  const total=brindeSelecionados.reduce((s,b)=>s+parseFloat(b.custo||0),0);
+  itens.innerHTML=brindeSelecionados.map((b,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:.5px solid rgba(245,239,230,.9)">
+      <div style="font-size:14px;color:var(--pl)">🎁 <strong>${b.nome}</strong>${b.desc?' — '+b.desc:''}</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        ${b.custo>0?`<span style="font-size:13px;color:#888">R$ ${parseFloat(b.custo).toFixed(2)}</span>`:''}
+        <button class="btn s d" onclick="removeBrindeSel(${i})">✕</button>
+      </div>
+    </div>`).join('')+
+    (total>0?`<div style="text-align:right;font-size:13px;color:var(--pl);padding-top:8px;font-weight:500">Custo total brindes: R$ ${total.toFixed(2)}</div>`:'');
+  renderTots();
+}
 function tipo(t,el){
   tipoAt=t;document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));el.classList.add('on');
   const pp=t==='pp',iv=t==='iv';
@@ -748,7 +801,7 @@ function renderItens(){
   renderTots();if(!isAdmin())document.querySelectorAll('.ao-col').forEach(e=>{e.style.display='none'});
 }
 function renderTots(){
-  const bi=document.getElementById('f-brd').value,bc=bi!==''&&brindes[bi]?parseFloat(brindes[bi].custo||0):0;
+  const bc=brindeSelecionados.reduce((s,b)=>s+parseFloat(b.custo||0),0);
   const tv=items.reduce((s,i)=>s+i.price,0),tc=items.reduce((s,i)=>s+i.cost,0)+bc;const lc=tv-tc,mg=tv>0?(lc/tv*100):0;
   if(tv>0){document.getElementById('f-valor-pp').value=tv.toFixed(2);updTotalPP();}
   document.getElementById('tots').innerHTML=`<div class="tc"><div class="l">Total venda</div><div class="v pv">R$ ${tv.toFixed(2)}</div></div><div class="tc"><div class="l">Custo total</div><div class="v rv">R$ ${tc.toFixed(2)}</div></div><div class="tc"><div class="l">Lucro · ${mg.toFixed(1)}%</div><div class="v gv">R$ ${lc.toFixed(2)}</div></div>`;
@@ -762,19 +815,19 @@ async function salvarIV(){
   const pac=document.getElementById('f-pac').value,pgto=document.getElementById('f-pgto').value;
   const isPix=PIX_PGTO.includes(pgto),info=PACOTES[pac];
   const baseVal=isPix?info.pix:info.normal,adic=parseFloat(document.getElementById('f-ent').value)||0,total=baseVal+adic;
-  const o={id:Date.now(),cliente:nome,data:document.getElementById('f-data').value,pgto,tipo:'iv',pacote:info.nome,obs:document.getElementById('f-obs-iv').value||'',obsCard:'',vt:total,valorBase:baseVal,adic,custo:info.custo,items:[{name:info.nome,variation:'Identidade Visual',qty:1,price:total,cost:info.custo,checked:false}],end:null,brd:null,stage:document.getElementById('f-etapa-iv').value,cr:new Date().toISOString()};
+  const o={id:Date.now(),cliente:nome,dataCompra:document.getElementById('f-compra').value,data:document.getElementById('f-data').value,pgto,tipo:'iv',pacote:info.nome,obs:document.getElementById('f-obs-iv').value||'',obsCard:'',vt:total,valorBase:baseVal,adic,custo:info.custo,items:[{name:info.nome,variation:'Identidade Visual',qty:1,price:total,cost:info.custo,checked:false}],end:null,brd:null,stage:document.getElementById('f-etapa-iv').value,cr:new Date().toISOString()};
   orders.unshift(o);await savO();alrt('✓ Pedido de '+nome+' salvo!','ok');clearAll();
 }
 async function salvar(){
   const nome=document.getElementById('f-nome').value.trim();if(!nome){alrt('Informe o nome da cliente.','err');return;}if(!items.length){alrt('Adicione pelo menos um item.','err');return;}
   const tv=items.reduce((s,i)=>s+i.price,0),bi=document.getElementById('f-brd').value,brd=bi!==''&&brindes[bi]?brindes[bi]:null;
-  const bc=brd?parseFloat(brd.custo||0):0,tc=items.reduce((s,i)=>s+i.cost,0)+bc;
+  const bc=brindeSelecionados.reduce((s,b)=>s+parseFloat(b.custo||0),0),tc=items.reduce((s,i)=>s+i.cost,0)+bc;
   const frete=parseFloat(document.getElementById('f-frete').value)||0;
   const totalComFrete=tv+frete;
-  const o={id:Date.now(),cliente:nome,data:document.getElementById('f-data').value,pgto:document.getElementById('f-pgto').value,tipo:tipoAt,obs:document.getElementById('f-obs-pp').value||'',obsCard:'',vt:totalComFrete,frete,adic:0,custo:tc,items:JSON.parse(JSON.stringify(items)),end:buildEnd(),brd,stage:document.getElementById('f-etapa').value,cr:new Date().toISOString()};
+  const o={id:Date.now(),cliente:nome,dataCompra:document.getElementById('f-compra').value,data:document.getElementById('f-data').value,pgto:document.getElementById('f-pgto').value,tipo:tipoAt,obs:document.getElementById('f-obs-pp').value||'',obsCard:'',vt:totalComFrete,frete,adic:0,custo:tc,items:JSON.parse(JSON.stringify(items)),end:buildEnd(),brindes:JSON.parse(JSON.stringify(brindeSelecionados)),stage:document.getElementById('f-etapa').value,cr:new Date().toISOString()};
   orders.unshift(o);await savO();alrt('✓ Pedido de '+nome+' salvo!','ok');clearAll();
 }
-function clearAll(){items=[];['f-nome','f-data','f-obs-iv','f-obs-pp','f-ent','e-nome','e-cep','e-rua','e-num','e-comp','e-bairro','e-cidade','e-uf'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});document.getElementById('f-brd').value='';document.getElementById('f-brd-c').value='';document.getElementById('f-valor').value='';document.getElementById('f-total-iv').value='';document.getElementById('f-valor-pp').value='';document.getElementById('f-frete').value='';document.getElementById('f-total-pp').value='';document.getElementById('preco-info').style.display='none';limpar();if(tipoAt==='iv')updValorIV();}
+function clearAll(){items=[];brindeSelecionados=[];['f-nome','f-compra','f-data','f-obs-iv','f-obs-pp','f-ent','e-nome','e-cep','e-rua','e-num','e-comp','e-bairro','e-cidade','e-uf'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});document.getElementById('f-brd').value='';document.getElementById('f-valor').value='';document.getElementById('f-total-iv').value='';document.getElementById('f-valor-pp').value='';document.getElementById('f-frete').value='';document.getElementById('f-total-pp').value='';document.getElementById('preco-info').style.display='none';renderBrindesSel();limpar();if(tipoAt==='iv')updValorIV();}
 
 function renderKPP(){
   document.getElementById('kdt-pp').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
@@ -809,7 +862,9 @@ function makeCard(o,kanbanType){
   const c=document.createElement('div');c.className='kc';c.draggable=true;c.dataset.id=o.id;
   const obsPreview=o.obsCard?`<div class="kobs">💬 ${o.obsCard}</div>`:'';
   const designerTag=kanbanType==='iv'?designerTagHtml(o.designer):'';
-  c.innerHTML=`<div class="kn">${o.cliente}</div><div class="km">${dt(o.data)}${o.pacote?' · '+o.pacote:''}</div>${tl(o.tipo)}${designerTag}${obsPreview}${o.brd?`<div style="margin-top:2px"><span style="font-size:11px;background:var(--gl);color:var(--g);padding:1px 6px;border-radius:20px">🎁 ${o.brd.nome}</span></div>`:''}<div class="pb"><div class="pf" style="width:${pct}%"></div></div><div style="font-size:11px;color:#888">${done}/${tot} · ${pct}%</div>`;
+  const brds=(o.brindes&&o.brindes.length)?o.brindes:(o.brd?[o.brd]:[]);
+  const brdsHtml=brds.map(b=>`<span style="font-size:11px;background:var(--gl);color:var(--g);padding:1px 6px;border-radius:20px;margin-right:3px">🎁 ${b.nome}</span>`).join('');
+  c.innerHTML=`<div class="kn">${o.cliente}</div><div class="km">${dt(o.data)}${o.pacote?' · '+o.pacote:''}</div>${tl(o.tipo)}${designerTag}${obsPreview}${brdsHtml?`<div style="margin-top:3px">${brdsHtml}</div>`:''}<div class="pb"><div class="pf" style="width:${pct}%"></div></div><div style="font-size:11px;color:#888">${done}/${tot} · ${pct}%</div>`;
   c.addEventListener('dragstart',e=>{dragId=o.id;setTimeout(()=>c.classList.add('dragging'),0);e.dataTransfer.effectAllowed='move';});
   c.addEventListener('dragend',()=>{dragId=null;c.classList.remove('dragging');});
   c.addEventListener('click',()=>openMoPed(o.id,kanbanType));return c;
@@ -830,7 +885,8 @@ function openMoPed(id,kanbanType){
   html+=`<div class="stl" style="display:flex;align-items:center;justify-content:space-between"><span>Editar itens</span><button class="btn s" onclick="addItemModal(${o.id},'${kanbanType||''}')">+ Item</button></div>`;
   o.items.forEach((it,idx)=>{html+=`<div class="edit-item-row"><input id="ei-n-${idx}" value="${it.name.replace(/"/g,'&quot;')}" placeholder="Nome" style="flex:2;min-width:80px"><input id="ei-v-${idx}" value="${(it.variation||'').replace(/"/g,'&quot;')}" placeholder="Variação" style="flex:2;min-width:80px"><input id="ei-c-${idx}" type="number" step="0.01" value="${(it.cost||0).toFixed(2)}" placeholder="Custo" style="width:75px"><button class="btn s d" onclick="removeItemModal(${o.id},${idx},'${kanbanType||''}')">✕</button></div>`;});
   html+=`<div style="text-align:right;margin-top:8px"><button class="btn s p" onclick="salvarItensModal(${o.id},'${kanbanType||''}')">Salvar itens</button></div>`;
-  if(o.brd)html+=`<div class="stl">Brinde</div><div style="font-size:14px;color:var(--g)">🎁 ${o.brd.nome}${o.brd.desc?' — '+o.brd.desc:''}</div>`;
+  if(o.brindes&&o.brindes.length){html+=`<div class="stl">Brindes</div>`;o.brindes.forEach(b=>{html+=`<div style="font-size:14px;color:var(--g);padding:3px 0">🎁 ${b.nome}${b.desc?' — '+b.desc:''}${b.custo>0?` <span style="font-size:12px;color:#888">· R$ ${parseFloat(b.custo).toFixed(2)}</span>`:''}</div>`;});}
+  else if(o.brd)html+=`<div class="stl">Brinde</div><div style="font-size:14px;color:var(--g)">🎁 ${o.brd.nome}${o.brd.desc?' — '+o.brd.desc:''}</div>`;
   if(o.end&&o.tipo!=='iv'){const e=o.end;html+=`<div class="stl">Endereço</div><div class="ab"><strong style="font-weight:500">${e.nome||o.cliente}</strong><br>${e.rua}${e.num?', '+e.num:''}${e.comp?' — '+e.comp:''}<br>${e.bairro} · ${e.cidade}/${e.uf} · CEP ${e.cep}<br><strong style="font-weight:500">Envio:</strong> ${e.envio}</div>`;}
   const ets=o.tipo==='iv'?ETS_IV:ETS_PP;
   html+=`<div class="stl">Etapa de produção</div><select class="ssel" style="font-size:14px;padding:9px 12px;border-radius:8px;width:100%" onchange="updSmo(${o.id},this.value,'${kanbanType||''}')">${ets.map(s=>`<option${s===o.stage?' selected':''}>${s}</option>`).join('')}</select>`;
@@ -878,19 +934,27 @@ async function delGasto(id){if(!confirm('Excluir este gasto?'))return;gastos=gas
 function gastoColor(cat){const map={'Aluguel':'#E8D5F5;color:#6B21A8','Imposto':'#FECACA;color:#991B1B','Funcionárias':'#DBEAFE;color:#1E40AF','Anúncios':'#FEF3C7;color:#92400E','Gráfica':'#D1FAE5;color:#065F46','Software':'#E0E7FF;color:#3730A3','Equipamento':'#F3F4F6;color:#374151','Outros':'#F3F4F6;color:#6B7280'};return map[cat]||map['Outros'];}
 
 function renderFin(){
-  const meses=new Set();[...orders,...gastos].forEach(x=>{if(x.data)meses.add(x.data.substring(0,7));});
+  const meses=new Set();
+  orders.forEach(x=>{const d=x.dataCompra||x.data;if(d)meses.add(d.substring(0,7));});
+  gastos.forEach(x=>{if(x.data)meses.add(x.data.substring(0,7));});
   const selMes=document.getElementById('g-filtro-mes'),mesSel=selMes.value;
   selMes.innerHTML='<option value="">Todos os meses</option>';
   [...meses].sort().reverse().forEach(m=>{const[y,mo]=m.split('-');const label=new Date(y,mo-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});selMes.innerHTML+=`<option value="${m}" ${m===mesSel?'selected':''}>${label}</option>`;});
   const filtroMes=selMes.value;
+  const filtroTipo=document.getElementById('g-filtro-tipo').value;
   const tbG=document.getElementById('tb-gastos');tbG.innerHTML='';
   const gf=filtroMes?gastos.filter(g=>g.data&&g.data.startsWith(filtroMes)):gastos;
   const totalGastos=gf.reduce((s,g)=>s+g.val,0);
   if(!gf.length){tbG.innerHTML='<tr><td colspan="5" style="text-align:center;padding:18px;color:#888">Nenhum gasto lançado</td></tr>';}
   else{gf.forEach(g=>{const clr=gastoColor(g.cat);const tr=document.createElement('tr');tr.innerHTML=`<td><span class="bdg" style="background:${clr.split(';')[0]};color:${clr.split('color:')[1]}">${g.cat}</span></td><td>${g.desc}</td><td>${dt(g.data)}</td><td style="color:#C0392B;font-weight:500">− R$ ${g.val.toFixed(2)}</td><td><button class="btn s d" onclick="delGasto(${g.id})">✕</button></td>`;tbG.appendChild(tr);});}
   const tb=document.getElementById('tb-fin');let tv=0,tc=0;tb.innerHTML='';
-  const of2=filtroMes?orders.filter(o=>o.data&&o.data.startsWith(filtroMes)):orders;
-  of2.forEach(o=>{tv+=o.vt;tc+=o.custo;const lc=o.vt-o.custo;const tr=document.createElement('tr');tr.innerHTML=`<td><strong style="font-weight:500;color:var(--pl)">${o.cliente}</strong></td><td>${dt(o.data)}</td><td>${tl(o.tipo)}</td><td style="color:var(--m)">R$ ${o.vt.toFixed(2)}</td><td>${o.adic>0?'R$ '+o.adic.toFixed(2):'-'}</td><td>R$ ${o.custo.toFixed(2)}</td><td style="color:${lc>=0?'var(--g)':'var(--pl)'};font-weight:500">R$ ${lc.toFixed(2)}</td><td><span class="bdg ${pc(o.pgto)}">${o.pgto||'-'}</span></td><td><span class="bdg bgr" style="font-size:11px">${o.stage}</span></td>`;tb.appendChild(tr);});
+  const of2=orders.filter(o=>{
+    const d=o.dataCompra||o.data;
+    const okMes=!filtroMes||(d&&d.startsWith(filtroMes));
+    const okTipo=!filtroTipo||o.tipo===filtroTipo;
+    return okMes&&okTipo;
+  });
+  of2.forEach(o=>{tv+=o.vt;tc+=o.custo;const lc=o.vt-o.custo;const tr=document.createElement('tr');tr.innerHTML=`<td><strong style="font-weight:500;color:var(--pl)">${o.cliente}</strong></td><td>${dt(o.dataCompra||o.data)}</td><td>${tl(o.tipo)}</td><td style="color:var(--m)">R$ ${o.vt.toFixed(2)}</td><td>${o.adic>0?'R$ '+o.adic.toFixed(2):'-'}</td><td>R$ ${o.custo.toFixed(2)}</td><td style="color:${lc>=0?'var(--g)':'var(--pl)'};font-weight:500">R$ ${lc.toFixed(2)}</td><td><span class="bdg ${pc(o.pgto)}">${o.pgto||'-'}</span></td><td><span class="bdg bgr" style="font-size:11px">${o.stage}</span></td>`;tb.appendChild(tr);});
   if(!of2.length)tb.innerHTML='<tr><td colspan="9" style="text-align:center;padding:18px;color:#888">Nenhum pedido no período</td></tr>';
   const lucroBruto=tv-tc,lucroLiquido=lucroBruto-totalGastos,mg=tv>0?(lucroLiquido/tv*100):0;
   document.getElementById('fcs').innerHTML=`<div class="fc"><div class="fl">Faturamento</div><div class="fv pv">R$ ${tv.toFixed(2)}</div></div><div class="fc"><div class="fl">Custo produção</div><div class="fv rv">R$ ${tc.toFixed(2)}</div></div><div class="fc"><div class="fl">Lucro bruto</div><div class="fv" style="color:${lucroBruto>=0?'var(--g)':'var(--pl)'}">R$ ${lucroBruto.toFixed(2)}</div></div><div class="fc"><div class="fl">Total gastos</div><div class="fv" style="color:#C0392B">− R$ ${totalGastos.toFixed(2)}</div></div><div class="fc" style="border-color:rgba(122,79,92,.4)"><div class="fl">Lucro líquido · ${mg.toFixed(1)}%</div><div class="fv" style="color:${lucroLiquido>=0?'var(--g)':'var(--pl)'}">R$ ${lucroLiquido.toFixed(2)}</div></div>`;
