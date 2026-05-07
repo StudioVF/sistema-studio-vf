@@ -1193,6 +1193,14 @@ function renderPeds(){
 async function updS(id,stage){var o=orders.find(function(x){return x.id===id;});if(o){o.stage=stage;await savO();}}
 
 // ── FINANCEIRO ──
+async function salvarDataCompra(id,novaData){
+  var o=orders.find(function(x){return x.id===id;});
+  if(!o)return;
+  o.dataCompra=novaData;
+  await savO();
+  alrt('✓ Data da compra atualizada!','ok');
+  renderFin();
+}
 async function lancarGasto(){
   var cat=document.getElementById('g-cat').value,desc=document.getElementById('g-desc').value.trim(),data=document.getElementById('g-data').value,val=parseFloat(document.getElementById('g-val').value)||0;
   if(!data){alrt('Informe a data do gasto.','err');return;}if(val<=0){alrt('Informe um valor válido.','err');return;}
@@ -1220,7 +1228,18 @@ function renderFin(){
   // Pedidos
   var tb=document.getElementById('tb-fin');var tv=0,tc=0;tb.innerHTML='';
   var of2=orders.filter(function(o){var d=o.dataCompra||o.data;var okM=!filtroMes||(d&&d.indexOf(filtroMes)===0);var okT=!filtroTipo||o.tipo===filtroTipo;return okM&&okT;});
-  of2.forEach(function(o){tv+=o.vt;tc+=o.custo;var lc=o.vt-o.custo;var tr=document.createElement('tr');tr.innerHTML='<td><strong style="font-weight:500;color:var(--pl)">'+o.cliente+'</strong></td><td>'+dt(o.dataCompra||o.data)+'</td><td>'+tl(o.tipo)+'</td><td style="color:var(--m)">R$ '+o.vt.toFixed(2)+'</td><td>'+(o.adic>0?'R$ '+o.adic.toFixed(2):'-')+'</td><td>R$ '+o.custo.toFixed(2)+'</td><td style="color:'+(lc>=0?'var(--g)':'var(--pl)')+';font-weight:500">R$ '+lc.toFixed(2)+'</td><td><span class="bdg '+pc(o.pgto)+'">'+( o.pgto||'-')+'</span></td><td><span class="bdg bgr" style="font-size:11px">'+o.stage+'</span></td>';tb.appendChild(tr);});
+  of2.forEach(function(o){tv+=o.vt;tc+=o.custo;var lc=o.vt-o.custo;var tr=document.createElement('tr');
+    var dataAtual=o.dataCompra||o.data||'';
+    tr.innerHTML='<td><strong style="font-weight:500;color:var(--pl)">'+o.cliente+'</strong></td>'
+      +'<td><input type="date" value="'+dataAtual+'" style="font-family:inherit;font-size:12px;border:.5px solid rgba(138,158,123,.28);border-radius:6px;padding:3px 6px;background:#fff;color:#333;cursor:pointer" onchange="salvarDataCompra(\''+o.id+'\',this.value)"></td>'
+      +'<td>'+tl(o.tipo)+'</td>'
+      +'<td style="color:var(--m)">R$ '+o.vt.toFixed(2)+'</td>'
+      +'<td>'+(o.adic>0?'R$ '+o.adic.toFixed(2):'-')+'</td>'
+      +'<td>R$ '+o.custo.toFixed(2)+'</td>'
+      +'<td style="color:'+(lc>=0?'var(--g)':'var(--pl)')+';font-weight:500">R$ '+lc.toFixed(2)+'</td>'
+      +'<td><span class="bdg '+pc(o.pgto)+'">'+( o.pgto||'-')+'</span></td>'
+      +'<td><span class="bdg bgr" style="font-size:11px">'+o.stage+'</span></td>';
+    tb.appendChild(tr);});
   if(!of2.length)tb.innerHTML='<tr><td colspan="9" style="text-align:center;padding:18px;color:#888">Nenhum pedido no período</td></tr>';
   var lucroBruto=tv-tc,lucroLiquido=lucroBruto-totalGastos,mg=tv>0?(lucroLiquido/tv*100):0;
   document.getElementById('fcs').innerHTML='<div class="fc"><div class="fl">Faturamento</div><div class="fv pv">R$ '+tv.toFixed(2)+'</div></div><div class="fc"><div class="fl">Custo produção</div><div class="fv rv">R$ '+tc.toFixed(2)+'</div></div><div class="fc"><div class="fl">Lucro bruto</div><div class="fv" style="color:'+(lucroBruto>=0?'var(--g)':'var(--pl)')+'">R$ '+lucroBruto.toFixed(2)+'</div></div><div class="fc"><div class="fl">Total gastos</div><div class="fv" style="color:#C0392B">− R$ '+totalGastos.toFixed(2)+'</div></div><div class="fc" style="border-color:rgba(122,79,92,.4)"><div class="fl">Lucro líquido · '+mg.toFixed(1)+'%</div><div class="fv" style="color:'+(lucroLiquido>=0?'var(--g)':'var(--pl)')+'">R$ '+lucroLiquido.toFixed(2)+'</div></div>';
@@ -1257,7 +1276,7 @@ function alrt(msg,tp){var a=document.getElementById('alrt');a.innerHTML='<div cl
 document.addEventListener('DOMContentLoaded',init);
 
 // ── Exposição global (necessário para onclick no HTML dinâmico) ──
-window.mascaraCpf=mascaraCpf;window.selecionarUser=selecionarUser;window.confirmarSenha=confirmarSenha;window.voltarUsers=voltarUsers;window.logout=logout;
+window.salvarDataCompra=salvarDataCompra;window.mascaraCpf=mascaraCpf;window.selecionarUser=selecionarUser;window.confirmarSenha=confirmarSenha;window.voltarUsers=voltarUsers;window.logout=logout;
 window.tipo=tipo;window.switchE=switchE;window.buscaCep=buscaCep;window.updValorIV=updValorIV;window.updTotalPP=updTotalPP;
 window.addBrinde=addBrinde;window.removeBrindeSel=removeBrindeSel;
 window.parsearTexto=parsearTexto;window.handlePDF=handlePDF;window.addItem=addItem;window.limpar=limpar;
