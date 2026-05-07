@@ -592,6 +592,7 @@ const COSTS_DEFAULT=[
 // ── Variáveis globais ──
 let orders=[],costs=[],brindes=[],gastos=[];
 let currentUser=null,items=[],tipoAt='iv',ecIdx=null,ebIdx=null,dragId=null,userSelecionado=null;
+let modalOrderId=null,modalKanbanType=null;
 let brindeSelecionados=[];
 
 async function savO(){await fbSet('orders',orders);}
@@ -1023,6 +1024,7 @@ function makeCard(o,kanbanType){
 // ── MODAL PEDIDO ──
 function openMoPed(id,kanbanType){
   var o=orders.find(function(x){return x.id===id;});if(!o)return;
+  modalOrderId=id;modalKanbanType=kanbanType;
   var ia=isAdmin();document.getElementById('mo-tit').textContent=o.cliente;
   var done=o.items.filter(function(i){return i.checked;}).length,tot=o.items.length,pct=tot>0?Math.round(done/tot*100):0;
   var lc=o.vt-o.custo;var html='';
@@ -1034,28 +1036,28 @@ function openMoPed(id,kanbanType){
     html+='<div style="font-size:13px;color:#888;margin-bottom:12px">'+tl(o.tipo)+(o.pacote?' · '+o.pacote:'')+'</div>';
   }
   // Data de entrega
-  html+='<div class="stl">Data de entrega</div><div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;flex-wrap:wrap"><input type="date" id="modal-data" value="'+(o.data||'')+'" style="font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:8px 10px;background:#fff;color:#333;flex:1;min-width:140px"><button class="btn s p" onclick="salvarData('+o.id+')">Salvar data</button></div>';
+  html+='<div class="stl">Data de entrega</div><div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;flex-wrap:wrap"><input type="date" id="modal-data" value="'+(o.data||'')+'" style="font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:8px 10px;background:#fff;color:#333;flex:1;min-width:140px"><button class="btn s p" onclick="salvarData()">Salvar data</button></div>';
   // Designer
   if(o.tipo==='iv'){
     var designers=[{key:'yses',label:'Yses'},{key:'tatiana',label:'Tatiana'},{key:'day',label:'Day'},{key:'juliana',label:'Juliana'},{key:'priscila',label:'Priscila'},{key:'',label:'Nenhuma'}];
     html+='<div class="stl">Designer responsável</div><div class="designer-btns">';
-    designers.forEach(function(d){html+='<button class="dbtn dbtn-'+(d.key||'none')+' '+(o.designer===d.key?'sel':'')+'" onclick="setDesigner('+o.id+',\''+d.key+'\',\''+kanbanType+'\')">'+d.label+'</button>';});
+    designers.forEach(function(d){html+='<button class="dbtn dbtn-'+(d.key||'none')+' '+(o.designer===d.key?'sel':'')+'" onclick="setDesigner(\''+d.key+'\',\''+kanbanType+'\')">'+d.label+'</button>';});
     html+='</div>';
   }
   // Observações
-  html+='<div class="stl">Observações do pedido</div><textarea id="obs-card-input" style="width:100%;min-height:60px;font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:8px 10px;resize:vertical;color:#333" placeholder="Anotações internas...">'+(o.obsCard||'')+'</textarea><div style="text-align:right;margin-top:6px"><button class="btn s p" onclick="salvarObs('+o.id+')">Salvar obs.</button></div>';
+  html+='<div class="stl">Observações do pedido</div><textarea id="obs-card-input" style="width:100%;min-height:60px;font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:8px 10px;resize:vertical;color:#333" placeholder="Anotações internas...">'+(o.obsCard||'')+'</textarea><div style="text-align:right;margin-top:6px"><button class="btn s p" onclick="salvarObs()">Salvar obs.</button></div>';
   // Checklist
   html+='<div class="stl">Itens do pedido</div><div class="pb"><div class="pf" style="width:'+pct+'%"></div></div><div style="font-size:12px;color:#888;margin-bottom:8px">'+done+'/'+tot+' itens · '+pct+'%</div>';
   o.items.forEach(function(it,idx){
     var display=it.variation?'<strong style="font-weight:600;color:var(--pl)">'+it.name+'</strong> <span style="color:#777">— '+it.variation+'</span>':'<strong style="font-weight:600;color:var(--pl)">'+it.name+'</strong>';
-    html+='<div class="ci '+(it.checked?'dn':'')+'"><input type="checkbox" '+(it.checked?'checked':'')+' onchange="chkItem('+o.id+','+idx+',this.checked,\''+kanbanType+'\')"><div class="ct" style="flex:1;font-size:14px">'+display+(ia&&it.price>0?'<span style="color:var(--m)"> · R$ '+it.price.toFixed(2)+'</span>':'')+(ia&&it.graficas&&it.graficas!=='—'?'<span style="font-size:12px;color:#999"> · '+it.graficas+'</span>':'')+'</div></div>';
+    html+='<div class="ci '+(it.checked?'dn':'')+'"><input type="checkbox" '+(it.checked?'checked':'')+' onchange="chkItem('+idx+',this.checked,\''+kanbanType+'\')"><div class="ct" style="flex:1;font-size:14px">'+display+(ia&&it.price>0?'<span style="color:var(--m)"> · R$ '+it.price.toFixed(2)+'</span>':'')+(ia&&it.graficas&&it.graficas!=='—'?'<span style="font-size:12px;color:#999"> · '+it.graficas+'</span>':'')+'</div></div>';
   });
   // Editar itens
-  html+='<div class="stl" style="display:flex;align-items:center;justify-content:space-between"><span>Editar itens</span><button class="btn s" onclick="addItemModal('+o.id+',\''+kanbanType+'\')">+ Item</button></div>';
+  html+='<div class="stl" style="display:flex;align-items:center;justify-content:space-between"><span>Editar itens</span><button class="btn s" onclick="addItemModal(\''+kanbanType+'\')">+ Item</button></div>';
   o.items.forEach(function(it,idx){
-    html+='<div class="edit-item-row"><input id="ei-n-'+idx+'" value="'+it.name.replace(/"/g,'&quot;')+'" placeholder="Nome" style="flex:2;min-width:80px"><input id="ei-v-'+idx+'" value="'+(it.variation||'').replace(/"/g,'&quot;')+'" placeholder="Variação" style="flex:2;min-width:80px"><input id="ei-c-'+idx+'" type="number" step="0.01" value="'+(it.cost||0).toFixed(2)+'" placeholder="Custo" style="width:75px"><button class="btn s d" onclick="removeItemModal('+o.id+','+idx+',\''+kanbanType+'\')">✕</button></div>';
+    html+='<div class="edit-item-row"><input id="ei-n-'+idx+'" value="'+it.name.replace(/"/g,'&quot;')+'" placeholder="Nome" style="flex:2;min-width:80px"><input id="ei-v-'+idx+'" value="'+(it.variation||'').replace(/"/g,'&quot;')+'" placeholder="Variação" style="flex:2;min-width:80px"><input id="ei-c-'+idx+'" type="number" step="0.01" value="'+(it.cost||0).toFixed(2)+'" placeholder="Custo" style="width:75px"><button class="btn s d" onclick="removeItemModal('+idx+',\''+kanbanType+'\')">✕</button></div>';
   });
-  html+='<div style="text-align:right;margin-top:8px"><button class="btn s p" onclick="salvarItensModal('+o.id+',\''+kanbanType+'\')">Salvar itens</button></div>';
+  html+='<div style="text-align:right;margin-top:8px"><button class="btn s p" onclick="salvarItensModal(\''+kanbanType+'\')">Salvar itens</button></div>';
   // Brindes
   var brdsAtuais=(o.brindes&&o.brindes.length)?o.brindes:(o.brd?[o.brd]:[]);
   if(brdsAtuais.length){
@@ -1067,41 +1069,41 @@ function openMoPed(id,kanbanType){
     brdsAtuais.forEach(function(b,i){
       html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:.5px solid rgba(245,239,230,.9)">';
       html+='<div style="font-size:14px;color:var(--pl)">🎁 <strong>'+b.nome+'</strong>'+(b.custo>0?' <span style="font-size:12px;color:#888">· R$ '+parseFloat(b.custo).toFixed(2)+'</span>':'')+'</div>';
-      html+='<button class="btn s d" onclick="removeBrindeModal('+o.id+','+i+',\''+kanbanType+'\')">✕</button></div>';
+      html+='<button class="btn s d" onclick="removeBrindeModal('+i+',\''+kanbanType+'\')">✕</button></div>';
     });
     html+='</div><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><select id="mo-brd-sel" style="flex:1;font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:8px 10px;background:#fff;color:#333;min-width:160px"><option value="">— Selecionar brinde —</option>';
     brindes.forEach(function(b,i){html+='<option value="'+i+'">'+b.nome+(b.custo>0?' — R$ '+parseFloat(b.custo).toFixed(2):'')+' </option>';});
-    html+='</select><button class="btn p s" onclick="addBrindeModal('+o.id+',\''+kanbanType+'\')">+ Adicionar</button></div>';
+    html+='</select><button class="btn p s" onclick="addBrindeModal(\''+kanbanType+'\')">+ Adicionar</button></div>';
   }
   // Endereço
   if(o.end&&o.tipo!=='iv'){var e=o.end;html+='<div class="stl">Endereço</div><div class="ab"><strong style="font-weight:500">'+(e.nome||o.cliente)+'</strong><br>'+e.rua+(e.num?', '+e.num:'')+(e.comp?' — '+e.comp:'')+'<br>'+e.bairro+' · '+e.cidade+'/'+e.uf+' · CEP '+e.cep+'</div>';}
   // Etapa
   var ets=o.tipo==='iv'?ETS_IV:ETS_PP;
-  html+='<div class="stl">Etapa de produção</div><select class="ssel" style="font-size:14px;padding:9px 12px;border-radius:8px;width:100%" onchange="updSmo('+o.id+',this.value,\''+kanbanType+'\')"><option value="">Selecione</option>';
+  html+='<div class="stl">Etapa de produção</div><select class="ssel" style="font-size:14px;padding:9px 12px;border-radius:8px;width:100%" onchange="updSmo(this.value,\''+kanbanType+'\')"><option value="">Selecione</option>';
   ets.forEach(function(s){html+='<option'+(s===o.stage?' selected':'')+'>'+s+'</option>';});
   html+='</select>';
   document.getElementById('mo-body').innerHTML=html;
-  var footHtml=ia?'<button class="btn s d" onclick="delO('+o.id+',\''+kanbanType+'\')">Excluir pedido</button>':'';
+  var footHtml=ia?'<button class="btn s d" onclick="delO(\''+kanbanType+'\')">Excluir pedido</button>':'';
   footHtml+='<button class="btn s" onclick="closeMo(\'mo-ped\')">Fechar</button>';
   document.getElementById('mo-foot').innerHTML=footHtml;
   document.getElementById('mo-ped').classList.add('on');
 }
-async function salvarData(id){var o=orders.find(function(x){return x.id===id;});if(!o)return;o.data=document.getElementById('modal-data').value;await savO();alrt('✓ Data atualizada!','ok');}
-async function salvarObs(id){var o=orders.find(function(x){return x.id===id;});if(!o)return;o.obsCard=document.getElementById('obs-card-input').value;await savO();alrt('✓ Observação salva!','ok');refreshKanban();}
+async function salvarData(){var o=orders.find(function(x){return x.id===modalOrderId;});if(!o)return;o.data=document.getElementById('modal-data').value;await savO();alrt('✓ Data atualizada!','ok');}
+async function salvarObs(){var o=orders.find(function(x){return x.id===modalOrderId;});if(!o)return;o.obsCard=document.getElementById('obs-card-input').value;await savO();alrt('✓ Observação salva!','ok');refreshKanban();}
 function recalcCusto(o){var custoBrindes=(o.brindes||[]).reduce(function(s,b){return s+parseFloat(b.custo||0);},0);var custoItens=o.items.reduce(function(s,i){return s+(i.cost||0);},0);o.custo=custoItens+custoBrindes;}
-async function salvarItensModal(id,kt){var o=orders.find(function(x){return x.id===id;});if(!o)return;o.items.forEach(function(it,idx){var n=document.getElementById('ei-n-'+idx),v=document.getElementById('ei-v-'+idx),c=document.getElementById('ei-c-'+idx);if(n)it.name=n.value.trim();if(v)it.variation=v.value.trim();if(c)it.cost=parseFloat(c.value)||0;});recalcCusto(o);await savO();alrt('✓ Itens atualizados!','ok');openMoPed(id,kt);refreshKanban();}
-async function addItemModal(id,kt){var o=orders.find(function(x){return x.id===id;});if(!o)return;o.items.push({name:'Novo item',variation:'',qty:1,price:0,cost:0,graficas:'—',checked:false});await savO();openMoPed(id,kt);}
-async function removeItemModal(id,idx,kt){var o=orders.find(function(x){return x.id===id;});if(!o)return;o.items.splice(idx,1);await savO();openMoPed(id,kt);}
-async function chkItem(oid,idx,checked,kt){var o=orders.find(function(x){return x.id===oid;});if(o){o.items[idx].checked=checked;await savO();openMoPed(oid,kt);refreshKanban();}}
-async function updSmo(id,s,kt){var o=orders.find(function(x){return x.id===id;});if(o&&s){o.stage=s;await savO();refreshKanban();}}
-async function addBrindeModal(id,kt){var idx=document.getElementById('mo-brd-sel').value;if(idx===''||!brindes[idx]){alrt('Selecione um brinde.','err');return;}var o=orders.find(function(x){return x.id===id;});if(!o)return;if(!o.brindes)o.brindes=o.brd?[o.brd]:[];o.brindes.push(Object.assign({},brindes[idx]));recalcCusto(o);await savO();openMoPed(id,kt);refreshKanban();alrt('✓ Brinde adicionado!','ok');}
-async function removeBrindeModal(id,idx,kt){var o=orders.find(function(x){return x.id===id;});if(!o)return;if(!o.brindes)o.brindes=o.brd?[o.brd]:[];o.brindes.splice(idx,1);recalcCusto(o);await savO();openMoPed(id,kt);refreshKanban();alrt('✓ Brinde removido!','ok');}
+async function salvarItensModal(){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(!o)return;o.items.forEach(function(it,idx){var n=document.getElementById('ei-n-'+idx),v=document.getElementById('ei-v-'+idx),c=document.getElementById('ei-c-'+idx);if(n)it.name=n.value.trim();if(v)it.variation=v.value.trim();if(c)it.cost=parseFloat(c.value)||0;});recalcCusto(o);await savO();alrt('✓ Itens atualizados!','ok');openMoPed(id,kt);refreshKanban();}
+async function addItemModal(){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(!o)return;o.items.push({name:'Novo item',variation:'',qty:1,price:0,cost:0,graficas:'—',checked:false});await savO();openMoPed(id,kt);}
+async function removeItemModal(idx){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(!o)return;o.items.splice(idx,1);await savO();openMoPed(id,kt);}
+async function chkItem(idx,checked){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(o){o.items[idx].checked=checked;await savO();openMoPed(id,kt);refreshKanban();}}
+async function updSmo(s){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(o&&s){o.stage=s;await savO();refreshKanban();}}
+async function addBrindeModal(){var id=modalOrderId,kt=modalKanbanType;var idx=document.getElementById('mo-brd-sel').value;if(idx===''||!brindes[idx]){alrt('Selecione um brinde.','err');return;}var o=orders.find(function(x){return x.id===id;});if(!o)return;if(!o.brindes)o.brindes=o.brd?[o.brd]:[];o.brindes.push(Object.assign({},brindes[idx]));recalcCusto(o);await savO();openMoPed(id,kt);refreshKanban();alrt('✓ Brinde adicionado!','ok');}
+async function removeBrindeModal(idx){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(!o)return;if(!o.brindes)o.brindes=o.brd?[o.brd]:[];o.brindes.splice(idx,1);recalcCusto(o);await savO();openMoPed(id,kt);refreshKanban();alrt('✓ Brinde removido!','ok');}
 function refreshKanban(){if(document.getElementById('pg-kanban-pp').classList.contains('on'))renderKPP();if(document.getElementById('pg-kanban-iv').classList.contains('on'))renderKIV();}
 
 // ── DESIGNERS ──
 var DESIGNERS={yses:{label:'Yses',cls:'dtag-yses'},tatiana:{label:'Tatiana',cls:'dtag-tatiana'},day:{label:'Day',cls:'dtag-day'},juliana:{label:'Juliana',cls:'dtag-juliana'},priscila:{label:'Priscila',cls:'dtag-priscila'},'':{label:'Sem designer',cls:'dtag-none'}};
 function designerTagHtml(d){if(!d&&d!==0)return '';var info=DESIGNERS[d]||DESIGNERS[''];return '<div style="margin-top:3px"><span class="designer-tag '+info.cls+'">✏ '+info.label+'</span></div>';}
-async function setDesigner(id,designer,kt){var o=orders.find(function(x){return x.id===id;});if(!o)return;o.designer=designer;await savO();document.querySelectorAll('.dbtn').forEach(function(b){b.classList.toggle('sel',b.textContent.trim()===(DESIGNERS[designer]||{}).label);});refreshKanban();alrt('✓ Designer atribuída!','ok');}
+async function setDesigner(designer){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(!o)return;o.designer=designer;await savO();document.querySelectorAll('.dbtn').forEach(function(b){b.classList.toggle('sel',b.textContent.trim()===(DESIGNERS[designer]||{}).label);});refreshKanban();alrt('✓ Designer atribuída!','ok');}
 
 // ── UTILITÁRIOS ──
 function tl(t){if(t==='iv')return '<span class="tp tiv">ID Visual</span>';if(t==='pp')return '<span class="tp tpp">Papelaria</span>';return '<span class="tp tivpp">IV + Papelaria</span>';}
@@ -1119,7 +1121,7 @@ function renderPeds(){
   }).forEach(function(o){
     var lc=o.vt-o.custo;var tr=document.createElement('tr');
     var opts=todos.map(function(s){return '<option'+(s===o.stage?' selected':'')+'>'+s+'</option>';}).join('');
-    tr.innerHTML='<td><strong style="font-weight:500;color:var(--pl)">'+o.cliente+'</strong>'+(o.obs?'<br><span style="font-size:12px;color:#888">'+o.obs+'</span>':'')+'</td><td>'+dt(o.data)+'</td><td>'+tl(o.tipo)+'</td><td style="font-size:13px">'+o.items.length+' item(s)</td><td style="color:var(--m)">R$ '+o.vt.toFixed(2)+'</td><td style="color:'+(lc>=0?'var(--g)':'var(--pl)')+';font-weight:500">R$ '+lc.toFixed(2)+'</td><td><span class="bdg '+pc(o.pgto)+'">'+( o.pgto||'-')+'</span></td><td><select class="ssel" onchange="updS('+o.id+',this.value)">'+opts+'</select></td><td><button class="btn s" onclick="openMoPed('+o.id+',\'\')">Ver</button></td>';
+    tr.innerHTML='<td><strong style="font-weight:500;color:var(--pl)">'+o.cliente+'</strong>'+(o.obs?'<br><span style="font-size:12px;color:#888">'+o.obs+'</span>':'')+'</td><td>'+dt(o.data)+'</td><td>'+tl(o.tipo)+'</td><td style="font-size:13px">'+o.items.length+' item(s)</td><td style="color:var(--m)">R$ '+o.vt.toFixed(2)+'</td><td style="color:'+(lc>=0?'var(--g)':'var(--pl)')+';font-weight:500">R$ '+lc.toFixed(2)+'</td><td><span class="bdg '+pc(o.pgto)+'">'+( o.pgto||'-')+'</span></td><td><select class="ssel" onchange="updS(\''+o.id+'\',this.value)">'+opts+'</select></td><td><button class="btn s" onclick="openMoPed(\''+o.id+'\',\'\')">Ver</button></td>';
     tb.appendChild(tr);
   });
   if(!document.getElementById('tb-peds').children.length)document.getElementById('tb-peds').innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:#888">Nenhum pedido encontrado</td></tr>';
@@ -1184,7 +1186,7 @@ async function delBrd(i){brindes.splice(i,1);await savB();renderBrd();}
 async function salvaBrd(){var n=document.getElementById('cb-nome').value.trim();if(!n){alrt('Informe o nome.','err');return;}var e={nome:n,desc:document.getElementById('cb-desc').value,custo:parseFloat(document.getElementById('cb-val').value)||0};if(ebIdx!==null)brindes[ebIdx]=e;else brindes.push(e);await savB();closeMo('mo-brd');renderBrd();}
 
 // ── AÇÕES ──
-async function delO(id,kt){if(!confirm('Excluir este pedido?'))return;orders=orders.filter(function(x){return x.id!==id;});await savO();closeMo('mo-ped');refreshKanban();}
+async function delO(){var id=modalOrderId,kt=modalKanbanType;if(!confirm('Excluir este pedido?'))return;orders=orders.filter(function(x){return x.id!==id;});await savO();closeMo('mo-ped');refreshKanban();}
 function closeMo(id){document.getElementById(id).classList.remove('on');}
 function alrt(msg,tp){var a=document.getElementById('alrt');a.innerHTML='<div class="alrt '+tp+'">'+msg+'</div>';setTimeout(function(){a.innerHTML='';},5000);}
 
