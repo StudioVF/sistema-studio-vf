@@ -252,7 +252,7 @@ textarea{resize:vertical;min-height:340px;width:100%}
       <div class="fg"><label>Data da compra</label><input type="date" id="f-compra"></div>
       <div class="fg"><label>Prazo de entrega</label><input type="date" id="f-data"></div>
       <div class="fg ao"><label>Forma de pagamento</label>
-        <select id="f-pgto" onchange="updValorIV()">
+        <select id="f-pgto" onchange="updValorIV();updTotalPP()">
           <option>Pix site</option><option>Cartão site</option><option>Cartão MP</option>
           <option>Pix Nubank</option><option>Pix CNPJ</option><option>A combinar</option>
         </select>
@@ -285,6 +285,7 @@ textarea{resize:vertical;min-height:340px;width:100%}
     <div id="row-total-pp" style="display:none;margin-bottom:10px">
       <div class="fg"><label>Valor total com frete (R$)</label><input id="f-total-pp" type="number" step="0.01" readonly style="background:var(--cr);color:var(--pl);font-weight:500;font-size:15px"></div>
     </div>
+    <div id="preco-info-pp" class="preco-info" style="display:none;margin-bottom:10px"></div>
     <div class="fg" id="row-obs-pp" style="display:none"><label>Observações</label><input id="f-obs-pp" placeholder="Informações extras, SEDEX..."></div>
   </div>
 
@@ -344,7 +345,7 @@ textarea{resize:vertical;min-height:340px;width:100%}
   <!-- Lista de itens -->
   <div class="card" id="card-lista" style="display:none">
     <div class="lbl">Itens identificados</div>
-    <div class="ih"><span>Produto — Variação</span><span>Venda</span><span class="ao">Custo</span><span></span></div>
+    <div class="ih"><span>Produto — Variação</span><span>Venda (R$)</span><span class="ao-col">Custo (R$)</span><span></span></div>
     <div id="lista"></div>
     <div class="tots ao" id="tots"></div>
     <hr class="dv">
@@ -726,9 +727,24 @@ function popBrd(){
   s.value=v;
 }
 function updTotalPP(){
-  var itens=parseFloat(document.getElementById('f-valor-pp').value)||0;
+  var itensBase=parseFloat(document.getElementById('f-valor-pp').value)||0;
+  var pgto=document.getElementById('f-pgto').value;
+  var isPix=PIX_PGTO.indexOf(pgto)>=0;
+  var itensComDesc=isPix?parseFloat((itensBase*0.95).toFixed(2)):itensBase;
   var frete=parseFloat(document.getElementById('f-frete').value)||0;
-  document.getElementById('f-total-pp').value=(itens+frete).toFixed(2);
+  var total=itensComDesc+frete;
+  document.getElementById('f-total-pp').value=total.toFixed(2);
+  // Mostrar info de desconto
+  var info=document.getElementById('preco-info-pp');
+  if(info){
+    if(isPix&&itensBase>0){
+      var desc=parseFloat((itensBase*0.05).toFixed(2));
+      info.style.display='block';
+      info.innerHTML='Desconto Pix 5%: <strong>− R$ '+desc.toFixed(2)+'</strong> · Total: <strong style="font-size:15px">R$ '+total.toFixed(2)+'</strong>';
+    }else{
+      info.style.display='none';
+    }
+  }
 }
 function updValorIV(){
   if(tipoAt!=='iv')return;
@@ -911,12 +927,19 @@ function renderItens(){
   items.forEach(function(it,idx){
     var row=document.createElement('div');row.className='ir';
     var nc=it.variation?it.name+' <span>— '+it.variation+'</span>':it.name;
+    // Coluna 1: nome + match
     var c1=document.createElement('div');
     c1.innerHTML='<div class="irow1">'+nc+'</div><div class="imatch '+(it.matched?'ok':'warn')+'">'+(it.matched?'✓ R$ '+it.cost.toFixed(2)+' · '+it.graficas:'⚠ ajuste o custo')+'</div>';
-    var c2=document.createElement('div');c2.style.cssText='font-size:14px;color:var(--m);padding-top:2px';c2.textContent=it.price>0?'R$ '+it.price.toFixed(2):'—';
+    // Coluna 2: venda (editável)
+    var c2=document.createElement('div');
+    var inpV=document.createElement('input');inpV.type='number';inpV.step='0.01';inpV.value=it.price>0?it.price.toFixed(2):'';inpV.style.cssText='width:80px;font-family:inherit;font-size:13px;border:.5px solid rgba(138,158,123,.28);border-radius:6px;padding:4px 6px';inpV.placeholder='0,00';
+    inpV.onchange=function(e){items[idx].price=parseFloat(e.target.value)||0;renderTots();};
+    c2.appendChild(inpV);
+    // Coluna 3: custo (editável, só admin)
     var c3=document.createElement('div');c3.className='ao-col';
-    var inp=document.createElement('input');inp.type='number';inp.step='0.01';inp.value=it.cost.toFixed(2);inp.style.width='72px';
-    inp.onchange=function(e){items[idx].cost=parseFloat(e.target.value)||0;renderTots();};c3.appendChild(inp);
+    var inpC=document.createElement('input');inpC.type='number';inpC.step='0.01';inpC.value=it.cost.toFixed(2);inpC.style.cssText='width:72px;font-family:inherit;font-size:13px;border:.5px solid rgba(138,158,123,.28);border-radius:6px;padding:4px 6px';
+    inpC.onchange=function(e){items[idx].cost=parseFloat(e.target.value)||0;renderTots();};c3.appendChild(inpC);
+    // Coluna 4: excluir
     var c4=document.createElement('button');c4.className='btn s d';c4.textContent='✕';
     c4.onclick=function(){items.splice(idx,1);if(!items.length)document.getElementById('card-lista').style.display='none';else renderItens();};
     row.append(c1,c2,c3,c4);list.appendChild(row);
@@ -954,13 +977,17 @@ async function salvarIV(){
 }
 async function salvar(){
   var nome=document.getElementById('f-nome').value.trim();if(!nome){alrt('Informe o nome da cliente.','err');return;}if(!items.length){alrt('Adicione pelo menos um item.','err');return;}
+  var pgto=document.getElementById('f-pgto').value;
+  var isPix=PIX_PGTO.indexOf(pgto)>=0;
   var tv=items.reduce(function(s,i){return s+i.price;},0);
+  var tvComDesc=isPix?parseFloat((tv*0.95).toFixed(2)):tv;
   var bc=brindeSelecionados.reduce(function(s,b){return s+parseFloat(b.custo||0);},0);
   var tc=items.reduce(function(s,i){return s+i.cost;},0)+bc;
   var frete=parseFloat(document.getElementById('f-frete').value)||0;
-  var totalComFrete=tv+frete;
-  var o={id:gerarId(),cliente:nome,dataCompra:document.getElementById('f-compra').value,data:document.getElementById('f-data').value,pgto:document.getElementById('f-pgto').value,tipo:tipoAt,obs:document.getElementById('f-obs-pp').value||'',obsCard:'',vt:totalComFrete,frete:frete,adic:0,custo:tc,items:JSON.parse(JSON.stringify(items)),end:buildEnd(),brindes:JSON.parse(JSON.stringify(brindeSelecionados)),stage:document.getElementById('f-etapa').value,cr:new Date().toISOString()};
-  orders.unshift(o);await savO();checarTamanho();alrt('✓ Pedido de '+nome+' salvo!','ok');clearAll();
+  var totalComFrete=tvComDesc+frete;
+  var desc=isPix?parseFloat((tv*0.05).toFixed(2)):0;
+  var o={id:gerarId(),cliente:nome,dataCompra:document.getElementById('f-compra').value,data:document.getElementById('f-data').value,pgto:pgto,tipo:tipoAt,obs:document.getElementById('f-obs-pp').value||'',obsCard:'',vt:totalComFrete,desconto:desc,frete:frete,adic:0,custo:tc,items:JSON.parse(JSON.stringify(items)),end:buildEnd(),brindes:JSON.parse(JSON.stringify(brindeSelecionados)),stage:document.getElementById('f-etapa').value,cr:new Date().toISOString()};
+  orders.unshift(o);await savO();checarTamanho();alrt('✓ Pedido de '+nome+' salvo! '+(isPix?'Desconto Pix de R$ '+desc.toFixed(2)+' aplicado.':''),'ok');clearAll();
 }
 function clearAll(){
   items=[];brindeSelecionados=[];
@@ -972,6 +999,7 @@ function clearAll(){
   document.getElementById('f-frete').value='';
   document.getElementById('f-total-pp').value='';
   document.getElementById('preco-info').style.display='none';
+  var pipp=document.getElementById('preco-info-pp');if(pipp)pipp.style.display='none';
   renderBrindesSel();limpar();
   if(tipoAt==='iv')updValorIV();
 }
