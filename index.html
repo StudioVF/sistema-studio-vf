@@ -125,6 +125,19 @@ textarea{resize:vertical;min-height:340px;width:100%}
 .ctb tr:last-child td{border-bottom:none}
 .preco-info{background:var(--ml);border:.5px solid rgba(142,107,122,.3);border-radius:8px;padding:11px 15px;font-size:13px;color:var(--pl);margin-top:8px;display:none}
 .preco-info strong{font-weight:600;font-size:15px;color:var(--m)}
+.atv-col{background:#fff;border-radius:10px;padding:10px;min-width:210px;width:210px;border:.5px solid rgba(138,158,123,.18);flex-shrink:0}
+.atv-col-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.atv-col-nome{font-size:10px;font-weight:600;color:var(--pl);letter-spacing:.5px;text-transform:uppercase;opacity:.8;flex:1}
+.atv-card{background:var(--cr);border:.5px solid rgba(138,158,123,.22);border-radius:8px;padding:10px;margin-bottom:6px;cursor:pointer;transition:.15s}
+.atv-card:hover{border-color:var(--m);background:var(--ml)}
+.atv-card-titulo{font-size:13px;font-weight:600;color:var(--pl);line-height:1.4;margin-bottom:4px}
+.atv-card-obs{font-size:11px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.atv-card-arqs{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.atv-arq-thumb{width:36px;height:36px;border-radius:6px;object-fit:cover;border:.5px solid rgba(138,158,123,.28)}
+.atv-arq-pdf{width:36px;height:36px;border-radius:6px;background:var(--ml);display:flex;align-items:center;justify-content:center;font-size:18px;border:.5px solid rgba(138,158,123,.28)}
+.atv-preview-item{position:relative;display:inline-block}
+.atv-preview-item img{width:70px;height:70px;object-fit:cover;border-radius:8px;border:.5px solid rgba(138,158,123,.28)}
+.atv-preview-rem{position:absolute;top:-6px;right:-6px;background:var(--pl);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .designer-tag{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;margin-top:4px;letter-spacing:.3px}
 .dtag-yses{background:#E8D5F5;color:#6B21A8}.dtag-tatiana{background:#FCE7F3;color:#9D174D}.dtag-day{background:#D1FAE5;color:#065F46}.dtag-juliana{background:#FEF3C7;color:#92400E}.dtag-priscila{background:#DBEAFE;color:#1E40AF}.dtag-none{background:#F3F4F6;color:#6B7280}
 .designer-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
@@ -384,6 +397,60 @@ textarea{resize:vertical;min-height:340px;width:100%}
   <div class="kanban-wrap"><div class="kanban-iv" id="kanban-iv"></div></div>
 </div>
 
+<!-- ATIVIDADES EMILY -->
+<div class="pg" id="pg-atividades">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+    <div style="font-size:15px;font-weight:400;font-family:Georgia,serif;color:var(--pl)">Atividades Emily ✦</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn p" onclick="abrirNovaColuna()">+ Nova coluna</button>
+      <button class="btn p" onclick="abrirNovoCard()">+ Nova atividade</button>
+    </div>
+  </div>
+  <div class="kanban-wrap"><div id="kanban-atv" style="display:flex;gap:8px;min-width:max-content"></div></div>
+</div>
+
+<!-- MODAL VISUALIZAR ARQUIVO -->
+<div class="mov" id="mo-atv-viewer" onclick="if(event.target===this)closeMo('mo-atv-viewer')"><div class="mo" style="max-width:800px;text-align:center">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <h2 id="viewer-nome" style="margin:0;word-break:break-all"></h2>
+    <div style="display:flex;gap:8px">
+      <a id="viewer-download" download style="text-decoration:none"><button class="btn p s">⬇ Baixar</button></a>
+      <button class="btn s" onclick="closeMo('mo-atv-viewer')">Fechar</button>
+    </div>
+  </div>
+  <div id="viewer-content" style="max-height:70vh;overflow:auto;border-radius:8px;background:#f5f5f5"></div>
+</div></div>
+
+<!-- MODAL NOVA COLUNA -->
+<div class="mov" id="mo-nova-col" onclick="if(event.target===this)closeMo('mo-nova-col')"><div class="mo" style="max-width:380px">
+  <h2>Nova coluna</h2>
+  <div class="fg" style="margin-bottom:12px"><label>Nome da coluna</label><input id="col-nome-input" placeholder="Ex: Em revisão..."></div>
+  <div class="mof"><button class="btn" onclick="closeMo('mo-nova-col')">Cancelar</button><button class="btn p" onclick="salvarNovaColuna()">Criar ↗</button></div>
+</div></div>
+
+<!-- MODAL NOVO CARD / EDITAR CARD -->
+<div class="mov" id="mo-atv-card" onclick="if(event.target===this)closeMo('mo-atv-card')"><div class="mo" style="max-width:560px">
+  <h2 id="mo-atv-tit">Nova atividade</h2>
+  <div class="fg" style="margin-bottom:10px"><label>Título</label><input id="atv-titulo" placeholder="Descreva a atividade..."></div>
+  <div class="fg" style="margin-bottom:10px"><label>Coluna</label><select id="atv-coluna" style="font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:9px 11px;background:#fff;color:#333;width:100%"></select></div>
+  <div class="fg" style="margin-bottom:10px"><label>Observações</label><textarea id="atv-obs" style="min-height:100px" placeholder="Detalhes, instruções, links..."></textarea></div>
+  <div class="fg" style="margin-bottom:10px">
+    <label>Arquivos (imagens, PDF...)</label>
+    <div id="atv-drop-area" style="border:2px dashed rgba(142,107,122,.35);border-radius:10px;padding:18px;text-align:center;cursor:pointer;background:var(--cr);transition:.2s" onclick="document.getElementById('atv-file-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--m)'" ondragleave="this.style.borderColor='rgba(142,107,122,.35)'" ondrop="handleAtvDrop(event)">
+      <input type="file" id="atv-file-input" multiple accept="image/*,.pdf" style="display:none" onchange="handleAtvFiles(this.files)">
+      <div style="font-size:28px;margin-bottom:6px">📎</div>
+      <div style="font-size:13px;color:var(--pl)">Clique ou arraste arquivos aqui</div>
+      <div style="font-size:12px;color:#888;margin-top:4px">Imagens e PDFs</div>
+    </div>
+    <div id="atv-arquivos-preview" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px"></div>
+  </div>
+  <div class="mof">
+    <button class="btn s d" id="atv-excluir-btn" style="display:none" onclick="excluirCard()">Excluir</button>
+    <button class="btn" onclick="closeMo('mo-atv-card')">Cancelar</button>
+    <button class="btn p" onclick="salvarCard()">Salvar ↗</button>
+  </div>
+</div></div>
+
 <!-- PEDIDOS -->
 <div class="pg" id="pg-pedidos">
   <div class="sr">
@@ -391,7 +458,7 @@ textarea{resize:vertical;min-height:340px;width:100%}
     <select id="seta" onchange="renderPeds()"><option value="">Todas as etapas</option><option>Produzindo Id. Visual</option><option>Passar para Yses</option><option>Produzindo Artes</option><option>Início do processo</option><option>Gabarito</option><option>Agendado</option><option>Pedido feito nas gráficas</option><option>Produzindo blocos</option><option>Esperando terceiros</option><option>Pronto para embalar</option><option>Emitir etiqueta</option><option>Enviado</option><option>Finalizou</option><option>Sumiu</option></select>
     <select id="stipo" onchange="renderPeds()"><option value="">Todos os tipos</option><option value="iv">Identidade Visual</option><option value="pp">Papelaria</option><option value="ivpp">IV + Papelaria</option></select>
   </div>
-  <div class="otb"><table><thead><tr><th>Cliente</th><th>Entrega</th><th>Tipo</th><th>Itens</th><th>Valor</th><th>Lucro</th><th>Pagamento</th><th>Etapa</th><th>Ações</th></tr></thead><tbody id="tb-peds"></tbody></table></div>
+  <div class="otb"><table><thead><tr><th>Cliente</th><th>Data pedido</th><th>Entrega</th><th>Tipo</th><th>Itens</th><th>Valor</th><th>Lucro</th><th>Pagamento</th><th>Etapa</th><th>Ações</th></tr></thead><tbody id="tb-peds"></tbody></table></div>
 </div>
 
 <!-- FINANCEIRO -->
@@ -626,6 +693,7 @@ async function init(){
     window.addEventListener('offline',function(){alrt('⚠ Conexão perdida.','err');});
     window.addEventListener('online',function(){alrt('✓ Conexão restaurada!','ok');});
     checarTamanho();
+    await loadAtividades();
   }catch(e){
     console.error('Firebase erro:',e);
     ld.innerHTML='<div style="background:#fff;border-radius:12px;padding:24px 32px;text-align:center;font-family:Georgia,serif;color:var(--pl)"><div style="font-size:28px;margin-bottom:8px">❌</div>Erro ao conectar.<br><small style="color:#888">Recarregue a página.</small><br><br><button onclick="location.reload()" style="background:var(--pl);color:#fff;border:none;border-radius:20px;padding:8px 20px;font-size:13px;cursor:pointer;margin-top:8px">Recarregar</button></div>';
@@ -693,6 +761,7 @@ function buildNav(){
     {id:'novo',label:'Novo pedido',show:true},
     {id:'kanban-pp',label:'Produção Papelaria',show:true},
     {id:'kanban-iv',label:'Produção Id. Visual',show:isAdmin()},
+    {id:'atividades',label:'Atividades Emily ✦',show:true},
     {id:'pedidos',label:'Pedidos',show:isAdmin()},
     {id:'fin',label:'Financeiro',show:isAdmin()},
     {id:'custos',label:'Tabela de custos',show:isAdmin()},
@@ -712,6 +781,7 @@ function pg(id,el){
   if(el)el.classList.add('on');
   if(id==='kanban-pp')renderKPP();
   if(id==='kanban-iv')renderKIV();
+  if(id==='atividades')renderAtividades();
   if(id==='pedidos')renderPeds();
   if(id==='fin')renderFin();
   if(id==='custos')renderC();
@@ -1179,16 +1249,33 @@ function renderPeds(){
   var q=(document.getElementById('sq').value||'').toLowerCase(),ef=document.getElementById('seta').value,tf=document.getElementById('stipo').value;
   var tb=document.getElementById('tb-peds');tb.innerHTML='';
   var todos=ETS_PP.concat(ETS_IV).filter(function(v,i,a){return a.indexOf(v)===i;});
-  orders.filter(function(o){
+  var filtrados=orders.filter(function(o){
     var mq=!q||o.cliente.toLowerCase().indexOf(q)>=0||o.items.some(function(i){return i.name.toLowerCase().indexOf(q)>=0;});
     return mq&&(!ef||o.stage===ef)&&(!tf||o.tipo===tf);
-  }).forEach(function(o){
+  }).sort(function(a,b){
+    var da=a.dataCompra||a.data||'';
+    var db=b.dataCompra||b.data||'';
+    if(!da&&!db)return 0;if(!da)return 1;if(!db)return -1;
+    return da<db?1:da>db?-1:0;
+  });
+  filtrados.forEach(function(o){
     var lc=o.vt-o.custo;var tr=document.createElement('tr');
     var opts=todos.map(function(s){return '<option'+(s===o.stage?' selected':'')+'>'+s+'</option>';}).join('');
-    tr.innerHTML='<td><strong style="font-weight:500;color:var(--pl)">'+o.cliente+'</strong>'+(o.obs?'<br><span style="font-size:12px;color:#888">'+o.obs+'</span>':'')+'</td><td>'+dt(o.data)+'</td><td>'+tl(o.tipo)+'</td><td style="font-size:13px">'+o.items.length+' item(s)</td><td style="color:var(--m)">R$ '+o.vt.toFixed(2)+'</td><td style="color:'+(lc>=0?'var(--g)':'var(--pl)')+';font-weight:500">R$ '+lc.toFixed(2)+'</td><td><span class="bdg '+pc(o.pgto)+'">'+( o.pgto||'-')+'</span></td><td><select class="ssel" onchange="updS(\''+o.id+'\',this.value)">'+opts+'</select></td><td><button class="btn s" onclick="openMoPed(\''+o.id+'\',\'\')">Ver</button></td>';
+    var inputCompra='<input type="date" value="'+(o.dataCompra||'')+'" style="font-family:inherit;font-size:12px;border:.5px solid rgba(138,158,123,.28);border-radius:6px;padding:3px 6px;background:#fff;color:#333" onchange="salvarDataCompra(\''+o.id+'\',this.value)">';
+    var inputEntrega='<input type="date" value="'+(o.data||'')+'" style="font-family:inherit;font-size:12px;border:.5px solid rgba(138,158,123,.28);border-radius:6px;padding:3px 6px;background:#fff;color:#333" onchange="salvarDataEntrega(\''+o.id+'\',this.value)">';
+    tr.innerHTML='<td><strong style="font-weight:500;color:var(--pl)">'+o.cliente+'</strong>'+(o.obs?'<br><span style="font-size:12px;color:#888">'+o.obs+'</span>':'')+'</td>'
+      +'<td>'+inputCompra+'</td>'
+      +'<td>'+inputEntrega+'</td>'
+      +'<td>'+tl(o.tipo)+'</td>'
+      +'<td style="font-size:13px">'+o.items.length+' item(s)</td>'
+      +'<td style="color:var(--m)">R$ '+o.vt.toFixed(2)+'</td>'
+      +'<td style="color:'+(lc>=0?'var(--g)':'var(--pl)')+';font-weight:500">R$ '+lc.toFixed(2)+'</td>'
+      +'<td><span class="bdg '+pc(o.pgto)+'">'+( o.pgto||'-')+'</span></td>'
+      +'<td><select class="ssel" onchange="updS(\''+o.id+'\',this.value)">'+opts+'</select></td>'
+      +'<td><button class="btn s" onclick="openMoPed(\''+o.id+'\',\'\')">Ver</button></td>';
     tb.appendChild(tr);
   });
-  if(!document.getElementById('tb-peds').children.length)document.getElementById('tb-peds').innerHTML='<tr><td colspan="9" style="text-align:center;padding:24px;color:#888">Nenhum pedido encontrado</td></tr>';
+  if(!tb.children.length)tb.innerHTML='<tr><td colspan="10" style="text-align:center;padding:24px;color:#888">Nenhum pedido encontrado</td></tr>';
 }
 async function updS(id,stage){var o=orders.find(function(x){return x.id===id;});if(o){o.stage=stage;await savO();}}
 
@@ -1198,8 +1285,16 @@ async function salvarDataCompra(id,novaData){
   if(!o)return;
   o.dataCompra=novaData;
   await savO();
-  alrt('✓ Data da compra atualizada!','ok');
-  renderFin();
+  alrt('✓ Data do pedido atualizada!','ok');
+  renderFin();renderPeds();
+}
+async function salvarDataEntrega(id,novaData){
+  var o=orders.find(function(x){return x.id===id;});
+  if(!o)return;
+  o.data=novaData;
+  await savO();
+  alrt('✓ Data de entrega atualizada!','ok');
+  renderPeds();refreshKanban();
 }
 async function lancarGasto(){
   var cat=document.getElementById('g-cat').value,desc=document.getElementById('g-desc').value.trim(),data=document.getElementById('g-data').value,val=parseFloat(document.getElementById('g-val').value)||0;
@@ -1227,7 +1322,7 @@ function renderFin(){
   else{gf.forEach(function(g){var clr=gastoColor(g.cat);var tr=document.createElement('tr');tr.innerHTML='<td><span class="bdg" style="background:'+clr.bg+';color:'+clr.color+'">'+g.cat+'</span></td><td>'+g.desc+'</td><td>'+dt(g.data)+'</td><td style="color:#C0392B;font-weight:500">− R$ '+g.val.toFixed(2)+'</td><td><button class="btn s d" onclick="delGasto(\''+g.id+'\')">✕</button></td>';tbG.appendChild(tr);});}
   // Pedidos
   var tb=document.getElementById('tb-fin');var tv=0,tc=0;tb.innerHTML='';
-  var of2=orders.filter(function(o){var d=o.dataCompra||o.data;var okM=!filtroMes||(d&&d.indexOf(filtroMes)===0);var okT=!filtroTipo||o.tipo===filtroTipo;return okM&&okT;});
+  var of2=orders.filter(function(o){var d=o.dataCompra||o.data;var okM=!filtroMes||(d&&d.indexOf(filtroMes)===0);var okT=!filtroTipo||o.tipo===filtroTipo;return okM&&okT;}).sort(function(a,b){var da=a.dataCompra||a.data||'';var db=b.dataCompra||b.data||'';if(!da&&!db)return 0;if(!da)return 1;if(!db)return -1;return da<db?1:da>db?-1:0;});
   of2.forEach(function(o){tv+=o.vt;tc+=o.custo;var lc=o.vt-o.custo;var tr=document.createElement('tr');
     var dataAtual=o.dataCompra||o.data||'';
     tr.innerHTML='<td><strong style="font-weight:500;color:var(--pl)">'+o.cliente+'</strong></td>'
@@ -1273,10 +1368,215 @@ async function delO(){var id=modalOrderId,kt=modalKanbanType;if(!confirm('Exclui
 function closeMo(id){document.getElementById(id).classList.remove('on');}
 function alrt(msg,tp){var a=document.getElementById('alrt');a.innerHTML='<div class="alrt '+tp+'">'+msg+'</div>';setTimeout(function(){a.innerHTML='';},5000);}
 
+// ── ATIVIDADES EMILY ──
+var atvColunas=[
+  {id:'col_1',nome:'Novas atividades'},
+  {id:'col_2',nome:'Em andamento'},
+  {id:'col_3',nome:'Pronto para análise'},
+  {id:'col_4',nome:'Ajustes'},
+  {id:'col_5',nome:'Aprovado'},
+  {id:'col_6',nome:'Finalizado'}
+];
+var atvCards=[];
+var atvCardEditando=null;
+var atvArquivosTemp=[];
+
+async function loadAtividades(){
+  var c=await fbGet('atv_colunas');if(c&&c.length)atvColunas=c;
+  var k=await fbGet('atv_cards');if(k&&k.length)atvCards=k;
+  fbListen('atv_colunas',function(d){if(d&&d.length){atvColunas=d;if(document.getElementById('pg-atividades').classList.contains('on'))renderAtividades();}});
+  fbListen('atv_cards',function(d){atvCards=d||[];if(document.getElementById('pg-atividades').classList.contains('on'))renderAtividades();});
+}
+async function savAtvColunas(){await fbSet('atv_colunas',atvColunas);}
+async function savAtvCards(){await fbSet('atv_cards',atvCards);}
+
+function renderAtividades(){
+  var board=document.getElementById('kanban-atv');board.innerHTML='';
+  atvColunas.forEach(function(col){
+    var cards=atvCards.filter(function(c){return c.colId===col.id;});
+    var div=document.createElement('div');div.className='atv-col';
+    div.innerHTML='<div class="atv-col-hd">'
+      +'<span class="atv-col-nome">'+col.nome+'</span>'
+      +'<div style="display:flex;gap:4px">'
+      +'<button class="btn s" style="padding:2px 7px;font-size:11px" onclick="renomearColuna(\''+col.id+'\')">✏</button>'
+      +'<button class="btn s d" style="padding:2px 7px;font-size:11px" onclick="excluirColuna(\''+col.id+'\')">✕</button>'
+      +'</div></div>'
+      +'<div id="atv-body-'+col.id+'"></div>'
+      +'<button class="btn" style="width:100%;font-size:12px;padding:6px;margin-top:6px;border-style:dashed" onclick="abrirNovoCard(\''+col.id+'\')">+ Atividade</button>';
+    board.appendChild(div);
+    var body=document.getElementById('atv-body-'+col.id);
+    cards.forEach(function(card){
+      var cardEl=document.createElement('div');cardEl.className='atv-card';
+      var arqsHtml='';
+      if(card.arquivos&&card.arquivos.length){
+        arqsHtml='<div class="atv-card-arqs">';
+        card.arquivos.slice(0,4).forEach(function(a,ai){
+          if(a.tipo==='pdf'){
+            arqsHtml+='<div class="atv-arq-pdf" title="'+a.nome+'" onclick="event.stopPropagation();abrirViewer(\''+card.id+'\','+ai+')" style="cursor:pointer">📄</div>';
+          }else{
+            arqsHtml+='<img class="atv-arq-thumb" src="'+a.data+'" title="'+a.nome+'" onclick="event.stopPropagation();abrirViewer(\''+card.id+'\','+ai+')" style="cursor:pointer">';
+          }
+        });
+        if(card.arquivos.length>4)arqsHtml+='<div style="font-size:11px;color:#888;align-self:center">+'+( card.arquivos.length-4)+'</div>';
+        arqsHtml+='</div>';
+      }
+      cardEl.innerHTML='<div class="atv-card-titulo">'+card.titulo+'</div>'
+        +(card.obs?'<div class="atv-card-obs">'+card.obs+'</div>':'')
+        +arqsHtml;
+      cardEl.onclick=function(){editarCard(card.id);};
+      body.appendChild(cardEl);
+    });
+  });
+}
+
+function abrirNovaColuna(){
+  document.getElementById('col-nome-input').value='';
+  document.getElementById('mo-nova-col').classList.add('on');
+  setTimeout(function(){document.getElementById('col-nome-input').focus();},100);
+}
+async function salvarNovaColuna(){
+  var nome=document.getElementById('col-nome-input').value.trim();
+  if(!nome){alrt('Informe o nome da coluna.','err');return;}
+  atvColunas.push({id:'col_'+Date.now(),nome:nome});
+  await savAtvColunas();closeMo('mo-nova-col');renderAtividades();
+}
+async function renomearColuna(colId){
+  var col=atvColunas.find(function(c){return c.id===colId;});if(!col)return;
+  var novo=prompt('Novo nome para a coluna:',col.nome);
+  if(!novo||!novo.trim())return;
+  col.nome=novo.trim();await savAtvColunas();renderAtividades();
+}
+async function excluirColuna(colId){
+  var temCards=atvCards.some(function(c){return c.colId===colId;});
+  if(temCards&&!confirm('Essa coluna tem atividades. Excluir mesmo assim?'))return;
+  atvColunas=atvColunas.filter(function(c){return c.id!==colId;});
+  atvCards=atvCards.filter(function(c){return c.colId!==colId;});
+  await savAtvColunas();await savAtvCards();renderAtividades();
+}
+
+function abrirNovoCard(colId){
+  atvCardEditando=null;atvArquivosTemp=[];
+  document.getElementById('mo-atv-tit').textContent='Nova atividade';
+  document.getElementById('atv-titulo').value='';
+  document.getElementById('atv-obs').value='';
+  document.getElementById('atv-excluir-btn').style.display='none';
+  document.getElementById('atv-arquivos-preview').innerHTML='';
+  // Preencher select de colunas
+  var sel=document.getElementById('atv-coluna');sel.innerHTML='';
+  atvColunas.forEach(function(col){sel.innerHTML+='<option value="'+col.id+'"'+(col.id===colId?' selected':'')+'>'+col.nome+'</option>';});
+  document.getElementById('mo-atv-card').classList.add('on');
+  setTimeout(function(){document.getElementById('atv-titulo').focus();},100);
+}
+function editarCard(cardId){
+  var card=atvCards.find(function(c){return c.id===cardId;});if(!card)return;
+  atvCardEditando=cardId;
+  atvArquivosTemp=card.arquivos?JSON.parse(JSON.stringify(card.arquivos)):[];
+  document.getElementById('mo-atv-tit').textContent='Editar atividade';
+  document.getElementById('atv-titulo').value=card.titulo||'';
+  document.getElementById('atv-obs').value=card.obs||'';
+  document.getElementById('atv-excluir-btn').style.display='inline-flex';
+  // Preencher select
+  var sel=document.getElementById('atv-coluna');sel.innerHTML='';
+  atvColunas.forEach(function(col){sel.innerHTML+='<option value="'+col.id+'"'+(col.id===card.colId?' selected':'')+'>'+col.nome+'</option>';});
+  renderAtvPreview();
+  document.getElementById('mo-atv-card').classList.add('on');
+}
+async function salvarCard(){
+  var titulo=document.getElementById('atv-titulo').value.trim();
+  if(!titulo){alrt('Informe o título da atividade.','err');return;}
+  var colId=document.getElementById('atv-coluna').value;
+  var obs=document.getElementById('atv-obs').value.trim();
+  if(atvCardEditando){
+    var card=atvCards.find(function(c){return c.id===atvCardEditando;});
+    if(card){card.titulo=titulo;card.colId=colId;card.obs=obs;card.arquivos=atvArquivosTemp;}
+  }else{
+    atvCards.push({id:'card_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),titulo:titulo,colId:colId,obs:obs,arquivos:atvArquivosTemp,cr:new Date().toISOString()});
+  }
+  await savAtvCards();closeMo('mo-atv-card');renderAtividades();alrt('✓ Atividade salva!','ok');
+}
+async function excluirCard(){
+  if(!atvCardEditando)return;
+  if(!confirm('Excluir esta atividade?'))return;
+  atvCards=atvCards.filter(function(c){return c.id!==atvCardEditando;});
+  await savAtvCards();closeMo('mo-atv-card');renderAtividades();
+}
+
+function abrirViewer(cardId,idx){
+  var card=atvCards.find(function(c){return c.id===cardId;});
+  if(!card||!card.arquivos||!card.arquivos[idx])return;
+  var a=card.arquivos[idx];
+  _mostrarViewer(a);
+}
+function abrirViewerTemp(idx){
+  var a=atvArquivosTemp[idx];
+  if(!a)return;
+  _mostrarViewer(a);
+}
+function _mostrarViewer(a){
+  document.getElementById('viewer-nome').textContent=a.nome;
+  var dl=document.getElementById('viewer-download');
+  dl.href=a.data;
+  dl.download=a.nome;
+  var content=document.getElementById('viewer-content');
+  if(a.tipo==='pdf'){
+    content.innerHTML='<iframe src="'+a.data+'" style="width:100%;height:65vh;border:none;border-radius:8px"></iframe>';
+  }else{
+    content.innerHTML='<img src="'+a.data+'" style="max-width:100%;max-height:65vh;border-radius:8px;display:block;margin:0 auto">';
+  }
+  document.getElementById('mo-atv-viewer').classList.add('on');
+}
+
+// Upload de arquivos
+function handleAtvFiles(files){
+  Array.from(files).forEach(function(file){
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var tipo=file.type.indexOf('pdf')>=0?'pdf':'img';
+      atvArquivosTemp.push({nome:file.name,tipo:tipo,data:e.target.result});
+      renderAtvPreview();
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('atv-file-input').value='';
+}
+function handleAtvDrop(e){
+  e.preventDefault();
+  document.getElementById('atv-drop-area').style.borderColor='rgba(142,107,122,.35)';
+  handleAtvFiles(e.dataTransfer.files);
+}
+function removerAtvArquivo(idx){
+  atvArquivosTemp.splice(idx,1);renderAtvPreview();
+}
+function renderAtvPreview(){
+  var prev=document.getElementById('atv-arquivos-preview');prev.innerHTML='';
+  atvArquivosTemp.forEach(function(a,i){
+    var wrap=document.createElement('div');wrap.className='atv-preview-item';
+    var thumb;
+    if(a.tipo==='pdf'){
+      thumb=document.createElement('div');
+      thumb.style.cssText='width:70px;height:70px;border-radius:8px;background:var(--ml);display:flex;flex-direction:column;align-items:center;justify-content:center;border:.5px solid rgba(138,158,123,.28);font-size:22px;cursor:pointer';
+      thumb.innerHTML='📄<div style="font-size:9px;color:var(--pl);margin-top:2px;max-width:60px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center">'+a.nome+'</div>';
+      thumb.onclick=function(){abrirViewerTemp(i);};
+    }else{
+      thumb=document.createElement('img');
+      thumb.src=a.data;
+      thumb.style.cssText='width:70px;height:70px;object-fit:cover;border-radius:8px;border:.5px solid rgba(138,158,123,.28);cursor:pointer';
+      thumb.title=a.nome;
+      thumb.onclick=function(){abrirViewerTemp(i);};
+    }
+    var rem=document.createElement('button');rem.className='atv-preview-rem';rem.textContent='✕';rem.onclick=function(e){e.stopPropagation();removerAtvArquivo(i);};
+    wrap.appendChild(thumb);wrap.appendChild(rem);prev.appendChild(wrap);
+  });
+}
+
 document.addEventListener('DOMContentLoaded',init);
 
 // ── Exposição global (necessário para onclick no HTML dinâmico) ──
-window.salvarDataCompra=salvarDataCompra;window.mascaraCpf=mascaraCpf;window.selecionarUser=selecionarUser;window.confirmarSenha=confirmarSenha;window.voltarUsers=voltarUsers;window.logout=logout;
+window.abrirNovaColuna=abrirNovaColuna;window.salvarNovaColuna=salvarNovaColuna;window.renomearColuna=renomearColuna;window.excluirColuna=excluirColuna;
+window.abrirNovoCard=abrirNovoCard;window.salvarCard=salvarCard;window.excluirCard=excluirCard;
+window.abrirViewer=abrirViewer;window.abrirViewerTemp=abrirViewerTemp;
+window.handleAtvFiles=handleAtvFiles;window.handleAtvDrop=handleAtvDrop;window.removerAtvArquivo=removerAtvArquivo;
+window.salvarDataCompra=salvarDataCompra;window.salvarDataEntrega=salvarDataEntrega;window.mascaraCpf=mascaraCpf;window.selecionarUser=selecionarUser;window.confirmarSenha=confirmarSenha;window.voltarUsers=voltarUsers;window.logout=logout;
 window.tipo=tipo;window.switchE=switchE;window.buscaCep=buscaCep;window.updValorIV=updValorIV;window.updTotalPP=updTotalPP;
 window.addBrinde=addBrinde;window.removeBrindeSel=removeBrindeSel;
 window.parsearTexto=parsearTexto;window.handlePDF=handlePDF;window.addItem=addItem;window.limpar=limpar;
