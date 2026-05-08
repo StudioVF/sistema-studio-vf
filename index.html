@@ -267,7 +267,7 @@ textarea{resize:vertical;min-height:340px;width:100%}
       <div class="fg ao"><label>Forma de pagamento</label>
         <select id="f-pgto" onchange="updValorIV();updTotalPP()">
           <option>Pix site</option><option>Cartão site</option><option>Cartão MP</option>
-          <option>Pix Nubank</option><option>Pix CNPJ</option><option>A combinar</option>
+          <option>Pix Nubank</option><option>Pix CNPJ</option><option>Boleto</option><option>A combinar</option>
         </select>
       </div>
     </div>
@@ -583,8 +583,9 @@ function checarTamanho(){const t=JSON.stringify(orders).length;if(t>800000)alrt(
 // ── Constantes ──
 const ETS_PP=['Produzindo Id. Visual','Passar para Yses','Produzindo Artes','Início do processo','Gabarito','Pedido feito nas gráficas','Produzindo blocos','Esperando terceiros','Pronto para embalar','Emitir etiqueta','Enviado'];
 const ETS_IV=['Início do processo','Agendado','Finalizou','Sumiu'];
-const PACOTES={essencial:{nome:'Pacote Essencial',normal:749,pix:711.55,custo:130},premium:{nome:'Pacote Premium',normal:949,pix:901.55,custo:205},premiumplus:{nome:'Pacote Premium Plus',normal:949,pix:901.55,custo:205}};
+const PACOTES={essencial:{nome:'Pacote Essencial',normal:749,custo:130},premium:{nome:'Pacote Premium',normal:949,custo:205},premiumplus:{nome:'Pacote Premium Plus',normal:949,custo:205}};
 const PIX_PGTO=['Pix site','Pix Nubank','Pix CNPJ'];
+const BOLETO_PGTO=['Boleto'];
 const USERS={gustavo:{nome:'Gustavo',role:'admin',senha:'1401'},victoria:{nome:'Victória',role:'admin',senha:'1401'},emily:{nome:'Emily',role:'emily',senha:'4567'}};
 const COSTS_DEFAULT=[
 {cat:'Cartões de visita',name:'Cartão de visitas — Verniz total',variation:'100 unidades',graficas:'Futura',cost:46},
@@ -800,17 +801,19 @@ function updTotalPP(){
   var itensBase=parseFloat(document.getElementById('f-valor-pp').value)||0;
   var pgto=document.getElementById('f-pgto').value;
   var isPix=PIX_PGTO.indexOf(pgto)>=0;
-  var itensComDesc=isPix?parseFloat((itensBase*0.95).toFixed(2)):itensBase;
+  var isBoleto=BOLETO_PGTO.indexOf(pgto)>=0;
+  var fator=isPix?0.95:isBoleto?0.96:1;
+  var itensComDesc=fator<1?parseFloat((itensBase*fator).toFixed(2)):itensBase;
   var frete=parseFloat(document.getElementById('f-frete').value)||0;
   var total=itensComDesc+frete;
   document.getElementById('f-total-pp').value=total.toFixed(2);
-  // Mostrar info de desconto
   var info=document.getElementById('preco-info-pp');
   if(info){
-    if(isPix&&itensBase>0){
-      var desc=parseFloat((itensBase*0.05).toFixed(2));
+    if(fator<1&&itensBase>0){
+      var pct=isPix?5:4;
+      var desc=parseFloat((itensBase*(1-fator)).toFixed(2));
       info.style.display='block';
-      info.innerHTML='Desconto Pix 5%: <strong>− R$ '+desc.toFixed(2)+'</strong> · Total: <strong style="font-size:15px">R$ '+total.toFixed(2)+'</strong>';
+      info.innerHTML='Desconto '+(isPix?'Pix':'Boleto')+' '+pct+'%: <strong>− R$ '+desc.toFixed(2)+'</strong> · Total: <strong style="font-size:15px">R$ '+total.toFixed(2)+'</strong>';
     }else{
       info.style.display='none';
     }
@@ -821,15 +824,19 @@ function updValorIV(){
   var pac=document.getElementById('f-pac').value;
   var pgto=document.getElementById('f-pgto').value;
   var isPix=PIX_PGTO.indexOf(pgto)>=0;
+  var isBoleto=BOLETO_PGTO.indexOf(pgto)>=0;
+  var fator=isPix?0.95:isBoleto?0.96:1;
   var info=PACOTES[pac];
-  var baseVal=isPix?info.pix:info.normal;
+  var baseVal=parseFloat((info.normal*fator).toFixed(2));
   var adic=parseFloat(document.getElementById('f-ent').value)||0;
   var total=baseVal+adic;
   document.getElementById('f-valor').value=baseVal.toFixed(2);
   document.getElementById('f-total-iv').value=total.toFixed(2);
   var pi=document.getElementById('preco-info');
   pi.style.display='block';
-  pi.innerHTML=info.nome+': <strong>R$ '+baseVal.toFixed(2)+'</strong> '+(isPix?'(Pix)':'(Cartão)')+' + Adicionais: R$ '+adic.toFixed(2)+' = <strong style="font-size:15px">Total: R$ '+total.toFixed(2)+'</strong>';
+  var descLabel=isPix?'Pix −5%':isBoleto?'Boleto −4%':'Cartão';
+  var descHtml=fator<1?' <span style="font-size:12px;color:var(--g)">'+descLabel+'</span>':' <span style="font-size:12px;color:#888">'+descLabel+'</span>';
+  pi.innerHTML=info.nome+': <strong>R$ '+info.normal.toFixed(2)+'</strong>'+descHtml+' = <strong style="font-size:15px">R$ '+baseVal.toFixed(2)+'</strong>'+(adic>0?' + Adicionais: R$ '+adic.toFixed(2)+' = <strong>Total: R$ '+total.toFixed(2)+'</strong>':'');
 }
 function tipo(t,el){
   tipoAt=t;
@@ -1064,24 +1071,30 @@ function buildEnd(){return{nome:document.getElementById('e-nome').value,cpf:docu
 async function salvarIV(){
   var nome=document.getElementById('f-nome').value.trim();if(!nome){alrt('Informe o nome da cliente.','err');return;}
   var pac=document.getElementById('f-pac').value,pgto=document.getElementById('f-pgto').value;
-  var isPix=PIX_PGTO.indexOf(pgto)>=0,info=PACOTES[pac];
-  var baseVal=isPix?info.pix:info.normal,adic=parseFloat(document.getElementById('f-ent').value)||0,total=baseVal+adic;
-  var o={id:gerarId(),cliente:nome,dataCompra:document.getElementById('f-compra').value,data:document.getElementById('f-data').value,pgto:pgto,tipo:'iv',pacote:info.nome,obs:document.getElementById('f-obs-iv').value||'',obsCard:'',vt:total,valorBase:baseVal,adic:adic,custo:info.custo,items:[{name:info.nome,variation:'Identidade Visual',qty:1,price:total,cost:info.custo,checked:false}],end:null,brindes:[],stage:document.getElementById('f-etapa-iv').value,cr:new Date().toISOString()};
-  orders.unshift(o);await savO();checarTamanho();alrt('✓ Pedido de '+nome+' salvo!','ok');clearAll();
+  var isPix=PIX_PGTO.indexOf(pgto)>=0,isBoleto=BOLETO_PGTO.indexOf(pgto)>=0,info=PACOTES[pac];
+  var fator=isPix?0.95:isBoleto?0.96:1;
+  var baseVal=parseFloat((info.normal*fator).toFixed(2));
+  var adic=parseFloat(document.getElementById('f-ent').value)||0,total=baseVal+adic;
+  var descLabel=isPix?'Pix −5%':isBoleto?'Boleto −4%':'';
+  var o={id:gerarId(),cliente:nome,dataCompra:document.getElementById('f-compra').value,data:document.getElementById('f-data').value,pgto:pgto,tipo:'iv',pacote:info.nome,obs:(document.getElementById('f-obs-iv').value||'')+(descLabel?' ['+descLabel+']':''),obsCard:'',vt:total,valorBase:baseVal,valorOriginal:info.normal,adic:adic,custo:info.custo,items:[{name:info.nome,variation:'Identidade Visual',qty:1,price:total,cost:info.custo,checked:false}],end:null,brindes:[],stage:document.getElementById('f-etapa-iv').value,cr:new Date().toISOString()};
+  orders.unshift(o);await savO();checarTamanho();alrt('✓ Pedido de '+nome+' salvo!'+(descLabel?' Desconto '+descLabel+' aplicado.':''),'ok');clearAll();
 }
 async function salvar(){
   var nome=document.getElementById('f-nome').value.trim();if(!nome){alrt('Informe o nome da cliente.','err');return;}if(!items.length){alrt('Adicione pelo menos um item.','err');return;}
   var pgto=document.getElementById('f-pgto').value;
   var isPix=PIX_PGTO.indexOf(pgto)>=0;
+  var isBoleto=BOLETO_PGTO.indexOf(pgto)>=0;
+  var fator=isPix?0.95:isBoleto?0.96:1;
   var tv=items.reduce(function(s,i){return s+i.price;},0);
-  var tvComDesc=isPix?parseFloat((tv*0.95).toFixed(2)):tv;
+  var tvComDesc=fator<1?parseFloat((tv*fator).toFixed(2)):tv;
   var bc=brindeSelecionados.reduce(function(s,b){return s+parseFloat(b.custo||0);},0);
   var tc=items.reduce(function(s,i){return s+i.cost;},0)+bc;
   var frete=parseFloat(document.getElementById('f-frete').value)||0;
   var totalComFrete=tvComDesc+frete;
-  var desc=isPix?parseFloat((tv*0.05).toFixed(2)):0;
+  var desc=fator<1?parseFloat((tv*(1-fator)).toFixed(2)):0;
   var o={id:gerarId(),cliente:nome,dataCompra:document.getElementById('f-compra').value,data:document.getElementById('f-data').value,pgto:pgto,tipo:tipoAt,obs:document.getElementById('f-obs-pp').value||'',obsCard:'',vt:totalComFrete,desconto:desc,frete:frete,adic:0,custo:tc,items:JSON.parse(JSON.stringify(items)),end:buildEnd(),brindes:JSON.parse(JSON.stringify(brindeSelecionados)),stage:document.getElementById('f-etapa').value,cr:new Date().toISOString()};
-  orders.unshift(o);await savO();checarTamanho();alrt('✓ Pedido de '+nome+' salvo! '+(isPix?'Desconto Pix de R$ '+desc.toFixed(2)+' aplicado.':''),'ok');clearAll();
+  var msgDesc=desc>0?'Desconto '+(isPix?'Pix 5%':'Boleto 4%')+' de R$ '+desc.toFixed(2)+' aplicado.':'';
+  orders.unshift(o);await savO();checarTamanho();alrt('✓ Pedido de '+nome+' salvo! '+msgDesc,'ok');clearAll();
 }
 function clearAll(){
   items=[];brindeSelecionados=[];
