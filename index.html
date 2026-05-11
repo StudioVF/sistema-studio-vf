@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Studio VF — Sistema de Gestão</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='16' fill='%238E6B7A'/><text x='5' y='23' font-family='Georgia,serif' font-size='20' font-style='italic' fill='%23F5EFE6'>Vf</text></svg>">
 <!-- Firebase SDKs via CDN (compatível com todos os browsers) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -90,7 +91,7 @@ textarea{resize:vertical;min-height:340px;width:100%}
 .bdg{display:inline-flex;padding:3px 8px;border-radius:20px;font-size:12px;font-weight:500}
 .bg{background:var(--gl);color:var(--g)}.bb{background:#e6f0f8;color:#2a6496}.bgr{background:rgba(107,107,107,.1);color:#666}
 .ssel{font-family:inherit;font-size:12px;border:.5px solid rgba(138,158,123,.28);border-radius:20px;padding:4px 8px;background:#fff;color:var(--pl);cursor:pointer}
-.fcs{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
+.fcs{display:grid;grid-template-columns:repeat(7,1fr);gap:12px;margin-bottom:16px}
 .fc{background:#fff;border:.5px solid rgba(138,158,123,.22);border-radius:12px;padding:16px}
 .fc .fl{font-size:11px;color:var(--pl);letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px;opacity:.7}
 .fc .fv{font-size:22px;font-weight:400;font-family:Georgia,serif}
@@ -1350,7 +1351,22 @@ function renderFin(){
     tb.appendChild(tr);});
   if(!of2.length)tb.innerHTML='<tr><td colspan="9" style="text-align:center;padding:18px;color:#888">Nenhum pedido no período</td></tr>';
   var lucroBruto=tv-tc,lucroLiquido=lucroBruto-totalGastos,mg=tv>0?(lucroLiquido/tv*100):0;
-  document.getElementById('fcs').innerHTML='<div class="fc"><div class="fl">Faturamento</div><div class="fv pv">R$ '+tv.toFixed(2)+'</div></div><div class="fc"><div class="fl">Custo produção</div><div class="fv rv">R$ '+tc.toFixed(2)+'</div></div><div class="fc"><div class="fl">Lucro bruto</div><div class="fv" style="color:'+(lucroBruto>=0?'var(--g)':'var(--pl)')+'">R$ '+lucroBruto.toFixed(2)+'</div></div><div class="fc"><div class="fl">Total gastos</div><div class="fv" style="color:#C0392B">− R$ '+totalGastos.toFixed(2)+'</div></div><div class="fc" style="border-color:rgba(122,79,92,.4)"><div class="fl">Lucro líquido · '+mg.toFixed(1)+'%</div><div class="fv" style="color:'+(lucroLiquido>=0?'var(--g)':'var(--pl)')+'">R$ '+lucroLiquido.toFixed(2)+'</div></div>';
+  // Clientes únicos (sem repetir nome)
+  var clientesUnicos=[];
+  of2.forEach(function(o){
+    var nome=o.cliente.trim().toLowerCase();
+    if(clientesUnicos.indexOf(nome)<0)clientesUnicos.push(nome);
+  });
+  var totalPedidos=clientesUnicos.length;
+  var ticketMedio=totalPedidos>0?tv/totalPedidos:0;
+  document.getElementById('fcs').innerHTML=
+    '<div class="fc"><div class="fl">Faturamento</div><div class="fv pv">R$ '+tv.toFixed(2)+'</div></div>'
+    +'<div class="fc"><div class="fl">Custo produção</div><div class="fv rv">R$ '+tc.toFixed(2)+'</div></div>'
+    +'<div class="fc"><div class="fl">Lucro bruto</div><div class="fv" style="color:'+(lucroBruto>=0?'var(--g)':'var(--pl)')+'">R$ '+lucroBruto.toFixed(2)+'</div></div>'
+    +'<div class="fc"><div class="fl">Total gastos</div><div class="fv" style="color:#C0392B">− R$ '+totalGastos.toFixed(2)+'</div></div>'
+    +'<div class="fc" style="border-color:rgba(122,79,92,.4)"><div class="fl">Lucro líquido · '+mg.toFixed(1)+'%</div><div class="fv" style="color:'+(lucroLiquido>=0?'var(--g)':'var(--pl)')+'">R$ '+lucroLiquido.toFixed(2)+'</div></div>'
+    +'<div class="fc"><div class="fl">Clientes únicos</div><div class="fv" style="color:var(--pl)">'+totalPedidos+'</div></div>'
+    +'<div class="fc"><div class="fl">Ticket médio</div><div class="fv pv">R$ '+ticketMedio.toFixed(2)+'</div></div>';
 }
 
 // ── CUSTOS ──
