@@ -146,6 +146,104 @@ textarea{resize:vertical;min-height:340px;width:100%}
 .dbtn:hover{opacity:.8}.dbtn.sel{border-color:#333;transform:scale(1.05)}
 .dbtn-yses{background:#E8D5F5;color:#6B21A8}.dbtn-tatiana{background:#FCE7F3;color:#9D174D}.dbtn-day{background:#D1FAE5;color:#065F46}.dbtn-juliana{background:#FEF3C7;color:#92400E}.dbtn-priscila{background:#DBEAFE;color:#1E40AF}.dbtn-none{background:#F3F4F6;color:#6B7280}
 
+/* ────── ORÇAMENTO (ALINE) ────── */
+.orc-wrap{max-width:1300px;margin:0 auto}
+.orc-hero{background:linear-gradient(135deg,var(--pl) 0%,var(--m) 100%);border-radius:16px;padding:24px 28px;margin-bottom:18px;color:#F5EFE6;box-shadow:0 4px 20px rgba(122,79,92,.18)}
+.orc-hero-tit{font-size:24px;font-family:Georgia,serif;font-weight:400;margin-bottom:6px}
+.orc-hero-sub{font-size:14px;opacity:.85;line-height:1.4}
+.orc-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;align-items:start}
+
+/* Coluna catálogo */
+.orc-cat-col{background:#fff;border-radius:16px;padding:18px;border:.5px solid rgba(138,158,123,.22);box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.orc-cat-tit{font-size:15px;font-weight:600;color:var(--pl);margin-bottom:14px;font-family:Georgia,serif}
+.orc-cat-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.orc-cat-btn{background:var(--cr);border:1.5px solid rgba(138,158,123,.25);border-radius:14px;padding:18px 14px;cursor:pointer;transition:.18s;text-align:left;font-family:inherit;display:flex;align-items:center;gap:12px}
+.orc-cat-btn:hover{border-color:var(--m);background:var(--ml);transform:translateY(-2px);box-shadow:0 4px 14px rgba(142,107,122,.18)}
+.orc-cat-btn:active{transform:translateY(0)}
+.orc-cat-icon{font-size:32px;flex-shrink:0;line-height:1}
+.orc-cat-info{flex:1;min-width:0}
+.orc-cat-nome{font-size:14px;font-weight:600;color:var(--pl);margin-bottom:2px}
+.orc-cat-desc{font-size:11px;color:#888;line-height:1.3}
+
+/* Coluna carrinho */
+.orc-cart-col{background:#fff;border-radius:16px;padding:18px;border:.5px solid rgba(138,158,123,.22);box-shadow:0 2px 8px rgba(0,0,0,.04);position:sticky;top:60px}
+.orc-cart-tit{font-size:15px;font-weight:600;color:var(--pl);margin-bottom:14px;font-family:Georgia,serif;display:flex;align-items:center;justify-content:space-between}
+.orc-cart-count{background:var(--m);color:#fff;border-radius:20px;padding:2px 10px;font-size:12px;font-family:system-ui,sans-serif;min-width:24px;text-align:center}
+.orc-cart-list{margin-bottom:12px}
+.orc-cart-empty{text-align:center;padding:30px 16px;color:#999;font-size:13px;line-height:1.5;background:var(--cr);border-radius:12px;border:1.5px dashed rgba(138,158,123,.25)}
+.orc-cart-item{background:var(--cr);border:.5px solid rgba(138,158,123,.22);border-radius:10px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;animation:slideIn .25s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.orc-cart-item-info{flex:1;min-width:0}
+.orc-cart-item-nome{font-size:13px;font-weight:600;color:var(--pl);line-height:1.35;margin-bottom:2px}
+.orc-cart-item-detalhe{font-size:12px;color:#888}
+.orc-cart-item-valor{font-size:13px;font-weight:600;color:var(--m);font-family:Georgia,serif;white-space:nowrap}
+.orc-cart-item-rem{background:none;border:none;color:#C0392B;font-size:18px;cursor:pointer;padding:0 4px;line-height:1;opacity:.6;transition:.15s}
+.orc-cart-item-rem:hover{opacity:1;transform:scale(1.15)}
+
+/* Total */
+.orc-total-box{background:linear-gradient(135deg,var(--g) 0%,#7A8E6B 100%);border-radius:12px;padding:14px 18px;margin-bottom:12px;color:#fff;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 12px rgba(138,158,123,.25)}
+.orc-total-lbl{font-size:12px;letter-spacing:1px;text-transform:uppercase;opacity:.9}
+.orc-total-val{font-size:22px;font-weight:600;font-family:Georgia,serif}
+
+/* Cliente */
+.orc-cliente-box{background:var(--cr);border-radius:10px;padding:12px 14px;margin-bottom:12px;border:.5px solid rgba(138,158,123,.22)}
+.orc-cliente-lbl{font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--pl);margin-bottom:6px;display:block;opacity:.75}
+.orc-cliente-box input{width:100%;font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.28);border-radius:8px;padding:9px 11px;background:#fff;color:#333}
+.orc-cliente-box input:focus{outline:none;border-color:var(--m)}
+
+/* Texto gerado */
+.orc-texto-box{background:#F0F8E8;border:1.5px solid rgba(138,158,123,.35);border-radius:12px;padding:14px;margin-bottom:12px}
+.orc-texto-tit{font-size:13px;font-weight:600;color:var(--pl);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.btn-copiar{background:#25D366;color:#fff;border:none;border-radius:20px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s;display:inline-flex;align-items:center;gap:5px}
+.btn-copiar:hover{background:#1FB855;transform:scale(1.04)}
+.btn-copiar.ok{background:var(--g)}
+#orc-texto-final{width:100%;min-height:200px;font-family:'Courier New',monospace;font-size:13px;line-height:1.55;border:.5px solid rgba(138,158,123,.28);border-radius:8px;padding:12px;background:#fff;color:#333;resize:vertical}
+#orc-texto-final:focus{outline:none;border-color:var(--m)}
+
+/* Ações */
+.orc-acoes{display:flex;gap:10px;flex-wrap:wrap}
+.btn-limpar,.btn-salvar{flex:1;padding:11px 14px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn-limpar{background:#fff;color:#C0392B;border-color:rgba(192,57,43,.35)}
+.btn-limpar:hover{background:rgba(192,57,43,.08)}
+.btn-salvar{background:var(--pl);color:#F5EFE6;border-color:var(--pl)}
+.btn-salvar:hover{background:var(--m)}
+
+/* Histórico */
+.orc-historico{margin-top:24px;background:#fff;border-radius:16px;padding:18px;border:.5px solid rgba(138,158,123,.22)}
+.orc-hist-tit{font-size:15px;font-weight:600;color:var(--pl);margin-bottom:12px;font-family:Georgia,serif}
+.orc-hist-item{background:var(--cr);border-radius:10px;padding:11px 14px;margin-bottom:8px;border:.5px solid rgba(138,158,123,.18);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.orc-hist-info{flex:1;min-width:160px}
+.orc-hist-cliente{font-size:13px;font-weight:600;color:var(--pl)}
+.orc-hist-meta{font-size:11px;color:#888;margin-top:2px}
+.orc-hist-valor{font-size:14px;font-weight:600;color:var(--m);font-family:Georgia,serif}
+.orc-hist-expira{font-size:10px;color:#c08a00;background:#fffbe6;padding:2px 7px;border-radius:20px;border:.5px solid #e0c96a}
+.orc-hist-btns{display:flex;gap:6px}
+.orc-hist-btn{padding:6px 12px;border-radius:20px;border:.5px solid rgba(138,158,123,.3);background:#fff;cursor:pointer;font-size:12px;font-family:inherit;color:var(--pl);transition:.15s}
+.orc-hist-btn:hover{background:var(--gl)}
+.orc-hist-btn.del{color:#C0392B;border-color:rgba(192,57,43,.25)}
+.orc-hist-btn.del:hover{background:rgba(192,57,43,.08)}
+.orc-hist-empty{text-align:center;padding:20px;color:#999;font-size:13px}
+
+/* Modal de seleção */
+.orc-modal{max-width:680px}
+.orc-modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:.5px solid rgba(138,158,123,.22)}
+.orc-modal-hd h2{margin:0}
+.orc-modal-x{background:none;border:none;font-size:22px;cursor:pointer;color:#888;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.15s}
+.orc-modal-x:hover{background:var(--cr);color:var(--pl)}
+.orc-sub-grupo{margin-bottom:18px}
+.orc-sub-tit{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--m);margin-bottom:8px;padding-bottom:5px;border-bottom:.5px solid rgba(142,107,122,.18)}
+.orc-opcao{background:var(--cr);border:1.5px solid rgba(138,158,123,.22);border-radius:10px;padding:12px 14px;margin-bottom:7px;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.orc-opcao:hover{border-color:var(--m);background:var(--ml);transform:translateX(3px)}
+.orc-opcao-info{flex:1;min-width:0}
+.orc-opcao-qtd{font-size:14px;font-weight:600;color:var(--pl)}
+.orc-opcao-detalhe{font-size:11px;color:#888;margin-top:1px}
+.orc-opcao-preco{font-size:15px;font-weight:600;color:var(--m);font-family:Georgia,serif;white-space:nowrap}
+.orc-bloco-config{background:var(--ml);border-radius:10px;padding:14px;margin-bottom:14px}
+.orc-bloco-config-lbl{font-size:12px;font-weight:600;color:var(--pl);margin-bottom:8px;display:block}
+.orc-bloco-config select{width:100%;font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:10px 12px;background:#fff;color:#333}
+.orc-bloco-config select:focus{outline:none;border-color:var(--m)}
+.orc-info-box{background:#FFF9E6;border:.5px solid #e0c96a;border-radius:8px;padding:9px 12px;font-size:12px;color:#7a6200;margin-bottom:10px}
+
 /* ── MOBILE ── */
 @media(max-width:640px){
   body{font-size:15px}
@@ -179,6 +277,17 @@ textarea{resize:vertical;min-height:340px;width:100%}
   .kanban-iv{grid-template-columns:repeat(4,minmax(130px,1fr))}
   .tots{grid-template-columns:repeat(3,1fr);gap:6px}
   .tc .v{font-size:15px}
+  /* Orçamento mobile */
+  .orc-grid{grid-template-columns:1fr;gap:14px}
+  .orc-cat-list{grid-template-columns:1fr 1fr}
+  .orc-cart-col{position:static}
+  .orc-hero{padding:18px 20px}
+  .orc-hero-tit{font-size:20px}
+  .orc-hero-sub{font-size:13px}
+  .orc-cat-icon{font-size:26px}
+  .orc-cat-nome{font-size:13px}
+  .orc-cat-desc{font-size:10px}
+  .orc-modal{max-width:100%}
 }
 @media(min-width:641px){
   body{font-size:16px}
@@ -207,6 +316,10 @@ textarea{resize:vertical;min-height:340px;width:100%}
       <button class="user-btn" onclick="selecionarUser('emily')">
         <div class="uavt" style="background:var(--gl);color:var(--g)">E</div>
         <div class="uinfo"><div class="uname">Emily</div><div class="urole">Funcionária · Produção e pedidos</div></div>
+      </button>
+      <button class="user-btn" onclick="selecionarUser('aline')">
+        <div class="uavt" style="background:#FCE7F3;color:#9D174D">A</div>
+        <div class="uinfo"><div class="uname">Aline</div><div class="urole">Vendedora · Orçamentos</div></div>
       </button>
     </div>
 
@@ -452,6 +565,83 @@ textarea{resize:vertical;min-height:340px;width:100%}
   </div>
 </div></div>
 
+<!-- ORÇAMENTO (ALINE / ADMINS) -->
+<div class="pg" id="pg-orcamento">
+  <div class="orc-wrap">
+
+    <!-- Cabeçalho de boas-vindas -->
+    <div class="orc-hero">
+      <div class="orc-hero-tit">Montar Orçamento</div>
+      <div class="orc-hero-sub">Selecione os itens que a cliente deseja. O texto do orçamento aparece pronto para copiar.</div>
+    </div>
+
+    <!-- Layout 2 colunas: catálogo + carrinho -->
+    <div class="orc-grid">
+
+      <!-- COLUNA ESQUERDA: catálogo de categorias -->
+      <div class="orc-cat-col">
+        <div class="orc-cat-tit">📦 O que a cliente quer?</div>
+        <div class="orc-cat-list" id="orc-cat-list"></div>
+      </div>
+
+      <!-- COLUNA DIREITA: carrinho + texto gerado -->
+      <div class="orc-cart-col">
+        <div class="orc-cart-tit">
+          <span>🛒 Itens selecionados</span>
+          <span class="orc-cart-count" id="orc-cart-count">0</span>
+        </div>
+
+        <div class="orc-cart-list" id="orc-cart-list">
+          <div class="orc-cart-empty">
+            <div style="font-size:42px;margin-bottom:8px;opacity:.5">🛒</div>
+            <div>Nenhum item selecionado ainda.<br>Clique nas categorias ao lado para começar.</div>
+          </div>
+        </div>
+
+        <div class="orc-total-box" id="orc-total-box" style="display:none">
+          <div class="orc-total-lbl">Valor total do orçamento</div>
+          <div class="orc-total-val" id="orc-total-val">R$ 0,00</div>
+        </div>
+
+        <div class="orc-cliente-box" id="orc-cliente-box" style="display:none">
+          <label class="orc-cliente-lbl">Nome da cliente <span style="opacity:.5">(opcional)</span></label>
+          <input id="orc-cliente-nome" placeholder="Ex: Dra. Ana Paula" oninput="atualizarTextoOrcamento()">
+        </div>
+
+        <div class="orc-texto-box" id="orc-texto-box" style="display:none">
+          <div class="orc-texto-tit">
+            <span>💬 Texto pronto para o WhatsApp</span>
+            <button class="btn-copiar" onclick="copiarOrcamento()">📋 Copiar</button>
+          </div>
+          <textarea id="orc-texto-final" readonly></textarea>
+        </div>
+
+        <div class="orc-acoes" id="orc-acoes" style="display:none">
+          <button class="btn-limpar" onclick="limparOrcamento()">🗑️ Limpar tudo</button>
+          <button class="btn-salvar" onclick="salvarOrcamento()">💾 Salvar orçamento</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Lista de orçamentos salvos (últimos 3 dias) -->
+    <div class="orc-historico" id="orc-historico-box" style="display:none">
+      <div class="orc-hist-tit">📂 Orçamentos salvos (últimos 3 dias)</div>
+      <div id="orc-hist-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL SELEÇÃO DE CATEGORIA -->
+<div class="mov" id="mo-orc-cat" onclick="if(event.target===this)closeMo('mo-orc-cat')"><div class="mo orc-modal">
+  <div class="orc-modal-hd">
+    <h2 id="orc-modal-tit">Selecione</h2>
+    <button class="orc-modal-x" onclick="closeMo('mo-orc-cat')">✕</button>
+  </div>
+  <div id="orc-modal-body"></div>
+</div></div>
+
 <!-- PEDIDOS -->
 <div class="pg" id="pg-pedidos">
   <div class="sr">
@@ -587,7 +777,7 @@ const ETS_IV=['Início do processo','Agendado','Finalizou','Sumiu'];
 const PACOTES={essencial:{nome:'Pacote Essencial',normal:749,custo:130},premium:{nome:'Pacote Premium',normal:949,custo:205},premiumplus:{nome:'Pacote Premium Plus',normal:949,custo:205}};
 const PIX_PGTO=['Pix site','Pix Nubank','Pix CNPJ'];
 const BOLETO_PGTO=['Boleto'];
-const USERS={gustavo:{nome:'Gustavo',role:'admin',senha:'1401'},victoria:{nome:'Victória',role:'admin',senha:'1401'},emily:{nome:'Emily',role:'emily',senha:'4567'}};
+const USERS={gustavo:{nome:'Gustavo',role:'admin',senha:'1401'},victoria:{nome:'Victória',role:'admin',senha:'1401'},emily:{nome:'Emily',role:'emily',senha:'4567'},aline:{nome:'Aline',role:'vendedora',senha:'0669'}};
 const COSTS_DEFAULT=[
 {cat:'Cartões de visita',name:'Cartão de visitas — Verniz total',variation:'100 unidades',graficas:'Futura',cost:46},
 {cat:'Cartões de visita',name:'Cartão de visitas — Verniz total',variation:'200 unidades',graficas:'Futura',cost:58},
@@ -670,6 +860,8 @@ async function savC(){await fbSet('costs',costs);}
 async function savB(){await fbSet('brindes',brindes);popBrd();}
 async function savG(){await fbSet('gastos',gastos);}
 function isAdmin(){return currentUser&&currentUser.role==='admin';}
+function isVendedora(){return currentUser&&currentUser.role==='vendedora';}
+function podeOrcar(){return isAdmin()||isVendedora();}
 
 // ── INIT ──
 async function init(){
@@ -709,13 +901,16 @@ async function init(){
 function selecionarUser(uid){
   userSelecionado=uid;
   const u=USERS[uid];
-  const isEmily=u.role==='emily';
   const av=document.getElementById('senha-avatar');
-  av.textContent=uid==='gustavo'?'G':uid==='victoria'?'V':'E';
-  av.style.background=isEmily?'var(--gl)':'var(--ml)';
-  av.style.color=isEmily?'var(--g)':'var(--pl)';
+  av.textContent=uid==='gustavo'?'G':uid==='victoria'?'V':uid==='emily'?'E':'A';
+  if(uid==='emily'){av.style.background='var(--gl)';av.style.color='var(--g)';}
+  else if(uid==='aline'){av.style.background='#FCE7F3';av.style.color='#9D174D';}
+  else{av.style.background='var(--ml)';av.style.color='var(--pl)';}
   document.getElementById('senha-nome').textContent=u.nome;
-  document.getElementById('senha-role').textContent=u.role==='admin'?'Proprietário(a) · Acesso total':'Funcionária · Produção e pedidos';
+  var roleText='Proprietário(a) · Acesso total';
+  if(u.role==='emily')roleText='Funcionária · Produção e pedidos';
+  else if(u.role==='vendedora')roleText='Vendedora · Orçamentos';
+  document.getElementById('senha-role').textContent=roleText;
   document.getElementById('senha-input').value='';
   document.getElementById('senha-erro').style.display='none';
   document.getElementById('step-user').style.display='none';
@@ -759,11 +954,13 @@ function logout(){
 }
 function buildNav(){
   const nav=document.getElementById('main-nav');nav.innerHTML='';
+  var vend=isVendedora();
   var pages=[
-    {id:'novo',label:'Novo pedido',show:true},
-    {id:'kanban-pp',label:'Produção Papelaria',show:true},
+    {id:'orcamento',label:'Orçamento ✦',show:podeOrcar()},
+    {id:'novo',label:'Novo pedido',show:!vend},
+    {id:'kanban-pp',label:'Produção Papelaria',show:!vend},
     {id:'kanban-iv',label:'Produção Id. Visual',show:isAdmin()},
-    {id:'atividades',label:'Atividades Emily ✦',show:true},
+    {id:'atividades',label:'Atividades Emily ✦',show:!vend},
     {id:'pedidos',label:'Pedidos',show:isAdmin()},
     {id:'fin',label:'Financeiro',show:isAdmin()},
     {id:'custos',label:'Tabela de custos',show:isAdmin()},
@@ -788,6 +985,7 @@ function pg(id,el){
   if(id==='fin')renderFin();
   if(id==='custos')renderC();
   if(id==='brindes')renderBrd();
+  if(id==='orcamento')renderOrcamento();
 }
 function popBrd(){
   var s=document.getElementById('f-brd');
@@ -1202,8 +1400,15 @@ function openMoPed(id,kanbanType){
   });
   // Editar itens
   html+='<div class="stl" style="display:flex;align-items:center;justify-content:space-between"><span>Editar itens</span><button class="btn s" onclick="addItemModal(\''+kanbanType+'\')">+ Item</button></div>';
+  html+='<div style="display:grid;grid-template-columns:2fr 2fr 80px 80px 28px;gap:6px;padding:4px 0;font-size:10px;font-weight:600;color:var(--pl);letter-spacing:.5px;text-transform:uppercase;opacity:.7"><span>Nome</span><span>Variação</span><span>Venda R$</span><span>Custo R$</span><span></span></div>';
   o.items.forEach(function(it,idx){
-    html+='<div class="edit-item-row"><input id="ei-n-'+idx+'" value="'+it.name.replace(/"/g,'&quot;')+'" placeholder="Nome" style="flex:2;min-width:80px"><input id="ei-v-'+idx+'" value="'+(it.variation||'').replace(/"/g,'&quot;')+'" placeholder="Variação" style="flex:2;min-width:80px"><input id="ei-c-'+idx+'" type="number" step="0.01" value="'+(it.cost||0).toFixed(2)+'" placeholder="Custo" style="width:75px"><button class="btn s d" onclick="removeItemModal('+idx+',\''+kanbanType+'\')">✕</button></div>';
+    html+='<div class="edit-item-row" style="display:grid;grid-template-columns:2fr 2fr 80px 80px 28px;gap:6px">'
+      +'<input id="ei-n-'+idx+'" value="'+it.name.replace(/"/g,'&quot;')+'" placeholder="Nome">'
+      +'<input id="ei-v-'+idx+'" value="'+(it.variation||'').replace(/"/g,'&quot;')+'" placeholder="Variação">'
+      +'<input id="ei-p-'+idx+'" type="number" step="0.01" value="'+(it.price||0).toFixed(2)+'" placeholder="0,00">'
+      +'<input id="ei-c-'+idx+'" type="number" step="0.01" value="'+(it.cost||0).toFixed(2)+'" placeholder="0,00">'
+      +'<button class="btn s d" onclick="removeItemModal('+idx+',\''+kanbanType+'\')">✕</button>'
+      +'</div>';
   });
   html+='<div style="text-align:right;margin-top:8px"><button class="btn s p" onclick="salvarItensModal(\''+kanbanType+'\')">Salvar itens</button></div>';
   // Brindes
@@ -1239,7 +1444,28 @@ function openMoPed(id,kanbanType){
 async function salvarData(){var o=orders.find(function(x){return x.id===modalOrderId;});if(!o)return;o.data=document.getElementById('modal-data').value;await savO();alrt('✓ Data atualizada!','ok');}
 async function salvarObs(){var o=orders.find(function(x){return x.id===modalOrderId;});if(!o)return;o.obsCard=document.getElementById('obs-card-input').value;await savO();alrt('✓ Observação salva!','ok');refreshKanban();}
 function recalcCusto(o){var custoBrindes=(o.brindes||[]).reduce(function(s,b){return s+parseFloat(b.custo||0);},0);var custoItens=o.items.reduce(function(s,i){return s+(i.cost||0);},0);o.custo=custoItens+custoBrindes;}
-async function salvarItensModal(){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(!o)return;o.items.forEach(function(it,idx){var n=document.getElementById('ei-n-'+idx),v=document.getElementById('ei-v-'+idx),c=document.getElementById('ei-c-'+idx);if(n)it.name=n.value.trim();if(v)it.variation=v.value.trim();if(c)it.cost=parseFloat(c.value)||0;});recalcCusto(o);await savO();alrt('✓ Itens atualizados!','ok');openMoPed(id,kt);refreshKanban();}
+async function salvarItensModal(){
+  var id=modalOrderId,kt=modalKanbanType;
+  var o=orders.find(function(x){return x.id===id;});if(!o)return;
+  o.items.forEach(function(it,idx){
+    var n=document.getElementById('ei-n-'+idx);
+    var v=document.getElementById('ei-v-'+idx);
+    var p=document.getElementById('ei-p-'+idx);
+    var c=document.getElementById('ei-c-'+idx);
+    if(n)it.name=n.value.trim();
+    if(v)it.variation=v.value.trim();
+    if(p)it.price=parseFloat(p.value)||0;
+    if(c)it.cost=parseFloat(c.value)||0;
+  });
+  // Recalcular valor total do pedido com base nos itens
+  var novoVt=o.items.reduce(function(s,i){return s+(i.price||0);},0);
+  if(novoVt>0)o.vt=novoVt+(o.frete||0);
+  recalcCusto(o);
+  await savO();
+  alrt('✓ Itens atualizados!','ok');
+  openMoPed(id,kt);
+  refreshKanban();
+}
 async function addItemModal(){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(!o)return;o.items.push({name:'Novo item',variation:'',qty:1,price:0,cost:0,graficas:'—',checked:false});await savO();openMoPed(id,kt);}
 async function removeItemModal(idx){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(!o)return;o.items.splice(idx,1);await savO();openMoPed(id,kt);}
 async function chkItem(idx,checked){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(o){o.items[idx].checked=checked;await savO();openMoPed(id,kt);refreshKanban();}}
@@ -1599,6 +1825,558 @@ function renderAtvPreview(){
 }
 
 document.addEventListener('DOMContentLoaded',init);
+
+// ═══════════════════════════════════════════════════════════
+// ════════════  MÓDULO ORÇAMENTO (ALINE) ═══════════════════
+// ═══════════════════════════════════════════════════════════
+
+// Tabela completa de preços (sincronizada com a tabela master)
+const TAB_ORC={
+  cartao:{
+    nome:'Cartão de visitas',
+    icone:'💳',
+    desc:'Couchê 300g',
+    subgrupos:[
+      {nome:'Verniz total — couchê brilho',opcoes:[
+        {qtd:100,preco:120,unid:'un',label:'100un Cartão de visitas verniz total'},
+        {qtd:250,preco:160,unid:'un',label:'250un Cartão de visitas verniz total'},
+        {qtd:500,preco:190,unid:'un',label:'500un Cartão de visitas verniz total'},
+        {qtd:1000,preco:220,unid:'un',label:'1000un Cartão de visitas verniz total'}
+      ]},
+      {nome:'Verniz localizado',opcoes:[
+        {qtd:100,preco:180,unid:'un',label:'100un Cartão de visitas verniz localizado'},
+        {qtd:250,preco:220,unid:'un',label:'250un Cartão de visitas verniz localizado'},
+        {qtd:500,preco:260,unid:'un',label:'500un Cartão de visitas verniz localizado'},
+        {qtd:1000,preco:300,unid:'un',label:'1000un Cartão de visitas verniz localizado'}
+      ]},
+      {nome:'Hotstamping',opcoes:[
+        {qtd:100,preco:190,unid:'un',label:'100un Cartão de visitas hotstamping'},
+        {qtd:500,preco:360,unid:'un',label:'500un Cartão de visitas hotstamping'},
+        {qtd:1000,preco:530,unid:'un',label:'1000un Cartão de visitas hotstamping'}
+      ]},
+      {nome:'Laminação holográfica',opcoes:[
+        {qtd:100,preco:140,unid:'un',label:'100un Cartão de visitas laminação holográfica'},
+        {qtd:250,preco:200,unid:'un',label:'250un Cartão de visitas laminação holográfica'},
+        {qtd:500,preco:340,unid:'un',label:'500un Cartão de visitas laminação holográfica'},
+        {qtd:1000,preco:550,unid:'un',label:'1000un Cartão de visitas laminação holográfica'}
+      ]}
+    ],
+    obs:'+ R$30,00 para adicionar cantos arredondados em qualquer acabamento.'
+  },
+  blocoA5:{
+    nome:'Bloco A5',
+    icone:'📋',
+    desc:'15x21cm — Sulfite 90g — Frente',
+    tipoDoc:['Receituário','Receituário especial','Atestado','Declaração','Solicitação de exames','Papel timbrado','Outro'],
+    subgrupos:[
+      {nome:'Valores por quantidade',opcoes:[
+        {qtd:1,preco:60,folhas:50,label:'1 bloco A5'},
+        {qtd:1,preco:100,folhas:100,label:'1 bloco A5'},
+        {qtd:2,preco:170,folhas:200,label:'2 blocos A5'},
+        {qtd:3,preco:240,folhas:300,label:'3 blocos A5'},
+        {qtd:5,preco:360,folhas:500,label:'5 blocos A5'},
+        {qtd:10,preco:550,folhas:1000,label:'10 blocos A5'},
+        {qtd:15,preco:680,folhas:1500,label:'15 blocos A5'},
+        {qtd:25,preco:850,folhas:2500,label:'25 blocos A5'}
+      ]}
+    ]
+  },
+  blocoA4:{
+    nome:'Bloco A4',
+    icone:'📄',
+    desc:'Sulfite 90g',
+    tipoDoc:['Anamnese','Prontuário','Ficha de avaliação','Termo de consentimento','Papel timbrado','Outro'],
+    subgrupos:[
+      {nome:'Frente (1 página)',opcoes:[
+        {qtd:1,preco:100,folhas:50,label:'1 bloco A4'},
+        {qtd:1,preco:170,folhas:100,label:'1 bloco A4'},
+        {qtd:2,preco:260,folhas:200,label:'2 blocos A4'},
+        {qtd:5,preco:490,folhas:500,label:'5 blocos A4'},
+        {qtd:10,preco:720,folhas:1000,label:'10 blocos A4'},
+        {qtd:25,preco:1040,folhas:2500,label:'25 blocos A4'}
+      ]},
+      {nome:'Frente e verso (2 páginas)',opcoes:[
+        {qtd:1,preco:140,folhas:50,label:'1 bloco A4 frente e verso'},
+        {qtd:1,preco:230,folhas:100,label:'1 bloco A4 frente e verso'},
+        {qtd:2,preco:310,folhas:200,label:'2 blocos A4 frente e verso'},
+        {qtd:5,preco:580,folhas:500,label:'5 blocos A4 frente e verso'},
+        {qtd:10,preco:840,folhas:1000,label:'10 blocos A4 frente e verso'}
+      ]}
+    ]
+  },
+  recibo:{
+    nome:'Bloco Recibo',
+    icone:'🧾',
+    desc:'10x21cm — Com canhoto',
+    subgrupos:[
+      {nome:'Valores por quantidade',opcoes:[
+        {qtd:1,preco:80,folhas:50,label:'1 bloco Recibo'},
+        {qtd:1,preco:120,folhas:100,label:'1 bloco Recibo'},
+        {qtd:2,preco:220,folhas:200,label:'2 blocos Recibo'}
+      ]}
+    ]
+  },
+  pastaOrelha:{
+    nome:'Pasta com orelha',
+    icone:'📁',
+    desc:'Verniz total ou Laminação fosca',
+    subgrupos:[
+      {nome:'Verniz total',opcoes:[
+        {qtd:25,preco:250,unid:'un',label:'25un Pasta com orelha - Verniz total'},
+        {qtd:50,preco:410,unid:'un',label:'50un Pasta com orelha - Verniz total'},
+        {qtd:100,preco:690,unid:'un',label:'100un Pasta com orelha - Verniz total'},
+        {qtd:250,preco:1320,unid:'un',label:'250un Pasta com orelha - Verniz total'}
+      ]},
+      {nome:'Laminação fosca',opcoes:[
+        {qtd:25,preco:240,unid:'un',label:'25un Pasta com orelha - Laminação fosca'},
+        {qtd:50,preco:410,unid:'un',label:'50un Pasta com orelha - Laminação fosca'},
+        {qtd:100,preco:730,unid:'un',label:'100un Pasta com orelha - Laminação fosca'},
+        {qtd:250,preco:1620,unid:'un',label:'250un Pasta com orelha - Laminação fosca'},
+        {qtd:500,preco:2750,unid:'un',label:'500un Pasta com orelha - Laminação fosca'}
+      ]}
+    ]
+  },
+  pastaBolso:{
+    nome:'Pasta com bolso',
+    icone:'🗂️',
+    desc:'Verniz total ou Laminação fosca',
+    subgrupos:[
+      {nome:'Verniz total',opcoes:[
+        {qtd:25,preco:240,unid:'un',label:'25un Pasta com bolso - Verniz total'},
+        {qtd:50,preco:440,unid:'un',label:'50un Pasta com bolso - Verniz total'},
+        {qtd:100,preco:778,unid:'un',label:'100un Pasta com bolso - Verniz total'},
+        {qtd:250,preco:1340,unid:'un',label:'250un Pasta com bolso - Verniz total'}
+      ]},
+      {nome:'Laminação fosca',opcoes:[
+        {qtd:25,preco:260,unid:'un',label:'25un Pasta com bolso - Laminação fosca'},
+        {qtd:50,preco:460,unid:'un',label:'50un Pasta com bolso - Laminação fosca'},
+        {qtd:100,preco:820,unid:'un',label:'100un Pasta com bolso - Laminação fosca'},
+        {qtd:250,preco:1670,unid:'un',label:'250un Pasta com bolso - Laminação fosca'}
+      ]}
+    ]
+  },
+  envelope:{
+    nome:'Envelopes',
+    icone:'✉️',
+    desc:'Carta ou A4',
+    subgrupos:[
+      {nome:'Envelope Carta',opcoes:[
+        {qtd:25,preco:120,unid:'un',label:'25un Envelope Carta'},
+        {qtd:50,preco:220,unid:'un',label:'50un Envelope Carta'},
+        {qtd:100,preco:400,unid:'un',label:'100un Envelope Carta'},
+        {qtd:250,preco:760,unid:'un',label:'250un Envelope Carta'}
+      ]},
+      {nome:'Envelope A4',opcoes:[
+        {qtd:25,preco:180,unid:'un',label:'25un Envelope A4'},
+        {qtd:50,preco:330,unid:'un',label:'50un Envelope A4'},
+        {qtd:100,preco:610,unid:'un',label:'100un Envelope A4'},
+        {qtd:250,preco:930,unid:'un',label:'250un Envelope A4'}
+      ]}
+    ]
+  },
+  carteirinha:{
+    nome:'Carteirinha',
+    icone:'💉',
+    desc:'Vacinação / Pré-natal',
+    subgrupos:[
+      {nome:'1 dobra — A5 / 15x10cm',opcoes:[
+        {qtd:10,preco:110,unid:'un',label:'10un Carteirinha 1 dobra'},
+        {qtd:25,preco:140,unid:'un',label:'25un Carteirinha 1 dobra'},
+        {qtd:50,preco:190,unid:'un',label:'50un Carteirinha 1 dobra'},
+        {qtd:100,preco:250,unid:'un',label:'100un Carteirinha 1 dobra'},
+        {qtd:250,preco:420,unid:'un',label:'250un Carteirinha 1 dobra'}
+      ]},
+      {nome:'2 dobras — A4 / 21x10cm — Apergaminhado 180g',opcoes:[
+        {qtd:50,preco:260,unid:'un',label:'50un Carteirinha 2 dobras A4'},
+        {qtd:100,preco:450,unid:'un',label:'100un Carteirinha 2 dobras A4'},
+        {qtd:250,preco:890,unid:'un',label:'250un Carteirinha 2 dobras A4'}
+      ]},
+      {nome:'2 dobras — A3 / 21x14cm — Apergaminhado 180g',opcoes:[
+        {qtd:25,preco:170,unid:'un',label:'25un Carteirinha 2 dobras A3'},
+        {qtd:50,preco:290,unid:'un',label:'50un Carteirinha 2 dobras A3'},
+        {qtd:100,preco:490,unid:'un',label:'100un Carteirinha 2 dobras A3'}
+      ]}
+    ]
+  },
+  certificado:{
+    nome:'Certificado',
+    icone:'🏆',
+    desc:'Couchê fosco 150g',
+    subgrupos:[
+      {nome:'Tamanho A5',opcoes:[
+        {qtd:25,preco:100,unid:'un',label:'25un Certificado A5'},
+        {qtd:50,preco:150,unid:'un',label:'50un Certificado A5'},
+        {qtd:100,preco:190,unid:'un',label:'100un Certificado A5'},
+        {qtd:250,preco:280,unid:'un',label:'250un Certificado A5'}
+      ]},
+      {nome:'Tamanho A6',opcoes:[
+        {qtd:25,preco:80,unid:'un',label:'25un Certificado A6'},
+        {qtd:50,preco:120,unid:'un',label:'50un Certificado A6'},
+        {qtd:100,preco:160,unid:'un',label:'100un Certificado A6'},
+        {qtd:250,preco:220,unid:'un',label:'250un Certificado A6'}
+      ]}
+    ]
+  },
+  adesivo:{
+    nome:'Adesivos',
+    icone:'⭕',
+    desc:'Redondos 5x5cm',
+    subgrupos:[
+      {nome:'Redondos — 5x5cm',opcoes:[
+        {qtd:100,preco:80,unid:'un',label:'100un Adesivo redondo 5x5cm'},
+        {qtd:250,preco:110,unid:'un',label:'250un Adesivo redondo 5x5cm'},
+        {qtd:500,preco:160,unid:'un',label:'500un Adesivo redondo 5x5cm'}
+      ]}
+    ]
+  },
+  panfleto:{
+    nome:'Panfletos',
+    icone:'📰',
+    desc:'10x15cm — Couchê brilho 150g',
+    subgrupos:[
+      {nome:'Frente',opcoes:[
+        {qtd:50,preco:100,unid:'un',label:'50un Panfleto frente'},
+        {qtd:100,preco:140,unid:'un',label:'100un Panfleto frente'},
+        {qtd:250,preco:230,unid:'un',label:'250un Panfleto frente'},
+        {qtd:500,preco:340,unid:'un',label:'500un Panfleto frente'}
+      ]},
+      {nome:'Frente e verso',opcoes:[
+        {qtd:50,preco:130,unid:'un',label:'50un Panfleto frente e verso'},
+        {qtd:100,preco:180,unid:'un',label:'100un Panfleto frente e verso'},
+        {qtd:250,preco:280,unid:'un',label:'250un Panfleto frente e verso'},
+        {qtd:1000,preco:460,unid:'un',label:'1000un Panfleto frente e verso'}
+      ]}
+    ]
+  }
+};
+
+// Carrinho de itens
+let orcCart=[];
+let orcCatAtual=null;
+let orcSalvos=[];
+
+function renderOrcamento(){
+  var lista=document.getElementById('orc-cat-list');lista.innerHTML='';
+  Object.keys(TAB_ORC).forEach(function(key){
+    var cat=TAB_ORC[key];
+    var btn=document.createElement('button');
+    btn.className='orc-cat-btn';
+    btn.onclick=function(){abrirCategoria(key);};
+    btn.innerHTML='<div class="orc-cat-icon">'+cat.icone+'</div>'+
+      '<div class="orc-cat-info"><div class="orc-cat-nome">'+cat.nome+'</div><div class="orc-cat-desc">'+cat.desc+'</div></div>';
+    lista.appendChild(btn);
+  });
+  renderCarrinho();
+  carregarOrcamentosSalvos();
+}
+
+function abrirCategoria(catKey){
+  orcCatAtual=catKey;
+  var cat=TAB_ORC[catKey];
+  document.getElementById('orc-modal-tit').textContent=cat.icone+' '+cat.nome;
+  var body=document.getElementById('orc-modal-body');
+  body.innerHTML='';
+
+  // Se tem variações de documento (blocos A5/A4) — adiciona seletor
+  var temTipoDoc=cat.tipoDoc&&cat.tipoDoc.length>0;
+  var seletorHtml='';
+  if(temTipoDoc){
+    seletorHtml='<div class="orc-bloco-config">'+
+      '<label class="orc-bloco-config-lbl">Qual documento será impresso?</label>'+
+      '<select id="orc-tipo-doc">';
+    cat.tipoDoc.forEach(function(td){seletorHtml+='<option value="'+td+'">'+td+'</option>';});
+    seletorHtml+='</select>'+
+      '<div class="orc-info-box" style="margin-top:10px">💡 O valor não muda conforme o tipo do documento. Você pode adicionar vários blocos com tipos diferentes (ex: 1 bloco de Receituário + 1 bloco de Atestado).</div>'+
+      '</div>';
+  }
+  body.innerHTML=seletorHtml;
+
+  // Subgrupos e opções
+  cat.subgrupos.forEach(function(sg){
+    var div=document.createElement('div');
+    div.className='orc-sub-grupo';
+    div.innerHTML='<div class="orc-sub-tit">'+sg.nome+'</div>';
+    sg.opcoes.forEach(function(op){
+      var opDiv=document.createElement('div');
+      opDiv.className='orc-opcao';
+      var detalhe='';
+      if(op.folhas){detalhe='('+op.folhas+' folhas)';}
+      else if(op.unid){detalhe='';}
+      opDiv.innerHTML='<div class="orc-opcao-info">'+
+        '<div class="orc-opcao-qtd">'+op.label+' '+detalhe+'</div>'+
+        '<div class="orc-opcao-detalhe">'+sg.nome+'</div>'+
+        '</div>'+
+        '<div class="orc-opcao-preco">R$ '+op.preco.toFixed(2).replace('.',',')+'</div>';
+      opDiv.onclick=function(){adicionarAoCarrinho(catKey,sg.nome,op);};
+      div.appendChild(opDiv);
+    });
+    body.appendChild(div);
+  });
+
+  if(cat.obs){
+    var obsDiv=document.createElement('div');
+    obsDiv.className='orc-info-box';
+    obsDiv.style.marginTop='12px';
+    obsDiv.innerHTML='⚠️ '+cat.obs;
+    body.appendChild(obsDiv);
+  }
+
+  document.getElementById('mo-orc-cat').classList.add('on');
+}
+
+function adicionarAoCarrinho(catKey,subgrupo,opcao){
+  var cat=TAB_ORC[catKey];
+  var tipoDoc=null;
+  if(cat.tipoDoc){
+    var sel=document.getElementById('orc-tipo-doc');
+    if(sel)tipoDoc=sel.value;
+  }
+  // Monta o label do item (formato WhatsApp)
+  var labelFinal=opcao.label;
+  if(tipoDoc){
+    labelFinal=opcao.label+' - '+tipoDoc;
+  }else{
+    labelFinal=opcao.label+' - '+subgrupo;
+  }
+  var detalhe='';
+  if(opcao.folhas)detalhe='('+opcao.folhas+' folhas)';
+
+  orcCart.push({
+    id:'oc_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
+    catKey:catKey,
+    catNome:cat.nome,
+    subgrupo:subgrupo,
+    tipoDoc:tipoDoc,
+    label:labelFinal,
+    detalhe:detalhe,
+    preco:opcao.preco,
+    qtd:opcao.qtd,
+    folhas:opcao.folhas||null
+  });
+
+  renderCarrinho();
+  closeMo('mo-orc-cat');
+  alrt('✓ '+cat.nome+' adicionado ao orçamento!','ok');
+}
+
+function removerDoCarrinho(id){
+  orcCart=orcCart.filter(function(it){return it.id!==id;});
+  renderCarrinho();
+}
+
+function renderCarrinho(){
+  var lista=document.getElementById('orc-cart-list');
+  var count=document.getElementById('orc-cart-count');
+  var totalBox=document.getElementById('orc-total-box');
+  var clienteBox=document.getElementById('orc-cliente-box');
+  var textoBox=document.getElementById('orc-texto-box');
+  var acoes=document.getElementById('orc-acoes');
+
+  count.textContent=orcCart.length;
+
+  if(orcCart.length===0){
+    lista.innerHTML='<div class="orc-cart-empty"><div style="font-size:42px;margin-bottom:8px;opacity:.5">🛒</div><div>Nenhum item selecionado ainda.<br>Clique nas categorias ao lado para começar.</div></div>';
+    totalBox.style.display='none';
+    clienteBox.style.display='none';
+    textoBox.style.display='none';
+    acoes.style.display='none';
+    return;
+  }
+
+  lista.innerHTML='';
+  var total=0;
+  orcCart.forEach(function(it){
+    total+=it.preco;
+    var div=document.createElement('div');
+    div.className='orc-cart-item';
+    div.innerHTML='<div class="orc-cart-item-info">'+
+      '<div class="orc-cart-item-nome">'+it.label+'</div>'+
+      (it.detalhe?'<div class="orc-cart-item-detalhe">'+it.detalhe+'</div>':'')+
+      '</div>'+
+      '<div class="orc-cart-item-valor">R$ '+it.preco.toFixed(2).replace('.',',')+'</div>'+
+      '<button class="orc-cart-item-rem" onclick="removerDoCarrinho(\''+it.id+'\')" title="Remover">✕</button>';
+    lista.appendChild(div);
+  });
+
+  document.getElementById('orc-total-val').textContent='R$ '+total.toFixed(2).replace('.',',');
+  totalBox.style.display='flex';
+  clienteBox.style.display='block';
+  textoBox.style.display='block';
+  acoes.style.display='flex';
+
+  atualizarTextoOrcamento();
+}
+
+function atualizarTextoOrcamento(){
+  if(orcCart.length===0)return;
+  var nomeCli=document.getElementById('orc-cliente-nome').value.trim();
+  var texto='';
+  if(nomeCli)texto+='Olá, '+nomeCli+'! Segue o orçamento:\n\n';
+  texto+='• Kit de papelaria impressa:\n';
+  orcCart.forEach(function(it){
+    var linha=it.label+' - R$'+it.preco.toFixed(2).replace('.',',').replace(',00','');
+    if(it.preco%1!==0)linha=it.label+' - R$'+it.preco.toFixed(2).replace('.',',');
+    if(it.detalhe)linha+=' '+it.detalhe;
+    texto+=linha+'\n';
+  });
+  var total=orcCart.reduce(function(s,it){return s+it.preco;},0);
+  texto+='\n💰 *Valor total: R$ '+total.toFixed(2).replace('.',',')+'*';
+  document.getElementById('orc-texto-final').value=texto;
+}
+
+function copiarOrcamento(){
+  var txt=document.getElementById('orc-texto-final');
+  txt.select();
+  txt.setSelectionRange(0,99999);
+  try{
+    navigator.clipboard.writeText(txt.value).then(function(){
+      var btn=document.querySelector('.btn-copiar');
+      var original=btn.innerHTML;
+      btn.innerHTML='✓ Copiado!';
+      btn.classList.add('ok');
+      setTimeout(function(){btn.innerHTML=original;btn.classList.remove('ok');},2000);
+    });
+  }catch(e){
+    document.execCommand('copy');
+    alrt('✓ Texto copiado!','ok');
+  }
+}
+
+function limparOrcamento(){
+  if(orcCart.length===0)return;
+  if(!confirm('Tem certeza que deseja limpar todo o orçamento?'))return;
+  orcCart=[];
+  document.getElementById('orc-cliente-nome').value='';
+  renderCarrinho();
+  alrt('Orçamento limpo','ok');
+}
+
+async function salvarOrcamento(){
+  if(orcCart.length===0)return;
+  var nomeCli=document.getElementById('orc-cliente-nome').value.trim()||'Cliente sem nome';
+  var total=orcCart.reduce(function(s,it){return s+it.preco;},0);
+  var agora=new Date();
+  var expira=new Date(agora.getTime()+3*24*60*60*1000); // 3 dias
+
+  var novo={
+    id:'orc_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
+    cliente:nomeCli,
+    itens:orcCart.slice(),
+    total:total,
+    texto:document.getElementById('orc-texto-final').value,
+    criadoEm:agora.toISOString(),
+    expiraEm:expira.toISOString(),
+    criadoPor:currentUser.nome
+  };
+
+  orcSalvos.push(novo);
+  await fbSet('orcamentos',orcSalvos);
+  alrt('✓ Orçamento salvo! (expira em 3 dias)','ok');
+  // Limpa para começar um novo
+  orcCart=[];
+  document.getElementById('orc-cliente-nome').value='';
+  renderCarrinho();
+  carregarOrcamentosSalvos();
+}
+
+async function carregarOrcamentosSalvos(){
+  try{
+    var dados=await fbGet('orcamentos');
+    orcSalvos=dados||[];
+    // Limpa expirados
+    var agora=new Date();
+    var validos=orcSalvos.filter(function(o){return new Date(o.expiraEm)>agora;});
+    if(validos.length!==orcSalvos.length){
+      orcSalvos=validos;
+      await fbSet('orcamentos',orcSalvos);
+    }
+    renderHistorico();
+  }catch(e){
+    console.error('Erro ao carregar orçamentos:',e);
+  }
+}
+
+function renderHistorico(){
+  var box=document.getElementById('orc-historico-box');
+  var lista=document.getElementById('orc-hist-list');
+
+  if(!orcSalvos||orcSalvos.length===0){
+    box.style.display='none';
+    return;
+  }
+
+  box.style.display='block';
+  lista.innerHTML='';
+
+  // Ordena por mais recente primeiro
+  var ordenados=orcSalvos.slice().sort(function(a,b){return new Date(b.criadoEm)-new Date(a.criadoEm);});
+
+  ordenados.forEach(function(o){
+    var dt=new Date(o.criadoEm);
+    var dtFmt=dt.toLocaleDateString('pt-BR')+' '+dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    var diasRest=Math.ceil((new Date(o.expiraEm)-new Date())/(1000*60*60*24));
+    var div=document.createElement('div');
+    div.className='orc-hist-item';
+    div.innerHTML='<div class="orc-hist-info">'+
+      '<div class="orc-hist-cliente">👤 '+o.cliente+'</div>'+
+      '<div class="orc-hist-meta">'+dtFmt+' • '+o.itens.length+' item'+(o.itens.length>1?'s':'')+' • por '+o.criadoPor+'</div>'+
+      '</div>'+
+      '<div class="orc-hist-valor">R$ '+o.total.toFixed(2).replace('.',',')+'</div>'+
+      '<div class="orc-hist-expira">⏱ '+diasRest+'d</div>'+
+      '<div class="orc-hist-btns">'+
+        '<button class="orc-hist-btn" onclick="reabrirOrcamento(\''+o.id+'\')">📋 Ver texto</button>'+
+        '<button class="orc-hist-btn" onclick="recarregarOrcamento(\''+o.id+'\')">↻ Editar</button>'+
+        '<button class="orc-hist-btn del" onclick="excluirOrcamento(\''+o.id+'\')">🗑️</button>'+
+      '</div>';
+    lista.appendChild(div);
+  });
+}
+
+function reabrirOrcamento(id){
+  var o=orcSalvos.find(function(x){return x.id===id;});
+  if(!o)return;
+  // Copia texto direto para o clipboard
+  navigator.clipboard.writeText(o.texto).then(function(){
+    alrt('✓ Texto do orçamento de '+o.cliente+' copiado!','ok');
+  }).catch(function(){
+    // Fallback: mostra em alert
+    prompt('Texto do orçamento (Ctrl+C para copiar):',o.texto);
+  });
+}
+
+function recarregarOrcamento(id){
+  var o=orcSalvos.find(function(x){return x.id===id;});
+  if(!o)return;
+  if(orcCart.length>0&&!confirm('Isso vai substituir o orçamento atual. Continuar?'))return;
+  orcCart=o.itens.slice();
+  document.getElementById('orc-cliente-nome').value=o.cliente==='Cliente sem nome'?'':o.cliente;
+  renderCarrinho();
+  window.scrollTo({top:0,behavior:'smooth'});
+  alrt('✓ Orçamento carregado para edição','ok');
+}
+
+async function excluirOrcamento(id){
+  if(!confirm('Excluir este orçamento?'))return;
+  orcSalvos=orcSalvos.filter(function(o){return o.id!==id;});
+  await fbSet('orcamentos',orcSalvos);
+  renderHistorico();
+  alrt('Orçamento excluído','ok');
+}
+
+// Exposição global
+window.renderOrcamento=renderOrcamento;
+window.abrirCategoria=abrirCategoria;
+window.adicionarAoCarrinho=adicionarAoCarrinho;
+window.removerDoCarrinho=removerDoCarrinho;
+window.atualizarTextoOrcamento=atualizarTextoOrcamento;
+window.copiarOrcamento=copiarOrcamento;
+window.limparOrcamento=limparOrcamento;
+window.salvarOrcamento=salvarOrcamento;
+window.reabrirOrcamento=reabrirOrcamento;
+window.recarregarOrcamento=recarregarOrcamento;
+window.excluirOrcamento=excluirOrcamento;
+
+// ═══════════════════════════════════════════════════════════
 
 // ── Exposição global (necessário para onclick no HTML dinâmico) ──
 window.abrirNovaColuna=abrirNovaColuna;window.salvarNovaColuna=salvarNovaColuna;window.renomearColuna=renomearColuna;window.excluirColuna=excluirColuna;
