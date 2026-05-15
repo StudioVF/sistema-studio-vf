@@ -153,6 +153,18 @@ textarea{resize:vertical;min-height:340px;width:100%}
 .orc-hero-sub{font-size:14px;opacity:.85;line-height:1.4}
 .orc-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;align-items:start}
 
+/* Kits Padrões */
+.orc-kits-box{background:linear-gradient(135deg,#FFF9E6 0%,#FEF3C7 100%);border:1.5px solid #e0c96a;border-radius:14px;padding:16px 18px;margin-bottom:18px}
+.orc-kits-tit{font-size:13px;font-weight:600;color:#7a6200;margin-bottom:12px;letter-spacing:.3px;text-transform:uppercase}
+.orc-kits-list{display:flex;gap:10px;flex-wrap:wrap}
+.orc-kit-btn{background:#fff;border:1.5px solid rgba(224,201,106,.6);border-radius:10px;padding:10px 16px;cursor:pointer;transition:.18s;font-family:inherit;display:flex;align-items:center;gap:10px;min-width:0}
+.orc-kit-btn:hover{border-color:#c0a040;background:#FFF9E6;transform:translateY(-2px);box-shadow:0 4px 12px rgba(192,160,64,.18)}
+.orc-kit-btn:active{transform:translateY(0)}
+.orc-kit-icon{font-size:22px;flex-shrink:0;line-height:1}
+.orc-kit-info{flex:1;min-width:0;text-align:left}
+.orc-kit-nome{font-size:13px;font-weight:600;color:var(--pl);line-height:1.2}
+.orc-kit-valor{font-size:11px;color:#7a6200;font-weight:500;margin-top:1px}
+
 /* Coluna catálogo */
 .orc-cat-col{background:#fff;border-radius:16px;padding:18px;border:.5px solid rgba(138,158,123,.22);box-shadow:0 2px 8px rgba(0,0,0,.04)}
 .orc-cat-tit{font-size:15px;font-weight:600;color:var(--pl);margin-bottom:14px;font-family:Georgia,serif}
@@ -171,13 +183,24 @@ textarea{resize:vertical;min-height:340px;width:100%}
 .orc-cart-count{background:var(--m);color:#fff;border-radius:20px;padding:2px 10px;font-size:12px;font-family:system-ui,sans-serif;min-width:24px;text-align:center}
 .orc-cart-list{margin-bottom:12px}
 .orc-cart-empty{text-align:center;padding:30px 16px;color:#999;font-size:13px;line-height:1.5;background:var(--cr);border-radius:12px;border:1.5px dashed rgba(138,158,123,.25)}
-.orc-cart-item{background:var(--cr);border:.5px solid rgba(138,158,123,.22);border-radius:10px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;animation:slideIn .25s ease}
+.orc-cart-item{background:var(--cr);border:.5px solid rgba(138,158,123,.22);border-radius:10px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px;animation:slideIn .25s ease;position:relative;transition:.2s}
+.orc-cart-item.dragging{opacity:.4;transform:scale(.98)}
+.orc-cart-item.drag-over-top{box-shadow:0 -3px 0 0 var(--m)}
+.orc-cart-item.drag-over-bottom{box-shadow:0 3px 0 0 var(--m)}
 @keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.orc-cart-item-drag{font-size:14px;color:#bbb;cursor:grab;user-select:none;line-height:1;letter-spacing:-3px;font-weight:700;padding:0 2px;transition:.15s;flex-shrink:0}
+.orc-cart-item-drag:hover{color:var(--m)}
+.orc-cart-item-drag:active{cursor:grabbing}
 .orc-cart-item-info{flex:1;min-width:0}
 .orc-cart-item-nome{font-size:13px;font-weight:600;color:var(--pl);line-height:1.35;margin-bottom:2px}
 .orc-cart-item-detalhe{font-size:12px;color:#888}
 .orc-cart-item-valor{font-size:13px;font-weight:600;color:var(--m);font-family:Georgia,serif;white-space:nowrap}
-.orc-cart-item-rem{background:none;border:none;color:#C0392B;font-size:18px;cursor:pointer;padding:0 4px;line-height:1;opacity:.6;transition:.15s}
+.orc-cart-item-setas{display:flex;flex-direction:column;gap:1px;flex-shrink:0}
+.orc-cart-seta{background:#fff;border:.5px solid rgba(138,158,123,.32);border-radius:5px;width:22px;height:18px;cursor:pointer;font-size:9px;color:var(--pl);padding:0;display:flex;align-items:center;justify-content:center;transition:.15s;line-height:1}
+.orc-cart-seta:hover:not(:disabled){background:var(--ml);border-color:var(--m);color:var(--m)}
+.orc-cart-seta:disabled{opacity:.3;cursor:not-allowed}
+.orc-cart-seta:active:not(:disabled){transform:scale(.92)}
+.orc-cart-item-rem{background:none;border:none;color:#C0392B;font-size:18px;cursor:pointer;padding:0 4px;line-height:1;opacity:.6;transition:.15s;flex-shrink:0}
 .orc-cart-item-rem:hover{opacity:1;transform:scale(1.15)}
 
 /* Total */
@@ -244,6 +267,27 @@ textarea{resize:vertical;min-height:340px;width:100%}
 .orc-bloco-config select:focus{outline:none;border-color:var(--m)}
 .orc-info-box{background:#FFF9E6;border:.5px solid #e0c96a;border-radius:8px;padding:9px 12px;font-size:12px;color:#7a6200;margin-bottom:10px}
 
+/* Multi-seleção (Taxa de artes) */
+.orc-multi-list{max-height:55vh;overflow-y:auto;border:.5px solid rgba(138,158,123,.22);border-radius:10px;padding:8px}
+.orc-multi-grupo{margin-bottom:12px}
+.orc-multi-grupo:last-child{margin-bottom:0}
+.orc-multi-grupo-tit{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--m);padding:8px 10px 6px;border-bottom:1px solid rgba(142,107,122,.2);margin-bottom:4px;background:linear-gradient(90deg,var(--ml) 0%,transparent 100%);border-radius:6px 6px 0 0}
+.orc-multi-item{display:flex;align-items:center;gap:12px;padding:10px 13px;border-radius:8px;cursor:pointer;transition:.15s;border:1.5px solid transparent;margin-bottom:3px}
+.orc-multi-item:hover{background:var(--cr)}
+.orc-multi-item.sel{background:var(--ml);border-color:var(--m)}
+.orc-multi-check{flex-shrink:0}
+.orc-multi-cb{width:22px;height:22px;border:2px solid rgba(138,158,123,.4);border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;transition:.15s;font-weight:700;color:#fff}
+.orc-multi-item.sel .orc-multi-cb{background:var(--m);border-color:var(--m)}
+.orc-multi-item.sel .orc-multi-cb::after{content:'✓';font-size:14px}
+.orc-multi-info{flex:1;min-width:0}
+.orc-multi-nome{font-size:14px;font-weight:500;color:var(--pl);line-height:1.3}
+.orc-multi-obs{font-size:11px;color:#888;margin-top:2px;font-style:italic}
+.orc-multi-preco{font-size:13px;font-weight:600;color:var(--m);font-family:Georgia,serif;white-space:nowrap}
+.orc-multi-footer{display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--cr);border-radius:10px;margin-top:12px;gap:12px;flex-wrap:wrap;position:sticky;bottom:0;border:.5px solid rgba(138,158,123,.22)}
+.orc-multi-count{font-size:13px;color:var(--pl);font-weight:500}
+.orc-multi-total{font-size:14px;color:var(--pl);font-weight:600}
+.orc-multi-total span{font-size:18px;color:var(--m);font-family:Georgia,serif;margin-left:6px}
+
 /* ── MOBILE ── */
 @media(max-width:640px){
   body{font-size:15px}
@@ -288,6 +332,10 @@ textarea{resize:vertical;min-height:340px;width:100%}
   .orc-cat-nome{font-size:13px}
   .orc-cat-desc{font-size:10px}
   .orc-modal{max-width:100%}
+  /* Kits mobile */
+  .orc-kits-box{padding:12px 14px}
+  .orc-kits-list{flex-direction:column;gap:8px}
+  .orc-kit-btn{width:100%}
 }
 @media(min-width:641px){
   body{font-size:16px}
@@ -573,6 +621,12 @@ textarea{resize:vertical;min-height:340px;width:100%}
     <div class="orc-hero">
       <div class="orc-hero-tit">Montar Orçamento</div>
       <div class="orc-hero-sub">Selecione os itens que a cliente deseja. O texto do orçamento aparece pronto para copiar.</div>
+    </div>
+
+    <!-- Kits Padrões -->
+    <div class="orc-kits-box" id="orc-kits-box">
+      <div class="orc-kits-tit">⚡ Kits prontos — clique para carregar</div>
+      <div class="orc-kits-list" id="orc-kits-list"></div>
     </div>
 
     <!-- Layout 2 colunas: catálogo + carrinho -->
@@ -1830,6 +1884,11 @@ document.addEventListener('DOMContentLoaded',init);
 // ════════════  MÓDULO ORÇAMENTO (ALINE) ═══════════════════
 // ═══════════════════════════════════════════════════════════
 
+// Formata valor monetário no padrão BR (sempre com ,00 e separador de milhar)
+function fmtRS(n){
+  return 'R$ '+(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
 // Tabela completa de preços (sincronizada com a tabela master)
 const TAB_ORC={
   cartao:{
@@ -2047,6 +2106,50 @@ const TAB_ORC={
         {qtd:1000,preco:460,unid:'un',label:'1000un Panfleto frente e verso'}
       ]}
     ]
+  },
+  taxaArtes:{
+    nome:'Taxa para produzir as artes',
+    icone:'🎨',
+    desc:'Cliente sem arquivos prontos',
+    multiSelect:true,
+    documentos:[
+      // R$ 30,00
+      {id:'timbrado_recituario',nome:'Timbrado ou receituário',obs:'A5 ou A4 — cliente escolhe',valor:30,grupo:'R$ 30,00'},
+
+      // R$ 35,00 — Materiais físicos
+      {id:'pasta',nome:'Pasta',valor:35,grupo:'R$ 35,00 — Materiais'},
+      {id:'envelope',nome:'Envelope',valor:35,grupo:'R$ 35,00 — Materiais'},
+      {id:'recibo',nome:'Recibo',valor:35,grupo:'R$ 35,00 — Materiais'},
+      {id:'cartao_visitas',nome:'Cartão de visitas',valor:35,grupo:'R$ 35,00 — Materiais'},
+      {id:'cartao_digital',nome:'Cartão digital',valor:35,grupo:'R$ 35,00 — Materiais'},
+
+      // R$ 35,00 — Documentos A5
+      {id:'declaracao',nome:'Declaração',obs:'A5',valor:35,grupo:'R$ 35,00 — Documentos A5'},
+      {id:'atestado',nome:'Atestado',obs:'A5',valor:35,grupo:'R$ 35,00 — Documentos A5'},
+      {id:'receituario_especial',nome:'Receituário especial',obs:'A5',valor:35,grupo:'R$ 35,00 — Documentos A5'},
+      {id:'solic_exames',nome:'Solicitação de exames',obs:'A5',valor:35,grupo:'R$ 35,00 — Documentos A5'},
+      {id:'ficha_controle_sessao',nome:'Ficha de controle de sessão',obs:'A5',valor:35,grupo:'R$ 35,00 — Documentos A5'},
+
+      // R$ 35,00 — Documentos A4
+      {id:'plano_aplicacao',nome:'Plano de aplicação',obs:'A4',valor:35,grupo:'R$ 35,00 — Documentos A4'},
+      {id:'termo_consentimento',nome:'Termo de consentimento',obs:'A4',valor:35,grupo:'R$ 35,00 — Documentos A4'},
+      {id:'ficha_evolucao',nome:'Ficha de evolução',obs:'A4',valor:35,grupo:'R$ 35,00 — Documentos A4'},
+      {id:'anamnese_1pag',nome:'Anamnese 1 página',obs:'A4',valor:35,grupo:'R$ 35,00 — Documentos A4'},
+      {id:'ficha_avaliacao',nome:'Ficha de avaliação',obs:'A4',valor:35,grupo:'R$ 35,00 — Documentos A4'},
+
+      // R$ 50,00
+      {id:'anamnese_2pag',nome:'Anamnese 2 páginas',valor:50,grupo:'R$ 50,00'},
+      {id:'panfleto_fv',nome:'Panfleto frente e verso',valor:50,grupo:'R$ 50,00'},
+
+      // R$ 60,00
+      {id:'carteirinha',nome:'Carteirinha de vacinação ou pré-natal',valor:60,grupo:'R$ 60,00'},
+
+      // R$ 80,00
+      {id:'anamnese_3pag',nome:'Anamnese ou Ficha com 3 páginas',obs:'A4',valor:80,grupo:'R$ 80,00'},
+
+      // R$ 100,00
+      {id:'anamnese_4pag',nome:'Anamnese ou Ficha com 4 páginas',obs:'A4',valor:100,grupo:'R$ 100,00'}
+    ]
   }
 };
 
@@ -2054,6 +2157,30 @@ const TAB_ORC={
 let orcCart=[];
 let orcCatAtual=null;
 let orcSalvos=[];
+let orcMensagemFinal=''; // Mensagem extra ao final do orçamento (ex: kits padrões)
+let orcDragIdx=null; // Índice do item sendo arrastado no carrinho
+
+// ── KITS PADRÕES ──
+// Para adicionar um novo kit, basta seguir a estrutura abaixo:
+// - nome: nome do kit (aparece no botão)
+// - icone: emoji do botão
+// - mensagemFinal: texto extra que aparece após o "Valor total" (opcional)
+// - itens: array com os itens (label, detalhe, preco, catKey)
+const KITS_PADROES={
+  basico:{
+    nome:'Kit básico',
+    icone:'📦',
+    mensagemFinal:'Esse é um kit de papelaria, mas podemos adaptar da maneira como desejar. Tanto na quantidade como nos itens.',
+    itens:[
+      {catKey:'cartao',label:'250un Cartão de visitas - Verniz localizado',detalhe:'',preco:220},
+      {catKey:'blocoA5',label:'2 blocos A5 - Receituário',detalhe:'(200 folhas)',preco:170},
+      {catKey:'blocoA5',label:'2 blocos A5 - Receituário especial',detalhe:'(200 folhas)',preco:170},
+      {catKey:'blocoA5',label:'1 bloco A5 - Atestado',detalhe:'(100 folhas)',preco:100},
+      {catKey:'blocoA5',label:'1 bloco A5 - Solicitação de exames',detalhe:'(100 folhas)',preco:100},
+      {catKey:'pastaBolso',label:'50un Pasta com bolso - Laminação fosca',detalhe:'',preco:460}
+    ]
+  }
+};
 
 function renderOrcamento(){
   var lista=document.getElementById('orc-cat-list');lista.innerHTML='';
@@ -2066,8 +2193,57 @@ function renderOrcamento(){
       '<div class="orc-cat-info"><div class="orc-cat-nome">'+cat.nome+'</div><div class="orc-cat-desc">'+cat.desc+'</div></div>';
     lista.appendChild(btn);
   });
+  renderKits();
   renderCarrinho();
   carregarOrcamentosSalvos();
+}
+
+function renderKits(){
+  var box=document.getElementById('orc-kits-box');
+  var lista=document.getElementById('orc-kits-list');
+  if(!lista)return;
+  lista.innerHTML='';
+  var keys=Object.keys(KITS_PADROES);
+  if(keys.length===0){box.style.display='none';return;}
+  box.style.display='block';
+  keys.forEach(function(k){
+    var kit=KITS_PADROES[k];
+    var total=kit.itens.reduce(function(s,i){return s+i.preco;},0);
+    var btn=document.createElement('button');
+    btn.className='orc-kit-btn';
+    btn.onclick=function(){carregarKit(k);};
+    btn.innerHTML='<div class="orc-kit-icon">'+kit.icone+'</div>'+
+      '<div class="orc-kit-info">'+
+        '<div class="orc-kit-nome">'+kit.nome+'</div>'+
+        '<div class="orc-kit-valor">'+kit.itens.length+' itens • '+fmtRS(total)+'</div>'+
+      '</div>';
+    lista.appendChild(btn);
+  });
+}
+
+function carregarKit(kitKey){
+  var kit=KITS_PADROES[kitKey];
+  if(!kit)return;
+  if(orcCart.length>0&&!confirm('Isso vai substituir os itens atuais do orçamento. Continuar?'))return;
+
+  // Carrega os itens no carrinho
+  orcCart=kit.itens.map(function(it){
+    return {
+      id:'oc_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
+      catKey:it.catKey,
+      catNome:TAB_ORC[it.catKey]?TAB_ORC[it.catKey].nome:'',
+      label:it.label,
+      detalhe:it.detalhe||'',
+      preco:it.preco
+    };
+  });
+
+  // Define mensagem final automática se o kit tiver
+  orcMensagemFinal=kit.mensagemFinal||'';
+
+  renderCarrinho();
+  window.scrollTo({top:document.querySelector('.orc-cart-col').offsetTop-80,behavior:'smooth'});
+  alrt('✓ '+kit.nome+' carregado! Você pode adaptar antes de enviar.','ok');
 }
 
 function abrirCategoria(catKey){
@@ -2076,6 +2252,13 @@ function abrirCategoria(catKey){
   document.getElementById('orc-modal-tit').textContent=cat.icone+' '+cat.nome;
   var body=document.getElementById('orc-modal-body');
   body.innerHTML='';
+
+  // ── MODO MULTI-SELEÇÃO (Taxa de artes) ──
+  if(cat.multiSelect){
+    abrirCategoriaMultiSelect(cat);
+    document.getElementById('mo-orc-cat').classList.add('on');
+    return;
+  }
 
   // Se tem variações de documento (blocos A5/A4) — adiciona seletor
   var temTipoDoc=cat.tipoDoc&&cat.tipoDoc.length>0;
@@ -2106,7 +2289,7 @@ function abrirCategoria(catKey){
         '<div class="orc-opcao-qtd">'+op.label+' '+detalhe+'</div>'+
         '<div class="orc-opcao-detalhe">'+sg.nome+'</div>'+
         '</div>'+
-        '<div class="orc-opcao-preco">R$ '+op.preco.toFixed(2).replace('.',',')+'</div>';
+        '<div class="orc-opcao-preco">'+fmtRS(op.preco)+'</div>';
       opDiv.onclick=function(){adicionarAoCarrinho(catKey,sg.nome,op);};
       div.appendChild(opDiv);
     });
@@ -2124,6 +2307,109 @@ function abrirCategoria(catKey){
   document.getElementById('mo-orc-cat').classList.add('on');
 }
 
+// ── Multi-seleção (Taxa de artes) ──
+let taxaArtesSelecionadas=[];
+
+function abrirCategoriaMultiSelect(cat){
+  taxaArtesSelecionadas=[];
+  var body=document.getElementById('orc-modal-body');
+  body.innerHTML='<div class="orc-info-box" style="margin-bottom:14px">'+
+    '✨ Selecione todos os documentos que precisam ter as artes produzidas. No orçamento, aparecerá como <b>um único item "Taxa para produzir as artes"</b> com o valor total somado.'+
+    '</div>'+
+    '<div class="orc-multi-list" id="orc-multi-list"></div>'+
+    '<div class="orc-multi-footer">'+
+      '<div class="orc-multi-count" id="orc-multi-count">0 documentos selecionados</div>'+
+      '<div class="orc-multi-total">Total: <span id="orc-multi-total">R$ 0,00</span></div>'+
+    '</div>'+
+    '<div class="orc-acoes" style="margin-top:14px">'+
+      '<button class="btn-limpar" onclick="closeMo(\'mo-orc-cat\')">Cancelar</button>'+
+      '<button class="btn-salvar" onclick="confirmarTaxaArtes()">✓ Adicionar ao orçamento</button>'+
+    '</div>';
+
+  var lista=document.getElementById('orc-multi-list');
+
+  // Agrupa documentos por grupo (faixa de preço)
+  var grupos={};
+  var ordemGrupos=[];
+  cat.documentos.forEach(function(doc){
+    var g=doc.grupo||'Outros';
+    if(!grupos[g]){grupos[g]=[];ordemGrupos.push(g);}
+    grupos[g].push(doc);
+  });
+
+  ordemGrupos.forEach(function(nomeGrupo){
+    var grupoDiv=document.createElement('div');
+    grupoDiv.className='orc-multi-grupo';
+    grupoDiv.innerHTML='<div class="orc-multi-grupo-tit">'+nomeGrupo+'</div>';
+
+    grupos[nomeGrupo].forEach(function(doc){
+      var opDiv=document.createElement('div');
+      opDiv.className='orc-multi-item';
+      opDiv.setAttribute('data-doc-id',doc.id);
+      opDiv.onclick=function(){toggleDocTaxa(doc);};
+      var precoLabel=doc.valor>0?fmtRS(doc.valor):'<span style="color:#c08a00;font-style:italic">Definir</span>';
+      var obsHtml=doc.obs?'<div class="orc-multi-obs">'+doc.obs+'</div>':'';
+      opDiv.innerHTML='<div class="orc-multi-check">'+
+        '<div class="orc-multi-cb"></div>'+
+        '</div>'+
+        '<div class="orc-multi-info">'+
+          '<div class="orc-multi-nome">'+doc.nome+'</div>'+
+          obsHtml+
+        '</div>'+
+        '<div class="orc-multi-preco">'+precoLabel+'</div>';
+      grupoDiv.appendChild(opDiv);
+    });
+
+    lista.appendChild(grupoDiv);
+  });
+}
+
+function toggleDocTaxa(doc){
+  var idx=taxaArtesSelecionadas.findIndex(function(d){return d.id===doc.id;});
+  var el=document.querySelector('[data-doc-id="'+doc.id+'"]');
+  if(idx>=0){
+    taxaArtesSelecionadas.splice(idx,1);
+    if(el)el.classList.remove('sel');
+  }else{
+    taxaArtesSelecionadas.push(doc);
+    if(el)el.classList.add('sel');
+  }
+  document.getElementById('orc-multi-count').textContent=
+    taxaArtesSelecionadas.length+' documento'+(taxaArtesSelecionadas.length===1?'':'s')+' selecionado'+(taxaArtesSelecionadas.length===1?'':'s');
+  var total=taxaArtesSelecionadas.reduce(function(s,d){return s+(d.valor||0);},0);
+  document.getElementById('orc-multi-total').textContent=fmtRS(total);
+}
+
+function confirmarTaxaArtes(){
+  if(taxaArtesSelecionadas.length===0){
+    alrt('Selecione pelo menos um documento','err');
+    return;
+  }
+  var total=taxaArtesSelecionadas.reduce(function(s,d){return s+(d.valor||0);},0);
+  if(total===0){
+    if(!confirm('Os documentos selecionados ainda não têm valores definidos. Deseja adicionar mesmo assim com R$ 0,00?'))return;
+  }
+  var nomes=taxaArtesSelecionadas.map(function(d){return d.nome;}).join(', ');
+
+  // Remove se já existir uma taxa de artes no carrinho (substitui)
+  orcCart=orcCart.filter(function(it){return it.catKey!=='taxaArtes';});
+
+  orcCart.push({
+    id:'oc_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
+    catKey:'taxaArtes',
+    catNome:'Taxa para produzir as artes',
+    label:'Taxa para produzir as artes',
+    detalhe:'('+taxaArtesSelecionadas.length+' documento'+(taxaArtesSelecionadas.length>1?'s':'')+')',
+    preco:total,
+    docsInclusos:taxaArtesSelecionadas.slice(),
+    docsNomes:nomes
+  });
+
+  renderCarrinho();
+  closeMo('mo-orc-cat');
+  alrt('✓ Taxa de artes adicionada ('+taxaArtesSelecionadas.length+' documento'+(taxaArtesSelecionadas.length>1?'s':'')+')','ok');
+}
+
 function adicionarAoCarrinho(catKey,subgrupo,opcao){
   var cat=TAB_ORC[catKey];
   var tipoDoc=null;
@@ -2134,9 +2420,16 @@ function adicionarAoCarrinho(catKey,subgrupo,opcao){
   // Monta o label do item (formato WhatsApp)
   var labelFinal=opcao.label;
   if(tipoDoc){
+    // Caso 1: blocos com tipo de documento (Receituário, Atestado, etc.)
     labelFinal=opcao.label+' - '+tipoDoc;
   }else{
-    labelFinal=opcao.label+' - '+subgrupo;
+    // Caso 2: só adiciona o subgrupo se ele ainda não estiver no label
+    // (evita repetições como "Pasta com bolso - Verniz total - Verniz total")
+    var labelLower=opcao.label.toLowerCase();
+    var subLower=subgrupo.toLowerCase();
+    if(labelLower.indexOf(subLower)===-1){
+      labelFinal=opcao.label+' - '+subgrupo;
+    }
   }
   var detalhe='';
   if(opcao.folhas)detalhe='('+opcao.folhas+' folhas)';
@@ -2185,20 +2478,72 @@ function renderCarrinho(){
 
   lista.innerHTML='';
   var total=0;
-  orcCart.forEach(function(it){
+  orcCart.forEach(function(it,idx){
     total+=it.preco;
     var div=document.createElement('div');
     div.className='orc-cart-item';
-    div.innerHTML='<div class="orc-cart-item-info">'+
-      '<div class="orc-cart-item-nome">'+it.label+'</div>'+
-      (it.detalhe?'<div class="orc-cart-item-detalhe">'+it.detalhe+'</div>':'')+
+    div.draggable=true;
+    div.dataset.idx=idx;
+
+    var setasHtml='<div class="orc-cart-item-setas">'+
+      '<button class="orc-cart-seta" onclick="moverItem('+idx+',-1)" '+(idx===0?'disabled':'')+' title="Mover para cima">▲</button>'+
+      '<button class="orc-cart-seta" onclick="moverItem('+idx+',1)" '+(idx===orcCart.length-1?'disabled':'')+' title="Mover para baixo">▼</button>'+
+      '</div>';
+
+    div.innerHTML='<div class="orc-cart-item-drag" title="Arraste para reordenar">⋮⋮</div>'+
+      '<div class="orc-cart-item-info">'+
+        '<div class="orc-cart-item-nome">'+it.label+'</div>'+
+        (it.detalhe?'<div class="orc-cart-item-detalhe">'+it.detalhe+'</div>':'')+
       '</div>'+
-      '<div class="orc-cart-item-valor">R$ '+it.preco.toFixed(2).replace('.',',')+'</div>'+
+      '<div class="orc-cart-item-valor">'+fmtRS(it.preco)+'</div>'+
+      setasHtml+
       '<button class="orc-cart-item-rem" onclick="removerDoCarrinho(\''+it.id+'\')" title="Remover">✕</button>';
+
+    // Drag events
+    div.addEventListener('dragstart',function(e){
+      orcDragIdx=idx;
+      div.classList.add('dragging');
+      e.dataTransfer.effectAllowed='move';
+      // Pra Firefox precisa de dataTransfer.setData
+      try{e.dataTransfer.setData('text/plain',idx);}catch(err){}
+    });
+    div.addEventListener('dragend',function(){
+      div.classList.remove('dragging');
+      orcDragIdx=null;
+      document.querySelectorAll('.orc-cart-item').forEach(function(el){el.classList.remove('drag-over-top','drag-over-bottom');});
+    });
+    div.addEventListener('dragover',function(e){
+      e.preventDefault();
+      if(orcDragIdx===null||orcDragIdx===idx)return;
+      var rect=div.getBoundingClientRect();
+      var midY=rect.top+rect.height/2;
+      div.classList.remove('drag-over-top','drag-over-bottom');
+      if(e.clientY<midY)div.classList.add('drag-over-top');
+      else div.classList.add('drag-over-bottom');
+    });
+    div.addEventListener('dragleave',function(){
+      div.classList.remove('drag-over-top','drag-over-bottom');
+    });
+    div.addEventListener('drop',function(e){
+      e.preventDefault();
+      div.classList.remove('drag-over-top','drag-over-bottom');
+      if(orcDragIdx===null||orcDragIdx===idx)return;
+      var rect=div.getBoundingClientRect();
+      var midY=rect.top+rect.height/2;
+      var alvoIdx=e.clientY<midY?idx:idx+1;
+      // Move o item
+      var item=orcCart[orcDragIdx];
+      orcCart.splice(orcDragIdx,1);
+      // Ajusta o índice se o item movido estava antes
+      if(orcDragIdx<alvoIdx)alvoIdx--;
+      orcCart.splice(alvoIdx,0,item);
+      renderCarrinho();
+    });
+
     lista.appendChild(div);
   });
 
-  document.getElementById('orc-total-val').textContent='R$ '+total.toFixed(2).replace('.',',');
+  document.getElementById('orc-total-val').textContent=fmtRS(total);
   totalBox.style.display='flex';
   clienteBox.style.display='block';
   textoBox.style.display='block';
@@ -2207,20 +2552,29 @@ function renderCarrinho(){
   atualizarTextoOrcamento();
 }
 
+function moverItem(idx,delta){
+  var novoIdx=idx+delta;
+  if(novoIdx<0||novoIdx>=orcCart.length)return;
+  var item=orcCart[idx];
+  orcCart[idx]=orcCart[novoIdx];
+  orcCart[novoIdx]=item;
+  renderCarrinho();
+}
+
 function atualizarTextoOrcamento(){
   if(orcCart.length===0)return;
   var nomeCli=document.getElementById('orc-cliente-nome').value.trim();
   var texto='';
-  if(nomeCli)texto+='Olá, '+nomeCli+'! Segue o orçamento:\n\n';
+  if(nomeCli)texto+='Segue o orçamento '+nomeCli+':\n\n';
   texto+='• Kit de papelaria impressa:\n';
   orcCart.forEach(function(it){
-    var linha=it.label+' - R$'+it.preco.toFixed(2).replace('.',',').replace(',00','');
-    if(it.preco%1!==0)linha=it.label+' - R$'+it.preco.toFixed(2).replace('.',',');
+    var linha=it.label+' - R$'+it.preco.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
     if(it.detalhe)linha+=' '+it.detalhe;
     texto+=linha+'\n';
   });
   var total=orcCart.reduce(function(s,it){return s+it.preco;},0);
-  texto+='\n💰 *Valor total: R$ '+total.toFixed(2).replace('.',',')+'*';
+  texto+='\n➡️ *Valor total: '+fmtRS(total)+'*';
+  if(orcMensagemFinal)texto+='\n\n'+orcMensagemFinal;
   document.getElementById('orc-texto-final').value=texto;
 }
 
@@ -2246,6 +2600,7 @@ function limparOrcamento(){
   if(orcCart.length===0)return;
   if(!confirm('Tem certeza que deseja limpar todo o orçamento?'))return;
   orcCart=[];
+  orcMensagemFinal='';
   document.getElementById('orc-cliente-nome').value='';
   renderCarrinho();
   alrt('Orçamento limpo','ok');
@@ -2274,6 +2629,7 @@ async function salvarOrcamento(){
   alrt('✓ Orçamento salvo! (expira em 3 dias)','ok');
   // Limpa para começar um novo
   orcCart=[];
+  orcMensagemFinal='';
   document.getElementById('orc-cliente-nome').value='';
   renderCarrinho();
   carregarOrcamentosSalvos();
@@ -2321,10 +2677,10 @@ function renderHistorico(){
       '<div class="orc-hist-cliente">👤 '+o.cliente+'</div>'+
       '<div class="orc-hist-meta">'+dtFmt+' • '+o.itens.length+' item'+(o.itens.length>1?'s':'')+' • por '+o.criadoPor+'</div>'+
       '</div>'+
-      '<div class="orc-hist-valor">R$ '+o.total.toFixed(2).replace('.',',')+'</div>'+
+      '<div class="orc-hist-valor">'+fmtRS(o.total)+'</div>'+
       '<div class="orc-hist-expira">⏱ '+diasRest+'d</div>'+
       '<div class="orc-hist-btns">'+
-        '<button class="orc-hist-btn" onclick="reabrirOrcamento(\''+o.id+'\')">📋 Ver texto</button>'+
+        '<button class="orc-hist-btn" onclick="reabrirOrcamento(\''+o.id+'\')">📋 Copiar texto</button>'+
         '<button class="orc-hist-btn" onclick="recarregarOrcamento(\''+o.id+'\')">↻ Editar</button>'+
         '<button class="orc-hist-btn del" onclick="excluirOrcamento(\''+o.id+'\')">🗑️</button>'+
       '</div>';
@@ -2375,6 +2731,10 @@ window.salvarOrcamento=salvarOrcamento;
 window.reabrirOrcamento=reabrirOrcamento;
 window.recarregarOrcamento=recarregarOrcamento;
 window.excluirOrcamento=excluirOrcamento;
+window.toggleDocTaxa=toggleDocTaxa;
+window.confirmarTaxaArtes=confirmarTaxaArtes;
+window.carregarKit=carregarKit;
+window.moverItem=moverItem;
 
 // ═══════════════════════════════════════════════════════════
 
