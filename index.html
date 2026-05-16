@@ -146,6 +146,18 @@ textarea{resize:vertical;min-height:340px;width:100%}
 .dbtn:hover{opacity:.8}.dbtn.sel{border-color:#333;transform:scale(1.05)}
 .dbtn-yses{background:#E8D5F5;color:#6B21A8}.dbtn-tatiana{background:#FCE7F3;color:#9D174D}.dbtn-day{background:#D1FAE5;color:#065F46}.dbtn-juliana{background:#FEF3C7;color:#92400E}.dbtn-priscila{background:#DBEAFE;color:#1E40AF}.dbtn-none{background:#F3F4F6;color:#6B7280}
 
+/* Busca no Kanban */
+.kbusca-wrap{position:relative;flex:1;max-width:340px;min-width:200px;display:flex;align-items:center}
+.kbusca-ico{position:absolute;left:11px;font-size:13px;opacity:.55;pointer-events:none}
+.kbusca-input{width:100%;font-family:inherit;font-size:13px;border:.5px solid rgba(138,158,123,.32);border-radius:20px;padding:8px 32px 8px 32px;background:#fff;color:#333;transition:.15s}
+.kbusca-input:focus{outline:none;border-color:var(--m);box-shadow:0 0 0 2px rgba(142,107,122,.12)}
+.kbusca-input::placeholder{color:#999}
+.kbusca-x{position:absolute;right:8px;background:none;border:none;color:#888;font-size:14px;cursor:pointer;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0;transition:.15s}
+.kbusca-x:hover{background:var(--cr);color:var(--pl)}
+.kc.kc-oculto{opacity:.18;transform:scale(.98);filter:grayscale(.8)}
+.kc.kc-match{box-shadow:0 0 0 2px var(--m),0 4px 12px rgba(142,107,122,.22);transform:translateY(-1px)}
+.kbusca-info{font-size:11px;color:var(--m);font-weight:600;letter-spacing:.4px;margin-top:6px;text-align:right}
+
 /* ────── ORÇAMENTO (ALINE) ────── */
 .orc-wrap{max-width:1300px;margin:0 auto}
 .orc-hero{background:linear-gradient(135deg,var(--pl) 0%,var(--m) 100%);border-radius:16px;padding:24px 28px;margin-bottom:18px;color:#F5EFE6;box-shadow:0 4px 20px rgba(122,79,92,.18)}
@@ -543,8 +555,13 @@ textarea{resize:vertical;min-height:340px;width:100%}
 
 <!-- PRODUÇÃO PAPELARIA -->
 <div class="pg" id="pg-kanban-pp">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">
     <div style="font-size:15px;font-weight:400;font-family:Georgia,serif;color:var(--pl)">Produção — Papelaria</div>
+    <div class="kbusca-wrap">
+      <span class="kbusca-ico">🔍</span>
+      <input type="text" class="kbusca-input" id="kbusca-pp" placeholder="Buscar cliente..." oninput="filtrarKanban('pp')">
+      <button class="kbusca-x" id="kbusca-pp-x" onclick="limparBuscaKanban('pp')" style="display:none">✕</button>
+    </div>
     <div style="font-size:11px;color:#888" id="kdt-pp"></div>
   </div>
   <div class="kanban-wrap"><div class="kanban-pp" id="kanban-pp"></div></div>
@@ -552,8 +569,13 @@ textarea{resize:vertical;min-height:340px;width:100%}
 
 <!-- PRODUÇÃO ID. VISUAL -->
 <div class="pg" id="pg-kanban-iv">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">
     <div style="font-size:15px;font-weight:400;font-family:Georgia,serif;color:var(--pl)">Produção — Identidade Visual</div>
+    <div class="kbusca-wrap">
+      <span class="kbusca-ico">🔍</span>
+      <input type="text" class="kbusca-input" id="kbusca-iv" placeholder="Buscar cliente..." oninput="filtrarKanban('iv')">
+      <button class="kbusca-x" id="kbusca-iv-x" onclick="limparBuscaKanban('iv')" style="display:none">✕</button>
+    </div>
     <div style="font-size:11px;color:#888" id="kdt-iv"></div>
   </div>
   <div class="kanban-wrap"><div class="kanban-iv" id="kanban-iv"></div></div>
@@ -1528,6 +1550,45 @@ async function addBrindeModal(){var id=modalOrderId,kt=modalKanbanType;var idx=d
 async function removeBrindeModal(idx){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(!o)return;if(!o.brindes)o.brindes=o.brd?[o.brd]:[];o.brindes.splice(idx,1);recalcCusto(o);await savO();openMoPed(id,kt);refreshKanban();alrt('✓ Brinde removido!','ok');}
 function refreshKanban(){if(document.getElementById('pg-kanban-pp').classList.contains('on'))renderKPP();if(document.getElementById('pg-kanban-iv').classList.contains('on'))renderKIV();}
 
+// ── BUSCA NO KANBAN ──
+function filtrarKanban(tipo){
+  var inp=document.getElementById('kbusca-'+tipo);
+  var x=document.getElementById('kbusca-'+tipo+'-x');
+  if(!inp)return;
+  var q=normalizar(inp.value);
+  if(q)x.style.display='flex';else x.style.display='none';
+  var board=document.getElementById('kanban-'+tipo);
+  if(!board)return;
+  var cards=board.querySelectorAll('.kc');
+  var matches=0;
+  cards.forEach(function(c){
+    c.classList.remove('kc-oculto','kc-match');
+    if(!q)return;
+    var nomeEl=c.querySelector('.kn');
+    var nome=nomeEl?normalizar(nomeEl.textContent):'';
+    if(nome.indexOf(q)>=0){c.classList.add('kc-match');matches++;}
+    else c.classList.add('kc-oculto');
+  });
+}
+
+function normalizar(s){
+  return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+}
+
+function limparBuscaKanban(tipo){
+  var inp=document.getElementById('kbusca-'+tipo);
+  if(inp){inp.value='';filtrarKanban(tipo);inp.focus();}
+}
+
+// Faz com que renderKPP/renderKIV reapliquem o filtro após renderizar
+var _renderKPP_orig=renderKPP;
+window.renderKPP=function(){_renderKPP_orig.apply(this,arguments);filtrarKanban('pp');};
+var _renderKIV_orig=renderKIV;
+window.renderKIV=function(){_renderKIV_orig.apply(this,arguments);filtrarKanban('iv');};
+
+window.filtrarKanban=filtrarKanban;
+window.limparBuscaKanban=limparBuscaKanban;
+
 // ── DESIGNERS ──
 var DESIGNERS={yses:{label:'Yses',cls:'dtag-yses'},tatiana:{label:'Tatiana',cls:'dtag-tatiana'},day:{label:'Day',cls:'dtag-day'},juliana:{label:'Juliana',cls:'dtag-juliana'},priscila:{label:'Priscila',cls:'dtag-priscila'},'':{label:'Sem designer',cls:'dtag-none'}};
 function designerTagHtml(d){if(!d&&d!==0)return '';var info=DESIGNERS[d]||DESIGNERS[''];return '<div style="margin-top:3px"><span class="designer-tag '+info.cls+'">✏ '+info.label+'</span></div>';}
@@ -1944,7 +2005,7 @@ const TAB_ORC={
     nome:'Bloco A4',
     icone:'📄',
     desc:'Sulfite 90g',
-    tipoDoc:['Anamnese','Prontuário','Ficha de avaliação','Termo de consentimento','Papel timbrado','Outro'],
+    tipoDoc:['Anamnese','Prontuário','Ficha de avaliação','Termo de consentimento','Receituário','Solicitação de exames','Papel timbrado','Outro'],
     subgrupos:[
       {nome:'Frente (1 página)',opcoes:[
         {qtd:1,preco:100,folhas:50,label:'1 bloco A4'},
