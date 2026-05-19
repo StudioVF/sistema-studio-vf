@@ -279,6 +279,16 @@ textarea{resize:vertical;min-height:340px;width:100%}
 .orc-bloco-config select:focus{outline:none;border-color:var(--m)}
 .orc-info-box{background:#FFF9E6;border:.5px solid #e0c96a;border-radius:8px;padding:9px 12px;font-size:12px;color:#7a6200;margin-bottom:10px}
 
+/* Extras (acabamentos adicionais — ex: cantos arredondados) */
+.orc-extras-box{background:linear-gradient(135deg,#F0F8E8 0%,#E5F2D5 100%);border:1.5px solid rgba(138,158,123,.38);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.orc-extras-tit{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--g);margin-bottom:8px}
+.orc-extra-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#fff;border-radius:8px;cursor:pointer;transition:.15s;border:1px solid transparent;margin-bottom:4px}
+.orc-extra-item:last-child{margin-bottom:0}
+.orc-extra-item:hover{border-color:var(--g)}
+.orc-extra-item input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:var(--g);flex-shrink:0;margin:0}
+.orc-extra-lbl{flex:1;font-size:13px;color:var(--pl);font-weight:500}
+.orc-extra-preco{font-size:13px;font-weight:600;color:var(--g);font-family:Georgia,serif}
+
 /* Multi-seleção (Taxa de artes) */
 .orc-multi-list{max-height:55vh;overflow-y:auto;border:.5px solid rgba(138,158,123,.22);border-radius:10px;padding:8px}
 .orc-multi-grupo{margin-bottom:12px}
@@ -700,9 +710,9 @@ textarea{resize:vertical;min-height:340px;width:100%}
       </div>
     </div>
 
-    <!-- Lista de orçamentos salvos (últimos 3 dias) -->
+    <!-- Lista de orçamentos salvos (últimos 7 dias) -->
     <div class="orc-historico" id="orc-historico-box" style="display:none">
-      <div class="orc-hist-tit">📂 Orçamentos salvos (últimos 3 dias)</div>
+      <div class="orc-hist-tit">📂 Orçamentos salvos (últimos 7 dias)</div>
       <div id="orc-hist-list"></div>
     </div>
 
@@ -1956,32 +1966,34 @@ const TAB_ORC={
     nome:'Cartão de visitas',
     icone:'💳',
     desc:'Couchê 300g',
+    extras:[
+      {id:'cantos_arredondados',label:'Cantos arredondados',valor:30,labelTexto:'Cantos arredondados'}
+    ],
     subgrupos:[
       {nome:'Verniz total — couchê brilho',opcoes:[
-        {qtd:100,preco:120,unid:'un',label:'100un Cartão de visitas verniz total'},
-        {qtd:250,preco:160,unid:'un',label:'250un Cartão de visitas verniz total'},
-        {qtd:500,preco:190,unid:'un',label:'500un Cartão de visitas verniz total'},
-        {qtd:1000,preco:220,unid:'un',label:'1000un Cartão de visitas verniz total'}
+        {qtd:100,preco:120,unid:'un',label:'100un Cartão de visitas - Verniz total'},
+        {qtd:250,preco:160,unid:'un',label:'250un Cartão de visitas - Verniz total'},
+        {qtd:500,preco:190,unid:'un',label:'500un Cartão de visitas - Verniz total'},
+        {qtd:1000,preco:220,unid:'un',label:'1000un Cartão de visitas - Verniz total'}
       ]},
       {nome:'Verniz localizado',opcoes:[
-        {qtd:100,preco:180,unid:'un',label:'100un Cartão de visitas verniz localizado'},
-        {qtd:250,preco:220,unid:'un',label:'250un Cartão de visitas verniz localizado'},
-        {qtd:500,preco:260,unid:'un',label:'500un Cartão de visitas verniz localizado'},
-        {qtd:1000,preco:300,unid:'un',label:'1000un Cartão de visitas verniz localizado'}
+        {qtd:100,preco:180,unid:'un',label:'100un Cartão de visitas - Verniz localizado'},
+        {qtd:250,preco:220,unid:'un',label:'250un Cartão de visitas - Verniz localizado'},
+        {qtd:500,preco:260,unid:'un',label:'500un Cartão de visitas - Verniz localizado'},
+        {qtd:1000,preco:300,unid:'un',label:'1000un Cartão de visitas - Verniz localizado'}
       ]},
       {nome:'Hotstamping',opcoes:[
-        {qtd:100,preco:190,unid:'un',label:'100un Cartão de visitas hotstamping'},
-        {qtd:500,preco:360,unid:'un',label:'500un Cartão de visitas hotstamping'},
-        {qtd:1000,preco:530,unid:'un',label:'1000un Cartão de visitas hotstamping'}
+        {qtd:100,preco:190,unid:'un',label:'100un Cartão de visitas - Hotstamping'},
+        {qtd:500,preco:360,unid:'un',label:'500un Cartão de visitas - Hotstamping'},
+        {qtd:1000,preco:530,unid:'un',label:'1000un Cartão de visitas - Hotstamping'}
       ]},
       {nome:'Laminação holográfica',opcoes:[
-        {qtd:100,preco:140,unid:'un',label:'100un Cartão de visitas laminação holográfica'},
-        {qtd:250,preco:200,unid:'un',label:'250un Cartão de visitas laminação holográfica'},
-        {qtd:500,preco:340,unid:'un',label:'500un Cartão de visitas laminação holográfica'},
-        {qtd:1000,preco:550,unid:'un',label:'1000un Cartão de visitas laminação holográfica'}
+        {qtd:100,preco:140,unid:'un',label:'100un Cartão de visitas - Laminação holográfica'},
+        {qtd:250,preco:200,unid:'un',label:'250un Cartão de visitas - Laminação holográfica'},
+        {qtd:500,preco:340,unid:'un',label:'500un Cartão de visitas - Laminação holográfica'},
+        {qtd:1000,preco:550,unid:'un',label:'1000un Cartão de visitas - Laminação holográfica'}
       ]}
-    ],
-    obs:'+ R$30,00 para adicionar cantos arredondados em qualquer acabamento.'
+    ]
   },
   blocoA5:{
     nome:'Bloco A5',
@@ -2005,7 +2017,7 @@ const TAB_ORC={
     nome:'Bloco A4',
     icone:'📄',
     desc:'Sulfite 90g',
-    tipoDoc:['Anamnese','Prontuário','Ficha de avaliação','Termo de consentimento','Receituário','Solicitação de exames','Papel timbrado','Outro'],
+    tipoDoc:['Anamnese','Prontuário','Ficha de avaliação','Termo de consentimento','Plano de aplicação','Receituário','Solicitação de exames','Papel timbrado','Outro'],
     subgrupos:[
       {nome:'Frente (1 página)',opcoes:[
         {qtd:1,preco:100,folhas:50,label:'1 bloco A4'},
@@ -2233,7 +2245,7 @@ let orcDragIdx=null; // Índice do item sendo arrastado no carrinho
 // - itens: array com os itens (label, detalhe, preco, catKey)
 const KITS_PADROES={
   basico:{
-    nome:'Kit básico',
+    nome:'Kit - Medicina - Básico',
     icone:'📦',
     mensagemFinal:'Esse é um kit de papelaria, mas podemos adaptar da maneira como desejar. Tanto na quantidade como nos itens.',
     itens:[
@@ -2338,6 +2350,22 @@ function abrirCategoria(catKey){
       '</div>';
   }
   body.innerHTML=seletorHtml;
+
+  // ── EXTRAS (ex: cantos arredondados no cartão de visitas) ──
+  if(cat.extras&&cat.extras.length>0){
+    var extrasBox=document.createElement('div');
+    extrasBox.className='orc-extras-box';
+    var extrasHtml='<div class="orc-extras-tit">✨ Acabamento adicional</div>';
+    cat.extras.forEach(function(ex){
+      extrasHtml+='<label class="orc-extra-item">'+
+        '<input type="checkbox" data-extra-id="'+ex.id+'" data-extra-valor="'+ex.valor+'" data-extra-label="'+ex.labelTexto+'">'+
+        '<span class="orc-extra-lbl">'+ex.label+'</span>'+
+        '<span class="orc-extra-preco">+ '+fmtRS(ex.valor)+'</span>'+
+      '</label>';
+    });
+    extrasBox.innerHTML=extrasHtml;
+    body.appendChild(extrasBox);
+  }
 
   // Subgrupos e opções
   cat.subgrupos.forEach(function(sg){
@@ -2482,6 +2510,18 @@ function adicionarAoCarrinho(catKey,subgrupo,opcao){
     var sel=document.getElementById('orc-tipo-doc');
     if(sel)tipoDoc=sel.value;
   }
+
+  // Lê extras marcados (ex: cantos arredondados)
+  var extrasMarcados=[];
+  var extrasValor=0;
+  var extrasLabel='';
+  document.querySelectorAll('#orc-modal-body input[data-extra-id]:checked').forEach(function(cb){
+    extrasMarcados.push(cb.getAttribute('data-extra-id'));
+    extrasValor+=parseFloat(cb.getAttribute('data-extra-valor'))||0;
+    var lbl=cb.getAttribute('data-extra-label');
+    extrasLabel+=' - '+lbl;
+  });
+
   // Monta o label do item (formato WhatsApp)
   var labelFinal=opcao.label;
   if(tipoDoc){
@@ -2489,13 +2529,15 @@ function adicionarAoCarrinho(catKey,subgrupo,opcao){
     labelFinal=opcao.label+' - '+tipoDoc;
   }else{
     // Caso 2: só adiciona o subgrupo se ele ainda não estiver no label
-    // (evita repetições como "Pasta com bolso - Verniz total - Verniz total")
     var labelLower=opcao.label.toLowerCase();
     var subLower=subgrupo.toLowerCase();
     if(labelLower.indexOf(subLower)===-1){
       labelFinal=opcao.label+' - '+subgrupo;
     }
   }
+  // Anexa extras ao label (ex: " - Cantos arredondados")
+  if(extrasLabel)labelFinal+=extrasLabel;
+
   var detalhe='';
   if(opcao.folhas)detalhe='('+opcao.folhas+' folhas)';
 
@@ -2507,9 +2549,10 @@ function adicionarAoCarrinho(catKey,subgrupo,opcao){
     tipoDoc:tipoDoc,
     label:labelFinal,
     detalhe:detalhe,
-    preco:opcao.preco,
+    preco:opcao.preco+extrasValor,
     qtd:opcao.qtd,
-    folhas:opcao.folhas||null
+    folhas:opcao.folhas||null,
+    extras:extrasMarcados
   });
 
   renderCarrinho();
@@ -2676,7 +2719,7 @@ async function salvarOrcamento(){
   var nomeCli=document.getElementById('orc-cliente-nome').value.trim()||'Cliente sem nome';
   var total=orcCart.reduce(function(s,it){return s+it.preco;},0);
   var agora=new Date();
-  var expira=new Date(agora.getTime()+3*24*60*60*1000); // 3 dias
+  var expira=new Date(agora.getTime()+7*24*60*60*1000); // 7 dias
 
   var novo={
     id:'orc_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
@@ -2691,7 +2734,7 @@ async function salvarOrcamento(){
 
   orcSalvos.push(novo);
   await fbSet('orcamentos',orcSalvos);
-  alrt('✓ Orçamento salvo! (expira em 3 dias)','ok');
+  alrt('✓ Orçamento salvo! (expira em 7 dias)','ok');
   // Limpa para começar um novo
   orcCart=[];
   orcMensagemFinal='';
