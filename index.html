@@ -626,7 +626,10 @@ textarea{resize:vertical;min-height:340px;width:100%}
 <div class="mov" id="mo-atv-card" onclick="if(event.target===this)closeMo('mo-atv-card')"><div class="mo" style="max-width:560px">
   <h2 id="mo-atv-tit">Nova atividade</h2>
   <div class="fg" style="margin-bottom:10px"><label>Título</label><input id="atv-titulo" placeholder="Descreva a atividade..."></div>
-  <div class="fg" style="margin-bottom:10px"><label>Coluna</label><select id="atv-coluna" style="font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:9px 11px;background:#fff;color:#333;width:100%"></select></div>
+  <div class="g2" style="margin-bottom:10px">
+    <div class="fg"><label>Coluna</label><select id="atv-coluna" style="font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:9px 11px;background:#fff;color:#333;width:100%"></select></div>
+    <div class="fg"><label>Data da tarefa</label><input type="date" id="atv-data" style="font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:9px 11px;background:#fff;color:#333;width:100%"></div>
+  </div>
   <div class="fg" style="margin-bottom:10px"><label>Observações</label><textarea id="atv-obs" style="min-height:100px" placeholder="Detalhes, instruções, links..."></textarea></div>
   <div class="fg" style="margin-bottom:10px">
     <label>Arquivos (imagens, PDF...)</label>
@@ -1801,6 +1804,7 @@ function renderAtividades(){
         arqsHtml+='</div>';
       }
       cardEl.innerHTML='<div class="atv-card-titulo">'+card.titulo+'</div>'
+        +(card.data?'<div style="font-size:11px;color:var(--m);margin:2px 0 3px;font-weight:500">📅 '+new Date(card.data+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'2-digit'})+'</div>':'')
         +(card.obs?'<div class="atv-card-obs">'+card.obs+'</div>':'')
         +arqsHtml;
       cardEl.onclick=function(){editarCard(card.id);};
@@ -1839,9 +1843,9 @@ function abrirNovoCard(colId){
   document.getElementById('mo-atv-tit').textContent='Nova atividade';
   document.getElementById('atv-titulo').value='';
   document.getElementById('atv-obs').value='';
+  document.getElementById('atv-data').value='';
   document.getElementById('atv-excluir-btn').style.display='none';
   document.getElementById('atv-arquivos-preview').innerHTML='';
-  // Preencher select de colunas
   var sel=document.getElementById('atv-coluna');sel.innerHTML='';
   atvColunas.forEach(function(col){sel.innerHTML+='<option value="'+col.id+'"'+(col.id===colId?' selected':'')+'>'+col.nome+'</option>';});
   document.getElementById('mo-atv-card').classList.add('on');
@@ -1854,8 +1858,8 @@ function editarCard(cardId){
   document.getElementById('mo-atv-tit').textContent='Editar atividade';
   document.getElementById('atv-titulo').value=card.titulo||'';
   document.getElementById('atv-obs').value=card.obs||'';
+  document.getElementById('atv-data').value=card.data||'';
   document.getElementById('atv-excluir-btn').style.display='inline-flex';
-  // Preencher select
   var sel=document.getElementById('atv-coluna');sel.innerHTML='';
   atvColunas.forEach(function(col){sel.innerHTML+='<option value="'+col.id+'"'+(col.id===card.colId?' selected':'')+'>'+col.nome+'</option>';});
   renderAtvPreview();
@@ -1866,11 +1870,12 @@ async function salvarCard(){
   if(!titulo){alrt('Informe o título da atividade.','err');return;}
   var colId=document.getElementById('atv-coluna').value;
   var obs=document.getElementById('atv-obs').value.trim();
+  var data=document.getElementById('atv-data').value;
   if(atvCardEditando){
     var card=atvCards.find(function(c){return c.id===atvCardEditando;});
-    if(card){card.titulo=titulo;card.colId=colId;card.obs=obs;card.arquivos=atvArquivosTemp;}
+    if(card){card.titulo=titulo;card.colId=colId;card.obs=obs;card.data=data;card.arquivos=atvArquivosTemp;}
   }else{
-    atvCards.push({id:'card_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),titulo:titulo,colId:colId,obs:obs,arquivos:atvArquivosTemp,cr:new Date().toISOString()});
+    atvCards.push({id:'card_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),titulo:titulo,colId:colId,obs:obs,data:data,arquivos:atvArquivosTemp,cr:new Date().toISOString()});
   }
   await savAtvCards();closeMo('mo-atv-card');renderAtividades();alrt('✓ Atividade salva!','ok');
 }
