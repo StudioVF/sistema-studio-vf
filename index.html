@@ -83,6 +83,9 @@ textarea{resize:vertical;min-height:340px;width:100%}
 .pf{height:100%;background:var(--m);border-radius:2px;transition:width .3s}
 .tp{display:inline-flex;padding:2px 7px;border-radius:20px;font-size:11px;font-weight:500;margin-top:2px}
 .tiv{background:var(--gl);color:var(--g)}.tpp{background:var(--ml);color:var(--pl)}.tivpp{background:#edf3e6;color:#4a6b3c}
+.pac-essencial{background:#EDE9F5;color:#5B21B6;border:.5px solid #C4B5FD;font-weight:600}
+.pac-premium{background:#F3E8E1;color:#7C3A1E;border:.5px solid #D4A992;font-weight:600}
+.pac-premiumplus{background:#FDF4DC;color:#92620A;border:.5px solid #E8C96A;font-weight:600}
 .otb{background:#fff;border:.5px solid rgba(138,158,123,.22);border-radius:12px;overflow:hidden}
 .otb table{width:100%;border-collapse:collapse;font-size:14px}
 .otb th{text-align:left;padding:10px 12px;font-size:11px;font-weight:600;color:var(--pl);letter-spacing:.5px;text-transform:uppercase;border-bottom:.5px solid rgba(138,158,123,.18);background:var(--cr)}
@@ -1410,6 +1413,8 @@ function renderKPP(){
       if(!a.data&&!b.data)return 0;
       if(!a.data)return 1;
       if(!b.data)return -1;
+      // Enviado: mais recente primeiro. Demais: mais próximo primeiro
+      if(et==='Enviado') return a.data<b.data?1:a.data>b.data?-1:0;
       return a.data<b.data?-1:a.data>b.data?1:0;
     });
     var exibir=so.slice(0,MAX),excesso=so.length-exibir.length;
@@ -1449,7 +1454,14 @@ function makeCard(o,kanbanType){
   var designerTag=kanbanType==='iv'?designerTagHtml(o.designer):'';
   var brds=(o.brindes&&o.brindes.length)?o.brindes:(o.brd?[o.brd]:[]);
   var brdsHtml=brds.map(function(b){return '<span style="font-size:11px;background:var(--gl);color:var(--g);padding:1px 6px;border-radius:20px;margin-right:3px">🎁 '+b.nome+'</span>';}).join('');
-  c.innerHTML='<div class="kn">'+o.cliente+'</div>'+'<div class="km">'+dt(o.data)+(o.pacote?' · '+o.pacote:'')+'</div>'+tl(o.tipo)+designerTag+obsPreview+(brdsHtml?'<div style="margin-top:3px">'+brdsHtml+'</div>':'')+'<div class="pb"><div class="pf" style="width:'+pct+'%"></div></div><div style="font-size:11px;color:#888">'+done+'/'+tot+' · '+pct+'%</div>';
+  c.innerHTML='<div class="kn">'+o.cliente+'</div>'
+    +'<div class="km">'+dt(o.data)+'</div>'
+    +tl(o.tipo)
+    +(o.tipo==='iv'&&o.pacote?'<div style="margin-top:3px">'+pacTag(o.pacote)+'</div>':'')
+    +designerTag+obsPreview
+    +(brdsHtml?'<div style="margin-top:3px">'+brdsHtml+'</div>':'')
+    +'<div class="pb"><div class="pf" style="width:'+pct+'%"></div></div>'
+    +'<div style="font-size:11px;color:#888">'+done+'/'+tot+' · '+pct+'%</div>';
   c.addEventListener('dragstart',function(e){dragId=o.id;setTimeout(function(){c.classList.add('dragging');},0);e.dataTransfer.effectAllowed='move';});
   c.addEventListener('dragend',function(){dragId=null;c.classList.remove('dragging');});
   c.addEventListener('click',function(){openMoPed(o.id,kanbanType);});
@@ -1609,6 +1621,12 @@ async function setDesigner(designer){var id=modalOrderId,kt=modalKanbanType;var 
 
 // ── UTILITÁRIOS ──
 function tl(t){if(t==='iv')return '<span class="tp tiv">ID Visual</span>';if(t==='pp')return '<span class="tp tpp">Papelaria</span>';return '<span class="tp tivpp">IV + Papelaria</span>';}
+function pacTag(pacote){
+  if(!pacote)return '';
+  var p=pacote.toLowerCase();
+  var cls=p.indexOf('plus')>=0?'pac-premiumplus':p.indexOf('premium')>=0?'pac-premium':'pac-essencial';
+  return '<span class="tp '+cls+'" style="margin-top:3px;display:inline-flex">✦ '+pacote+'</span>';
+}
 function pc(p){if(!p)return 'bgr';p=p.toLowerCase();if(p.indexOf('pix')>=0)return 'bg';if(p.indexOf('cart')>=0)return 'bb';return 'bgr';}
 function dt(d){return d?new Date(d+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'2-digit'}):'-';}
 
