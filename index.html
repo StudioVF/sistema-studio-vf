@@ -1475,12 +1475,16 @@ function openMoPed(id,kanbanType){
   var ia=isAdmin();document.getElementById('mo-tit').textContent=o.cliente;
   var done=o.items.filter(function(i){return i.checked;}).length,tot=o.items.length,pct=tot>0?Math.round(done/tot*100):0;
   var lc=o.vt-o.custo;var html='';
+  // Etiqueta do pacote IV em destaque
+  if(o.tipo==='iv'&&o.pacote){
+    html+='<div style="margin-bottom:12px">'+pacTag(o.pacote,true)+'</div>';
+  }
   if(ia){
     html+='<div class="tots" style="margin-bottom:12px"><div class="tc"><div class="l">Valor total</div><div class="v pv">R$ '+o.vt.toFixed(2)+'</div></div><div class="tc"><div class="l">Custo</div><div class="v rv">R$ '+o.custo.toFixed(2)+'</div></div><div class="tc"><div class="l">Lucro</div><div class="v gv">R$ '+lc.toFixed(2)+'</div></div></div>';
-    if(o.tipo==='iv'&&o.valorBase)html+='<div style="font-size:13px;color:#888;margin-bottom:8px">'+o.pacote+' · Base: R$ '+o.valorBase.toFixed(2)+(o.adic>0?' + Ad: R$ '+o.adic.toFixed(2):'') +' · '+o.pgto+'</div>';
+    if(o.tipo==='iv'&&o.valorBase)html+='<div style="font-size:13px;color:#888;margin-bottom:8px">Base: R$ '+o.valorBase.toFixed(2)+(o.adic>0?' + Ad: R$ '+o.adic.toFixed(2):'') +' · '+o.pgto+'</div>';
     else html+='<div style="font-size:13px;color:#888;margin-bottom:8px">'+o.pgto+(o.obs?' · '+o.obs:'')+'</div>';
   }else{
-    html+='<div style="font-size:13px;color:#888;margin-bottom:12px">'+tl(o.tipo)+(o.pacote?' · '+o.pacote:'')+'</div>';
+    html+='<div style="font-size:13px;color:#888;margin-bottom:12px">'+tl(o.tipo)+'</div>';
   }
   // Data de entrega
   html+='<div class="stl">Data de entrega</div><div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;flex-wrap:wrap"><input type="date" id="modal-data" value="'+(o.data||'')+'" style="font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:8px 10px;background:#fff;color:#333;flex:1;min-width:140px"><button class="btn s p" onclick="salvarData()">Salvar data</button></div>';
@@ -1621,11 +1625,12 @@ async function setDesigner(designer){var id=modalOrderId,kt=modalKanbanType;var 
 
 // ── UTILITÁRIOS ──
 function tl(t){if(t==='iv')return '<span class="tp tiv">ID Visual</span>';if(t==='pp')return '<span class="tp tpp">Papelaria</span>';return '<span class="tp tivpp">IV + Papelaria</span>';}
-function pacTag(pacote){
+function pacTag(pacote,grande){
   if(!pacote)return '';
   var p=pacote.toLowerCase();
   var cls=p.indexOf('plus')>=0?'pac-premiumplus':p.indexOf('premium')>=0?'pac-premium':'pac-essencial';
-  return '<span class="tp '+cls+'" style="margin-top:3px;display:inline-flex">✦ '+pacote+'</span>';
+  var tamanho=grande?'font-size:14px;padding:6px 14px;':'';
+  return '<span class="tp '+cls+'" style="'+tamanho+'">✦ '+pacote+'</span>';
 }
 function pc(p){if(!p)return 'bgr';p=p.toLowerCase();if(p.indexOf('pix')>=0)return 'bg';if(p.indexOf('cart')>=0)return 'bb';return 'bgr';}
 function dt(d){return d?new Date(d+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'2-digit'}):'-';}
