@@ -1588,15 +1588,31 @@ function filtrarKanban(tipo){
   if(q)x.style.display='flex';else x.style.display='none';
   var board=document.getElementById('kanban-'+tipo);
   if(!board)return;
-  var cards=board.querySelectorAll('.kc');
-  var matches=0;
-  cards.forEach(function(c){
-    c.classList.remove('kc-oculto','kc-match');
-    if(!q)return;
-    var nomeEl=c.querySelector('.kn');
-    var nome=nomeEl?normalizar(nomeEl.textContent):'';
-    if(nome.indexOf(q)>=0){c.classList.add('kc-match');matches++;}
-    else c.classList.add('kc-oculto');
+
+  if(!q){
+    // Sem busca: restaurar ordem original e mostrar tudo
+    board.querySelectorAll('.kc').forEach(function(c){
+      c.classList.remove('kc-oculto','kc-match');
+    });
+    return;
+  }
+
+  // Com busca: para cada coluna, mover matches ao topo
+  board.querySelectorAll('.kcol').forEach(function(col){
+    var body=col.querySelector('.kbody');
+    if(!body)return;
+    var cards=Array.from(body.querySelectorAll('.kc'));
+    var matches=[];var others=[];
+    cards.forEach(function(c){
+      c.classList.remove('kc-oculto','kc-match');
+      var nomeEl=c.querySelector('.kn');
+      var nome=nomeEl?normalizar(nomeEl.textContent):'';
+      if(nome.indexOf(q)>=0){c.classList.add('kc-match');matches.push(c);}
+      else{c.classList.add('kc-oculto');others.push(c);}
+    });
+    // Reordenar: matches primeiro, depois ocultos
+    matches.forEach(function(c){body.appendChild(c);});
+    others.forEach(function(c){body.appendChild(c);});
   });
 }
 
@@ -1606,7 +1622,13 @@ function normalizar(s){
 
 function limparBuscaKanban(tipo){
   var inp=document.getElementById('kbusca-'+tipo);
-  if(inp){inp.value='';filtrarKanban(tipo);inp.focus();}
+  if(inp){
+    inp.value='';
+    // Re-renderiza para restaurar ordem original
+    if(tipo==='pp')_renderKPP_orig();
+    else _renderKIV_orig();
+    inp.focus();
+  }
 }
 
 // Faz com que renderKPP/renderKIV reapliquem o filtro após renderizar
@@ -2512,6 +2534,19 @@ function confirmarTaxaArtes(){
   }
   var nomes=taxaArtesSelecionadas.map(function(d){return d.nome;}).join(', ');
 
+  // Verificar se tem vetorização entre os selecionados
+  var temVetor=taxaArtesSelecionadas.some(function(d){
+    return d.grupo==='Vetorização'||d.nome.toLowerCase().indexOf('vetori')>=0;
+  });
+
+  var labelFinal=temVetor
+    ?'Taxa para vetorização da marca + produção das artes dos documentos'
+    :'Taxa para produzir as artes';
+
+  var detalhe=temVetor
+    ?'('+taxaArtesSelecionadas.length+' item'+(taxaArtesSelecionadas.length>1?'s':'')+')'
+    :'('+taxaArtesSelecionadas.length+' documento'+(taxaArtesSelecionadas.length>1?'s':'')+')'
+
   // Remove se já existir uma taxa de artes no carrinho (substitui)
   orcCart=orcCart.filter(function(it){return it.catKey!=='taxaArtes';});
 
@@ -2519,8 +2554,8 @@ function confirmarTaxaArtes(){
     id:'oc_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
     catKey:'taxaArtes',
     catNome:'Taxa para produzir as artes',
-    label:'Taxa para produzir as artes',
-    detalhe:'('+taxaArtesSelecionadas.length+' documento'+(taxaArtesSelecionadas.length>1?'s':'')+')',
+    label:labelFinal,
+    detalhe:detalhe,
     preco:total,
     docsInclusos:taxaArtesSelecionadas.slice(),
     docsNomes:nomes
@@ -2528,7 +2563,7 @@ function confirmarTaxaArtes(){
 
   renderCarrinho();
   closeMo('mo-orc-cat');
-  alrt('✓ Taxa de artes adicionada ('+taxaArtesSelecionadas.length+' documento'+(taxaArtesSelecionadas.length>1?'s':'')+')','ok');
+  alrt('✓ Taxa de artes adicionada ('+taxaArtesSelecionadas.length+' item'+(taxaArtesSelecionadas.length>1?'s':'')+')','ok');
 }
 
 function adicionarAoCarrinho(catKey,subgrupo,opcao){
