@@ -873,7 +873,7 @@ const ETS_IV=['Início do processo','Agendado','Finalizou','Sumiu'];
 const PACOTES={essencial:{nome:'Pacote Essencial',normal:749,custo:130},premium:{nome:'Pacote Premium',normal:949,custo:205},premiumplus:{nome:'Pacote Premium Plus',normal:949,custo:205}};
 const PIX_PGTO=['Pix site','Pix Nubank','Pix CNPJ'];
 const BOLETO_PGTO=['Boleto'];
-const USERS={gustavo:{nome:'Gustavo',role:'admin',senha:'1401'},victoria:{nome:'Victória',role:'admin',senha:'1401'},emily:{nome:'Emily',role:'emily',senha:'4567'},sabrina:{nome:'Sabrina',role:'emily',senha:'4567'},aline:{nome:'Aline',role:'vendedora',senha:'0669'}};
+const USERS={gustavo:{nome:'Gustavo',role:'admin',senha:'1401'},victoria:{nome:'Victória',role:'admin',senha:'1401'},emily:{nome:'Emily',role:'emily',senha:'4567'},sabrina:{nome:'Sabrina',role:'sabrina',senha:'4567'},aline:{nome:'Aline',role:'vendedora',senha:'0669'}};
 const COSTS_DEFAULT=[
 {cat:'Cartões de visita',name:'Cartão de visitas — Verniz total',variation:'100 unidades',graficas:'Futura',cost:46},
 {cat:'Cartões de visita',name:'Cartão de visitas — Verniz total',variation:'200 unidades',graficas:'Futura',cost:58},
@@ -957,6 +957,8 @@ async function savB(){await fbSet('brindes',brindes);popBrd();}
 async function savG(){await fbSet('gastos',gastos);}
 function isAdmin(){return currentUser&&currentUser.role==='admin';}
 function isVendedora(){return currentUser&&currentUser.role==='vendedora';}
+function isSabrina(){return currentUser&&currentUser.role==='sabrina';}
+function isEmily(){return currentUser&&currentUser.role==='emily';}
 function podeOrcar(){return isAdmin()||isVendedora();}
 
 // ── INIT ──
@@ -1005,8 +1007,8 @@ function selecionarUser(uid){
   else{av.style.background='var(--ml)';av.style.color='var(--pl)';}
   document.getElementById('senha-nome').textContent=u.nome;
   var roleText='Proprietário(a) · Acesso total';
-  if(u.role==='emily'&&uid==='emily')roleText='Produção e pedidos';
-  else if(u.role==='emily'&&uid==='sabrina')roleText='Atendimento';
+  if(u.role==='emily')roleText='Produção e pedidos';
+  else if(u.role==='sabrina')roleText='Atendimento';
   else if(u.role==='vendedora')roleText='Vendedora · Orçamentos';
   document.getElementById('senha-role').textContent=roleText;
   document.getElementById('senha-input').value='';
@@ -1053,12 +1055,13 @@ function logout(){
 function buildNav(){
   const nav=document.getElementById('main-nav');nav.innerHTML='';
   var vend=isVendedora();
+  var sabrina=isSabrina();
   var pages=[
-    {id:'orcamento',label:'Orçamento ✦',show:podeOrcar()},
-    {id:'novo',label:'Novo pedido',show:!vend},
+    {id:'orcamento',label:'Orçamento ✦',show:podeOrcar()||sabrina},
+    {id:'novo',label:'Novo pedido',show:!vend&&!sabrina},
     {id:'kanban-pp',label:'Produção Papelaria',show:!vend},
-    {id:'kanban-iv',label:'Produção Id. Visual',show:isAdmin()},
-    {id:'atividades',label:'Atividades Emily ✦',show:!vend},
+    {id:'kanban-iv',label:'Produção Id. Visual',show:isAdmin()||sabrina},
+    {id:'atividades',label:'Atividades Emily ✦',show:!vend&&!sabrina},
     {id:'pedidos',label:'Pedidos',show:isAdmin()},
     {id:'fin',label:'Financeiro',show:isAdmin()},
     {id:'custos',label:'Tabela de custos',show:isAdmin()},
