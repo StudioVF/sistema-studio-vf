@@ -388,7 +388,11 @@ textarea{resize:vertical;min-height:340px;width:100%}
       </button>
       <button class="user-btn" onclick="selecionarUser('emily')">
         <div class="uavt" style="background:var(--gl);color:var(--g)">E</div>
-        <div class="uinfo"><div class="uname">Emily</div><div class="urole">Funcionária · Produção e pedidos</div></div>
+        <div class="uinfo"><div class="uname">Emily</div><div class="urole">Produção e pedidos</div></div>
+      </button>
+      <button class="user-btn" onclick="selecionarUser('sabrina')">
+        <div class="uavt" style="background:#E0F0FF;color:#1E6B9E">S</div>
+        <div class="uinfo"><div class="uname">Sabrina</div><div class="urole">Atendimento</div></div>
       </button>
       <button class="user-btn" onclick="selecionarUser('aline')">
         <div class="uavt" style="background:#FCE7F3;color:#9D174D">A</div>
@@ -869,7 +873,7 @@ const ETS_IV=['Início do processo','Agendado','Finalizou','Sumiu'];
 const PACOTES={essencial:{nome:'Pacote Essencial',normal:749,custo:130},premium:{nome:'Pacote Premium',normal:949,custo:205},premiumplus:{nome:'Pacote Premium Plus',normal:949,custo:205}};
 const PIX_PGTO=['Pix site','Pix Nubank','Pix CNPJ'];
 const BOLETO_PGTO=['Boleto'];
-const USERS={gustavo:{nome:'Gustavo',role:'admin',senha:'1401'},victoria:{nome:'Victória',role:'admin',senha:'1401'},emily:{nome:'Emily',role:'emily',senha:'4567'},aline:{nome:'Aline',role:'vendedora',senha:'0669'}};
+const USERS={gustavo:{nome:'Gustavo',role:'admin',senha:'1401'},victoria:{nome:'Victória',role:'admin',senha:'1401'},emily:{nome:'Emily',role:'emily',senha:'4567'},sabrina:{nome:'Sabrina',role:'emily',senha:'4567'},aline:{nome:'Aline',role:'vendedora',senha:'0669'}};
 const COSTS_DEFAULT=[
 {cat:'Cartões de visita',name:'Cartão de visitas — Verniz total',variation:'100 unidades',graficas:'Futura',cost:46},
 {cat:'Cartões de visita',name:'Cartão de visitas — Verniz total',variation:'200 unidades',graficas:'Futura',cost:58},
@@ -994,13 +998,15 @@ function selecionarUser(uid){
   userSelecionado=uid;
   const u=USERS[uid];
   const av=document.getElementById('senha-avatar');
-  av.textContent=uid==='gustavo'?'G':uid==='victoria'?'V':uid==='emily'?'E':'A';
+  av.textContent=uid==='gustavo'?'G':uid==='victoria'?'V':uid==='emily'?'E':uid==='sabrina'?'S':'A';
   if(uid==='emily'){av.style.background='var(--gl)';av.style.color='var(--g)';}
+  else if(uid==='sabrina'){av.style.background='#E0F0FF';av.style.color='#1E6B9E';}
   else if(uid==='aline'){av.style.background='#FCE7F3';av.style.color='#9D174D';}
   else{av.style.background='var(--ml)';av.style.color='var(--pl)';}
   document.getElementById('senha-nome').textContent=u.nome;
   var roleText='Proprietário(a) · Acesso total';
-  if(u.role==='emily')roleText='Funcionária · Produção e pedidos';
+  if(u.role==='emily'&&uid==='emily')roleText='Produção e pedidos';
+  else if(u.role==='emily'&&uid==='sabrina')roleText='Atendimento';
   else if(u.role==='vendedora')roleText='Vendedora · Orçamentos';
   document.getElementById('senha-role').textContent=roleText;
   document.getElementById('senha-input').value='';
@@ -2304,7 +2310,7 @@ const KITS_PADROES={
       {catKey:'blocoA5',label:'2 blocos A5 - Receituário especial',detalhe:'(200 folhas)',preco:170},
       {catKey:'blocoA5',label:'1 bloco A5 - Atestado',detalhe:'(100 folhas)',preco:100},
       {catKey:'blocoA5',label:'1 bloco A5 - Solicitação de exames',detalhe:'(100 folhas)',preco:100},
-      {catKey:'pastaBolso',label:'50un Pasta com bolso - Laminação fosca',detalhe:'',preco:460}
+      {catKey:'pastaBolso',label:'50un Pasta com bolso - Verniz total',detalhe:'',preco:460}
     ]
   }
 };
