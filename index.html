@@ -1741,6 +1741,7 @@ function renderFin(){
   // Gastos
   var tbG=document.getElementById('tb-gastos');tbG.innerHTML='';
   var gf=filtroMes?gastos.filter(function(g){return g.data&&g.data.indexOf(filtroMes)===0;}):gastos;
+  gf=gf.slice().sort(function(a,b){if(!a.data&&!b.data)return 0;if(!a.data)return 1;if(!b.data)return -1;return a.data>b.data?-1:1;});
   var totalGastos=gf.reduce(function(s,g){return s+g.val;},0);
   if(!gf.length){tbG.innerHTML='<tr><td colspan="5" style="text-align:center;padding:18px;color:#888">Nenhum gasto lançado</td></tr>';}
   else{gf.forEach(function(g){var clr=gastoColor(g.cat);var tr=document.createElement('tr');tr.innerHTML='<td><span class="bdg" style="background:'+clr.bg+';color:'+clr.color+'">'+g.cat+'</span></td><td>'+g.desc+'</td><td>'+dt(g.data)+'</td><td style="color:#C0392B;font-weight:500">− R$ '+g.val.toFixed(2)+'</td><td><button class="btn s d" onclick="delGasto(\''+g.id+'\')">✕</button></td>';tbG.appendChild(tr);});}
@@ -1836,10 +1837,12 @@ function renderAtividades(){
   atvColunas.forEach(function(col){
     // Ordenar cards por data — mais recente primeiro, sem data por último
     var cards=atvCards.filter(function(c){return c.colId===col.id;}).sort(function(a,b){
-      if(!a.data&&!b.data)return 0;
-      if(!a.data)return 1;
-      if(!b.data)return -1;
-      return a.data<b.data?1:a.data>b.data?-1:0;
+      var da=a.data||'';var db=b.data||'';
+      if(da&&db)return da<db?-1:da>db?1:0;
+      if(da&&!db)return -1;
+      if(!da&&db)return 1;
+      var ca=a.cr||'';var cb=b.cr||'';
+      return ca<cb?-1:ca>cb?1:0;
     });
     var div=document.createElement('div');div.className='atv-col';
     div.innerHTML='<div class="atv-col-hd">'
