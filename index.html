@@ -129,7 +129,9 @@ textarea{resize:vertical;min-height:340px;width:100%}
 .ctb tr:last-child td{border-bottom:none}
 .preco-info{background:var(--ml);border:.5px solid rgba(142,107,122,.3);border-radius:8px;padding:11px 15px;font-size:13px;color:var(--pl);margin-top:8px;display:none}
 .preco-info strong{font-weight:600;font-size:15px;color:var(--m)}
-.atv-col{background:#fff;border-radius:10px;padding:10px;min-width:210px;width:210px;border:.5px solid rgba(138,158,123,.18);flex-shrink:0}
+.atv-col{background:#fff;border-radius:10px;padding:10px;min-width:210px;width:210px;border:.5px solid rgba(138,158,123,.18);flex-shrink:0;transition:.15s}
+.atv-col.atv-col-dragover{background:var(--ml);border-color:var(--m)}
+.atv-drop-zone{min-height:40px}
 .atv-col-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .atv-col-nome{font-size:10px;font-weight:600;color:var(--pl);letter-spacing:.5px;text-transform:uppercase;opacity:.8;flex:1}
 .atv-card{background:var(--cr);border:.5px solid rgba(138,158,123,.22);border-radius:8px;padding:10px;margin-bottom:6px;cursor:pointer;transition:.15s}
@@ -1827,10 +1829,18 @@ async function loadAtividades(){
 async function savAtvColunas(){await fbSet('atv_colunas',atvColunas);}
 async function savAtvCards(){await fbSet('atv_cards',atvCards);}
 
+var atvDragId=null;
+
 function renderAtividades(){
   var board=document.getElementById('kanban-atv');board.innerHTML='';
   atvColunas.forEach(function(col){
-    var cards=atvCards.filter(function(c){return c.colId===col.id;});
+    // Ordenar cards por data — mais recente primeiro, sem data por último
+    var cards=atvCards.filter(function(c){return c.colId===col.id;}).sort(function(a,b){
+      if(!a.data&&!b.data)return 0;
+      if(!a.data)return 1;
+      if(!b.data)return -1;
+      return a.data<b.data?1:a.data>b.data?-1:0;
+    });
     var div=document.createElement('div');div.className='atv-col';
     div.innerHTML='<div class="atv-col-hd">'
       +'<span class="atv-col-nome">'+col.nome+'</span>'
@@ -1838,12 +1848,33 @@ function renderAtividades(){
       +'<button class="btn s" style="padding:2px 7px;font-size:11px" onclick="renomearColuna(\''+col.id+'\')">✏</button>'
       +'<button class="btn s d" style="padding:2px 7px;font-size:11px" onclick="excluirColuna(\''+col.id+'\')">✕</button>'
       +'</div></div>'
-      +'<div id="atv-body-'+col.id+'"></div>'
+      +'<div id="atv-body-'+col.id+'" class="atv-drop-zone"></div>'
       +'<button class="btn" style="width:100%;font-size:12px;padding:6px;margin-top:6px;border-style:dashed" onclick="abrirNovoCard(\''+col.id+'\')">+ Atividade</button>';
     board.appendChild(div);
+
+    // Drop zone listeners
     var body=document.getElementById('atv-body-'+col.id);
+    body.addEventListener('dragover',function(e){e.preventDefault();div.classList.add('atv-col-dragover');});
+    body.addEventListener('dragleave',function(e){if(!div.contains(e.relatedTarget))div.classList.remove('atv-col-dragover');});
+    body.addEventListener('drop',async function(e){
+      e.preventDefault();div.classList.remove('atv-col-dragover');
+      if(!atvDragId)return;
+      var card=atvCards.find(function(c){return c.id===atvDragId;});
+      if(card&&card.colId!==col.id){
+        card.colId=col.id;
+        await savAtvCards();
+        renderAtividades();
+        alrt('✓ Atividade movida para '+col.nome+'!','ok');
+      }
+      atvDragId=null;
+    });
+
     cards.forEach(function(card){
-      var cardEl=document.createElement('div');cardEl.className='atv-card';
+      var cardEl=document.createElement('div');
+      cardEl.className='atv-card';
+      cardEl.draggable=true;
+      cardEl.style.cursor='grab';
+
       var arqsHtml='';
       if(card.arquivos&&card.arquivos.length){
         arqsHtml='<div class="atv-card-arqs">';
@@ -1857,11 +1888,23 @@ function renderAtividades(){
         if(card.arquivos.length>4)arqsHtml+='<div style="font-size:11px;color:#888;align-self:center">+'+( card.arquivos.length-4)+'</div>';
         arqsHtml+='</div>';
       }
+
       cardEl.innerHTML='<div class="atv-card-titulo">'+card.titulo+'</div>'
         +(card.data?'<div style="font-size:11px;color:var(--m);margin:2px 0 3px;font-weight:500">📅 '+new Date(card.data+'T00:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'2-digit'})+'</div>':'')
         +(card.obs?'<div class="atv-card-obs">'+card.obs+'</div>':'')
         +arqsHtml;
-      cardEl.onclick=function(){editarCard(card.id);};
+
+      cardEl.addEventListener('dragstart',function(e){
+        atvDragId=card.id;
+        e.dataTransfer.effectAllowed='move';
+        setTimeout(function(){cardEl.style.opacity='.4';},0);
+      });
+      cardEl.addEventListener('dragend',function(){
+        cardEl.style.opacity='1';
+        atvDragId=null;
+        document.querySelectorAll('.atv-col-dragover').forEach(function(el){el.classList.remove('atv-col-dragover');});
+      });
+      cardEl.addEventListener('click',function(){if(!atvDragId)editarCard(card.id);});
       body.appendChild(cardEl);
     });
   });
