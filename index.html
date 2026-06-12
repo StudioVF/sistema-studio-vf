@@ -447,6 +447,7 @@ textarea{resize:vertical;min-height:340px;width:100%}
     <div class="ttog">
       <button class="tb on" onclick="tipo('iv',this)">Identidade Visual</button>
       <button class="tb" onclick="tipo('pp',this)">Papelaria Personalizada</button>
+      <button class="tb" onclick="tipo('site',this)">Site</button>
     </div>
   </div>
 
@@ -563,11 +564,16 @@ textarea{resize:vertical;min-height:340px;width:100%}
 
   <!-- Salvar IV -->
   <div class="card" id="card-iv-save" style="display:none">
+    <!-- Campo valor para Site -->
+    <div id="row-site-valor" style="display:none;margin-bottom:10px">
+      <div class="fg"><label>Valor do site (R$)</label><input type="number" step="0.01" id="f-valor-site" placeholder="0,00"></div>
+    </div>
     <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
       <div class="fg" style="flex:1;min-width:170px"><label>Etapa inicial</label>
         <select id="f-etapa-iv"><option>Início do processo</option><option>Agendado</option><option>Finalizou</option><option>Sumiu</option></select>
       </div>
-      <button class="btn p" onclick="salvarIV()">Salvar pedido ↗</button>
+      <button class="btn p" id="btn-salvar-iv" onclick="salvarIV()">Salvar pedido ↗</button>
+      <button class="btn p" id="btn-salvar-site" style="display:none" onclick="salvarSite()">Salvar pedido ↗</button>
     </div>
   </div>
 </div>
@@ -598,6 +604,20 @@ textarea{resize:vertical;min-height:340px;width:100%}
     <div style="font-size:11px;color:#888" id="kdt-iv"></div>
   </div>
   <div class="kanban-wrap"><div class="kanban-iv" id="kanban-iv"></div></div>
+</div>
+
+<!-- PRODUÇÃO SITES -->
+<div class="pg" id="pg-kanban-site">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:10px">
+    <div style="font-size:15px;font-weight:400;font-family:Georgia,serif;color:var(--pl)">Produção — Sites</div>
+    <div class="kbusca-wrap">
+      <span class="kbusca-ico">🔍</span>
+      <input type="text" class="kbusca-input" id="kbusca-site" placeholder="Buscar cliente..." oninput="filtrarKanban('site')">
+      <button class="kbusca-x" id="kbusca-site-x" onclick="limparBuscaKanban('site')" style="display:none">✕</button>
+    </div>
+    <div style="font-size:11px;color:#888" id="kdt-site"></div>
+  </div>
+  <div class="kanban-wrap"><div class="kanban-iv" id="kanban-site"></div></div>
 </div>
 
 <!-- ATIVIDADES EMILY -->
@@ -872,6 +892,7 @@ function checarTamanho(){const t=JSON.stringify(orders).length;if(t>800000)alrt(
 // ── Constantes ──
 const ETS_PP=['Produzindo Id. Visual','Passar para Yses','Produzindo Artes','Início do processo','Gabarito','Pedido feito nas gráficas','Produzindo blocos','Esperando terceiros','Pronto para embalar','Emitir etiqueta','Enviado'];
 const ETS_IV=['Início do processo','Agendado','Finalizou','Sumiu'];
+const ETS_SITE=['Início do processo','Agendado','Finalizou','Sumiu'];
 const PACOTES={essencial:{nome:'Pacote Essencial',normal:749,custo:130},premium:{nome:'Pacote Premium',normal:949,custo:205},premiumplus:{nome:'Pacote Premium Plus',normal:949,custo:205}};
 const PIX_PGTO=['Pix site','Pix Nubank','Pix CNPJ'];
 const BOLETO_PGTO=['Boleto'];
@@ -1063,6 +1084,7 @@ function buildNav(){
     {id:'novo',label:'Novo pedido',show:!vend&&!sabrina},
     {id:'kanban-pp',label:'Produção Papelaria',show:!vend},
     {id:'kanban-iv',label:'Produção Id. Visual',show:isAdmin()||sabrina},
+    {id:'kanban-site',label:'Produção Sites',show:isAdmin()||sabrina},
     {id:'atividades',label:'Atividades Emily ✦',show:!vend&&!sabrina},
     {id:'pedidos',label:'Pedidos',show:isAdmin()},
     {id:'fin',label:'Financeiro',show:isAdmin()},
@@ -1082,7 +1104,7 @@ function pg(id,el){
   document.getElementById('pg-'+id).classList.add('on');
   if(el)el.classList.add('on');
   if(id==='kanban-pp')renderKPP();
-  if(id==='kanban-iv')renderKIV();
+  if(id==='kanban-site')renderKSite();
   if(id==='atividades')renderAtividades();
   if(id==='pedidos')renderPeds();
   if(id==='fin')renderFin();
@@ -1144,16 +1166,23 @@ function tipo(t,el){
   tipoAt=t;
   document.querySelectorAll('.tb').forEach(function(b){b.classList.remove('on');});
   el.classList.add('on');
-  var pp=t==='pp',iv=t==='iv';
+  var pp=t==='pp',iv=t==='iv',site=t==='site';
   ['card-end','card-brd','card-itens'].forEach(function(id){document.getElementById(id).style.display=pp?'block':'none';});
   document.getElementById('card-lista').style.display='none';
-  document.getElementById('card-iv-save').style.display=iv?'block':'none';
+  document.getElementById('card-iv-save').style.display=(iv||site)?'block':'none';
   document.getElementById('row-iv-campos').style.display=iv?'block':'none';
+  var rowSite=document.getElementById('row-site-valor');if(rowSite)rowSite.style.display=site?'block':'none';
+  var btnIV=document.getElementById('btn-salvar-iv');if(btnIV)btnIV.style.display=iv?'inline-flex':'none';
+  var btnSite=document.getElementById('btn-salvar-site');if(btnSite)btnSite.style.display=site?'inline-flex':'none';
   document.getElementById('row-pp-valor').style.display=pp?'block':'none';
   document.getElementById('row-total-pp').style.display=pp?'block':'none';
   document.getElementById('row-obs-pp').style.display=pp?'block':'none';
   document.getElementById('preco-info').style.display='none';
   items=[];brindeSelecionados=[];
+  // Atualizar etapas no select conforme tipo
+  var etapaSel=document.getElementById('f-etapa-iv');
+  var etapas=ETS_SITE;
+  etapaSel.innerHTML=etapas.map(function(e){return '<option>'+e+'</option>';}).join('');
   if(iv)updValorIV();
 }
 function switchE(tab,el){
@@ -1588,7 +1617,32 @@ async function chkItem(idx,checked){var id=modalOrderId,kt=modalKanbanType;var o
 async function updSmo(s){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(o&&s){o.stage=s;await savO();refreshKanban();}}
 async function addBrindeModal(){var id=modalOrderId,kt=modalKanbanType;var idx=document.getElementById('mo-brd-sel').value;if(idx===''||!brindes[idx]){alrt('Selecione um brinde.','err');return;}var o=orders.find(function(x){return x.id===id;});if(!o)return;if(!o.brindes)o.brindes=o.brd?[o.brd]:[];o.brindes.push(Object.assign({},brindes[idx]));recalcCusto(o);await savO();openMoPed(id,kt);refreshKanban();alrt('✓ Brinde adicionado!','ok');}
 async function removeBrindeModal(idx){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(!o)return;if(!o.brindes)o.brindes=o.brd?[o.brd]:[];o.brindes.splice(idx,1);recalcCusto(o);await savO();openMoPed(id,kt);refreshKanban();alrt('✓ Brinde removido!','ok');}
-function refreshKanban(){if(document.getElementById('pg-kanban-pp').classList.contains('on'))renderKPP();if(document.getElementById('pg-kanban-iv').classList.contains('on'))renderKIV();}
+function renderKSite(){
+  document.getElementById('kdt-site').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
+  var board=document.getElementById('kanban-site');board.innerHTML='';
+  var ordSite=orders.filter(function(o){return o.tipo==='site';});
+  ETS_SITE.forEach(function(et){
+    var so=ordSite.filter(function(o){return o.stage===et;}).sort(function(a,b){if(!a.data&&!b.data)return 0;if(!a.data)return 1;if(!b.data)return -1;return a.data<b.data?-1:a.data>b.data?1:0;});
+    var col=document.createElement('div');col.className='kcol';col.dataset.stage=et;
+    col.innerHTML='<div class="khd"><span>'+et+'</span><span style="background:var(--ml);color:var(--pl);border-radius:20px;padding:1px 6px;font-size:10px">'+so.length+'</span></div><div class="kbody"></div>';
+    col.addEventListener('dragover',function(e){e.preventDefault();col.classList.add('drag-over');});
+    col.addEventListener('dragleave',function(){col.classList.remove('drag-over');});
+    col.addEventListener('drop',async function(e){e.preventDefault();col.classList.remove('drag-over');if(dragId===null)return;var o=orders.find(function(x){return x.id===dragId;});if(o){o.stage=et;await savO();renderKSite();}});
+    board.appendChild(col);
+    so.forEach(function(o){col.querySelector('.kbody').appendChild(makeCard(o,'site'));});
+  });
+}
+async function salvarSite(){
+  var nome=document.getElementById('f-nome').value.trim();if(!nome){alrt('Informe o nome da cliente.','err');return;}
+  var pgto=document.getElementById('f-pgto').value;
+  var isPix=PIX_PGTO.indexOf(pgto)>=0,isBoleto=BOLETO_PGTO.indexOf(pgto)>=0;
+  var fator=isPix?0.95:isBoleto?0.96:1;
+  var valorInput=parseFloat(document.getElementById('f-valor-site')?document.getElementById('f-valor-site').value:0)||0;
+  var valorFinal=parseFloat((valorInput*fator).toFixed(2));
+  var obs=document.getElementById('f-obs-iv').value||'';
+  var o={id:gerarId(),cliente:nome,dataCompra:document.getElementById('f-compra').value,data:document.getElementById('f-data').value,pgto:pgto,tipo:'site',pacote:'',obs:obs,obsCard:'',vt:valorFinal,valorBase:valorFinal,adic:0,custo:0,items:[{name:'Site',variation:'',qty:1,price:valorFinal,cost:0,checked:false}],end:null,brindes:[],stage:document.getElementById('f-etapa-iv').value,cr:new Date().toISOString()};
+  orders.unshift(o);await savO();checarTamanho();alrt('✓ Pedido de site de '+nome+' salvo!','ok');clearAll();
+}if(document.getElementById('pg-kanban-pp').classList.contains('on'))renderKPP();if(document.getElementById('pg-kanban-iv').classList.contains('on'))renderKIV();if(document.getElementById('pg-kanban-site').classList.contains('on'))renderKSite();}
 
 // ── BUSCA NO KANBAN ──
 function filtrarKanban(tipo){
@@ -1657,7 +1711,7 @@ function designerTagHtml(d){if(!d&&d!==0)return '';var info=DESIGNERS[d]||DESIGN
 async function setDesigner(designer){var id=modalOrderId,kt=modalKanbanType;var o=orders.find(function(x){return x.id===id;});if(!o)return;o.designer=designer;await savO();document.querySelectorAll('.dbtn').forEach(function(b){b.classList.toggle('sel',b.textContent.trim()===(DESIGNERS[designer]||{}).label);});refreshKanban();alrt('✓ Designer atribuída!','ok');}
 
 // ── UTILITÁRIOS ──
-function tl(t){if(t==='iv')return '<span class="tp tiv">ID Visual</span>';if(t==='pp')return '<span class="tp tpp">Papelaria</span>';return '<span class="tp tivpp">IV + Papelaria</span>';}
+function tl(t){if(t==='iv')return '<span class="tp tiv">ID Visual</span>';if(t==='pp')return '<span class="tp tpp">Papelaria</span>';if(t==='site')return '<span class="tp" style="background:#E0F0FF;color:#1E6B9E">Site</span>';return '<span class="tp tivpp">IV + Papelaria</span>';}
 function pacTag(pacote,grande){
   if(!pacote)return '';
   var p=pacote.toLowerCase();
@@ -2969,7 +3023,8 @@ window.abrirNovaColuna=abrirNovaColuna;window.salvarNovaColuna=salvarNovaColuna;
 window.abrirNovoCard=abrirNovoCard;window.salvarCard=salvarCard;window.excluirCard=excluirCard;
 window.abrirViewer=abrirViewer;window.abrirViewerTemp=abrirViewerTemp;
 window.handleAtvFiles=handleAtvFiles;window.handleAtvDrop=handleAtvDrop;window.removerAtvArquivo=removerAtvArquivo;
-window.salvarDataCompra=salvarDataCompra;window.salvarDataEntrega=salvarDataEntrega;window.mascaraCpf=mascaraCpf;window.selecionarUser=selecionarUser;window.confirmarSenha=confirmarSenha;window.voltarUsers=voltarUsers;window.logout=logout;
+window.salvarDataCompra=salvarDataCompra;window.salvarDataEntrega=salvarDataEntrega;window.mascaraCpf=mascaraCpf;window.renderKSite=renderKSite;window.salvarSite=salvarSite;
+window.selecionarUser=selecionarUser;window.confirmarSenha=confirmarSenha;window.voltarUsers=voltarUsers;window.logout=logout;
 window.tipo=tipo;window.switchE=switchE;window.buscaCep=buscaCep;window.updValorIV=updValorIV;window.updTotalPP=updTotalPP;
 window.addBrinde=addBrinde;window.removeBrindeSel=removeBrindeSel;
 window.parsearTexto=parsearTexto;window.handlePDF=handlePDF;window.addItem=addItem;window.limpar=limpar;
