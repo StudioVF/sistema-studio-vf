@@ -1642,7 +1642,13 @@ async function salvarSite(){
   var obs=document.getElementById('f-obs-iv').value||'';
   var o={id:gerarId(),cliente:nome,dataCompra:document.getElementById('f-compra').value,data:document.getElementById('f-data').value,pgto:pgto,tipo:'site',pacote:'',obs:obs,obsCard:'',vt:valorFinal,valorBase:valorFinal,adic:0,custo:0,items:[{name:'Site',variation:'',qty:1,price:valorFinal,cost:0,checked:false}],end:null,brindes:[],stage:document.getElementById('f-etapa-iv').value,cr:new Date().toISOString()};
   orders.unshift(o);await savO();checarTamanho();alrt('✓ Pedido de site de '+nome+' salvo!','ok');clearAll();
-}if(document.getElementById('pg-kanban-pp').classList.contains('on'))renderKPP();if(document.getElementById('pg-kanban-iv').classList.contains('on'))renderKIV();if(document.getElementById('pg-kanban-site').classList.contains('on'))renderKSite();}
+}
+
+function refreshKanban(){
+  if(document.getElementById('pg-kanban-pp').classList.contains('on'))renderKPP();
+  if(document.getElementById('pg-kanban-iv').classList.contains('on'))renderKIV();
+  if(document.getElementById('pg-kanban-site').classList.contains('on'))renderKSite();
+}
 
 // ── BUSCA NO KANBAN ──
 function filtrarKanban(tipo){
