@@ -837,6 +837,7 @@ textarea{resize:vertical;min-height:340px;width:100%}
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
     <div style="font-size:15px;font-weight:400;font-family:Georgia,serif;color:var(--pl)">Tabela de custos</div>
     <button class="btn p" onclick="openCM()">+ Novo produto</button>
+    <button class="btn" onclick="resetarCustos()" style="font-size:12px;color:#888">↺ Restaurar padrão</button>
   </div>
   <div id="lista-custos"></div>
 </div>
@@ -957,8 +958,12 @@ const COSTS_DEFAULT=[
 {cat:'Carteirinhas',name:'Carteirinha de vacinação — 1 dobra (A5)',variation:'25 unidades',graficas:'Futura',cost:74},
 {cat:'Carteirinhas',name:'Carteirinha de vacinação — 1 dobra (A5)',variation:'50 unidades',graficas:'Futura',cost:88},
 {cat:'Carteirinhas',name:'Carteirinha de vacinação — 1 dobra (A5)',variation:'100 unidades',graficas:'Futura',cost:119},
-{cat:'Carteirinhas',name:'Carteirinha pré-natal — 2 dobras (A4)',variation:'50 unidades',graficas:'Zap',cost:143},
-{cat:'Carteirinhas',name:'Carteirinha pré-natal — 2 dobras (A4)',variation:'100 unidades',graficas:'Zap',cost:247},
+{cat:'Carteirinhas',name:'Carteirinha 2 dobras A4 (21x10cm)',variation:'50 unidades',graficas:'Zap',cost:270},
+{cat:'Carteirinhas',name:'Carteirinha 2 dobras A4 (21x10cm)',variation:'100 unidades',graficas:'Zap',cost:460},
+{cat:'Carteirinhas',name:'Carteirinha 2 dobras A4 (21x10cm)',variation:'250 unidades',graficas:'Zap',cost:890},
+{cat:'Carteirinhas',name:'Carteirinha 2 dobras A3 (21x14cm)',variation:'25 unidades',graficas:'Zap',cost:280},
+{cat:'Carteirinhas',name:'Carteirinha 2 dobras A3 (21x14cm)',variation:'50 unidades',graficas:'Printi',cost:380},
+{cat:'Carteirinhas',name:'Carteirinha 2 dobras A3 (21x14cm)',variation:'100 unidades',graficas:'Printi',cost:590},
 {cat:'Adesivos',name:'Adesivo redondo 5x5cm',variation:'100 unidades',graficas:'Futura',cost:36},
 {cat:'Adesivos',name:'Adesivo redondo 5x5cm',variation:'250 unidades',graficas:'Futura',cost:39},
 {cat:'Adesivos',name:'Adesivo redondo 5x5cm',variation:'500 unidades',graficas:'Futura',cost:62},
@@ -1852,6 +1857,13 @@ function renderC(){
     el.appendChild(w);
   });
 }
+async function resetarCustos(){
+  if(!confirm('Isso vai substituir TODA a tabela de custos pelos valores padrão do sistema. Continuar?'))return;
+  costs=JSON.parse(JSON.stringify(COSTS_DEFAULT));
+  await savC();
+  renderC();
+  alrt('✓ Tabela de custos restaurada ao padrão!','ok');
+}
 function openCM(){ecIdx=null;['cc-nome','cc-var','cc-graf','cc-val'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('mo-custo').classList.add('on');}
 function editC(i){ecIdx=i;var c=costs[i];document.getElementById('cc-cat').value=c.cat||'Outros';document.getElementById('cc-nome').value=c.name;document.getElementById('cc-var').value=c.variation||'';document.getElementById('cc-graf').value=c.graficas||'';document.getElementById('cc-val').value=c.cost;document.getElementById('mo-custo').classList.add('on');}
 async function delC(i){costs.splice(i,1);await savC();renderC();}
@@ -2285,14 +2297,14 @@ const TAB_ORC={
         {qtd:250,preco:420,unid:'un',label:'250un Carteirinha 1 dobra'}
       ]},
       {nome:'2 dobras — A4 / 21x10cm — Apergaminhado 180g',opcoes:[
-        {qtd:50,preco:260,unid:'un',label:'50un Carteirinha 2 dobras A4'},
-        {qtd:100,preco:450,unid:'un',label:'100un Carteirinha 2 dobras A4'},
-        {qtd:250,preco:890,unid:'un',label:'250un Carteirinha 2 dobras A4'}
+        {qtd:50,preco:270,unid:'un',label:'50un Carteirinha 2 dobras A4 (21x10cm)'},
+        {qtd:100,preco:460,unid:'un',label:'100un Carteirinha 2 dobras A4 (21x10cm)'},
+        {qtd:250,preco:890,unid:'un',label:'250un Carteirinha 2 dobras A4 (21x10cm)'}
       ]},
       {nome:'2 dobras — A3 / 21x14cm — Apergaminhado 180g',opcoes:[
-        {qtd:25,preco:170,unid:'un',label:'25un Carteirinha 2 dobras A3'},
-        {qtd:50,preco:290,unid:'un',label:'50un Carteirinha 2 dobras A3'},
-        {qtd:100,preco:490,unid:'un',label:'100un Carteirinha 2 dobras A3'}
+        {qtd:25,preco:280,unid:'un',label:'25un Carteirinha 2 dobras A3 (21x14cm)'},
+        {qtd:50,preco:380,unid:'un',label:'50un Carteirinha 2 dobras A3 (21x14cm)'},
+        {qtd:100,preco:590,unid:'un',label:'100un Carteirinha 2 dobras A3 (21x14cm)'}
       ]}
     ]
   },
@@ -3042,7 +3054,7 @@ window.chkItem=chkItem;window.updSmo=updSmo;window.setDesigner=setDesigner;
 window.addBrindeModal=addBrindeModal;window.removeBrindeModal=removeBrindeModal;
 window.delO=delO;window.closeMo=closeMo;window.updS=updS;
 window.renderPeds=renderPeds;window.renderFin=renderFin;window.lancarGasto=lancarGasto;window.delGasto=delGasto;
-window.openCM=openCM;window.editC=editC;window.delC=delC;window.salvaCusto=salvaCusto;
+window.resetarCustos=resetarCustos;window.openCM=openCM;window.editC=editC;window.delC=delC;window.salvaCusto=salvaCusto;
 window.openBM=openBM;window.editBrd=editBrd;window.delBrd=delBrd;window.salvaBrd=salvaBrd;
 </script>
 </body></html>
