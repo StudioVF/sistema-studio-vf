@@ -937,18 +937,25 @@ const COSTS_DEFAULT=[
 {cat:'Blocos',name:'Bloco A4 — Solicitação de exames',variation:'100 folhas',graficas:'Studio VF',cost:25},
 {cat:'Blocos',name:'Bloco A4 — Anamnese frente e verso',variation:'100 folhas',graficas:'Studio VF',cost:30},
 {cat:'Blocos',name:'Bloco A4 — Plano de aplicação',variation:'100 folhas',graficas:'Studio VF',cost:25},
-{cat:'Pastas',name:'Pasta com orelha — Laminação fosca',variation:'25 unidades',graficas:'Zap',cost:122},
-{cat:'Pastas',name:'Pasta com orelha — Laminação fosca',variation:'50 unidades',graficas:'Zap',cost:225.5},
-{cat:'Pastas',name:'Pasta com orelha — Laminação fosca',variation:'100 unidades',graficas:'Zap',cost:434.5},
-{cat:'Pastas',name:'Pasta com orelha — Verniz total',variation:'25 unidades',graficas:'Futura',cost:144},
-{cat:'Pastas',name:'Pasta com orelha — Verniz total',variation:'50 unidades',graficas:'Futura',cost:217},
-{cat:'Pastas',name:'Pasta com orelha — Verniz total',variation:'100 unidades',graficas:'Futura',cost:348},
-{cat:'Pastas',name:'Pasta com bolso — Verniz total',variation:'25 unidades',graficas:'Zap',cost:114},
-{cat:'Pastas',name:'Pasta com bolso — Verniz total',variation:'50 unidades',graficas:'Zap',cost:210.5},
-{cat:'Pastas',name:'Pasta com bolso — Verniz total',variation:'100 unidades',graficas:'Zap',cost:403.5},
-{cat:'Pastas',name:'Pasta com bolso — Laminação fosca',variation:'25 unidades',graficas:'Zap',cost:132},
-{cat:'Pastas',name:'Pasta com bolso — Laminação fosca',variation:'50 unidades',graficas:'Zap',cost:246.5},
-{cat:'Pastas',name:'Pasta com bolso — Laminação fosca',variation:'100 unidades',graficas:'Zap',cost:477.5},
+{cat:'Pastas',name:'Pasta com orelha — Sem verniz',variation:'25 unidades',graficas:'Zap',cost:99},
+{cat:'Pastas',name:'Pasta com orelha — Sem verniz',variation:'50 unidades',graficas:'Futura',cost:192},
+{cat:'Pastas',name:'Pasta com orelha — Sem verniz',variation:'100 unidades',graficas:'Futura',cost:317},
+{cat:'Pastas',name:'Pasta com orelha — Sem verniz',variation:'250 unidades',graficas:'Futura',cost:678},
+{cat:'Pastas',name:'Pasta com orelha — Sem verniz',variation:'500 unidades',graficas:'Futura',cost:1232},
+{cat:'Pastas',name:'Pasta com orelha — Verniz total',variation:'25 unidades',graficas:'Zap',cost:100},
+{cat:'Pastas',name:'Pasta com orelha — Verniz total',variation:'50 unidades',graficas:'Zap',cost:175},
+{cat:'Pastas',name:'Pasta com orelha — Verniz total',variation:'100 unidades',graficas:'Zap',cost:313},
+{cat:'Pastas',name:'Pasta com orelha — Verniz total',variation:'250 unidades',graficas:'Zap',cost:665.99},
+{cat:'Pastas',name:'Pasta com orelha — Verniz total',variation:'500 unidades',graficas:'Futura',cost:912},
+{cat:'Pastas',name:'Pasta com bolso — Sem verniz',variation:'50 unidades',graficas:'Futura',cost:267},
+{cat:'Pastas',name:'Pasta com bolso — Sem verniz',variation:'100 unidades',graficas:'Futura',cost:392},
+{cat:'Pastas',name:'Pasta com bolso — Sem verniz',variation:'250 unidades',graficas:'Futura',cost:754},
+{cat:'Pastas',name:'Pasta com bolso — Sem verniz',variation:'500 unidades',graficas:'Futura',cost:1512},
+{cat:'Pastas',name:'Pasta com bolso — Verniz total',variation:'25 unidades',graficas:'Futura',cost:223},
+{cat:'Pastas',name:'Pasta com bolso — Verniz total',variation:'50 unidades',graficas:'Futura',cost:298},
+{cat:'Pastas',name:'Pasta com bolso — Verniz total',variation:'100 unidades',graficas:'Futura',cost:432},
+{cat:'Pastas',name:'Pasta com bolso — Verniz total',variation:'250 unidades',graficas:'Futura',cost:814},
+{cat:'Pastas',name:'Pasta com bolso — Verniz total',variation:'500 unidades',graficas:'Futura',cost:1405},
 {cat:'Envelopes',name:'Envelope carta',variation:'25 unidades',graficas:'Zap',cost:63.5},
 {cat:'Envelopes',name:'Envelope carta',variation:'50 unidades',graficas:'Zap',cost:117.7},
 {cat:'Envelopes',name:'Envelope carta',variation:'100 unidades',graficas:'Zap',cost:220.45},
@@ -2229,39 +2236,42 @@ const TAB_ORC={
   pastaOrelha:{
     nome:'Pasta com orelha',
     icone:'📁',
-    desc:'Verniz total ou Laminação fosca',
+    desc:'Verniz total ou Sem verniz',
     subgrupos:[
-      {nome:'Verniz total',opcoes:[
-        {qtd:25,preco:250,unid:'un',label:'25un Pasta com orelha - Verniz total'},
-        {qtd:50,preco:410,unid:'un',label:'50un Pasta com orelha - Verniz total'},
-        {qtd:100,preco:690,unid:'un',label:'100un Pasta com orelha - Verniz total'},
-        {qtd:250,preco:1320,unid:'un',label:'250un Pasta com orelha - Verniz total'}
+      {nome:'Sem verniz',opcoes:[
+        {qtd:25,preco:190,unid:'un',label:'25un Pasta com orelha - Sem verniz'},
+        {qtd:50,preco:360,unid:'un',label:'50un Pasta com orelha - Sem verniz'},
+        {qtd:100,preco:580,unid:'un',label:'100un Pasta com orelha - Sem verniz'},
+        {qtd:250,preco:1070,unid:'un',label:'250un Pasta com orelha - Sem verniz'},
+        {qtd:500,preco:2180,unid:'un',label:'500un Pasta com orelha - Sem verniz'}
       ]},
-      {nome:'Laminação fosca',opcoes:[
-        {qtd:25,preco:240,unid:'un',label:'25un Pasta com orelha - Laminação fosca'},
-        {qtd:50,preco:410,unid:'un',label:'50un Pasta com orelha - Laminação fosca'},
-        {qtd:100,preco:730,unid:'un',label:'100un Pasta com orelha - Laminação fosca'},
-        {qtd:250,preco:1620,unid:'un',label:'250un Pasta com orelha - Laminação fosca'},
-        {qtd:500,preco:2750,unid:'un',label:'500un Pasta com orelha - Laminação fosca'}
+      {nome:'Verniz total',opcoes:[
+        {qtd:25,preco:200,unid:'un',label:'25un Pasta com orelha - Verniz total'},
+        {qtd:50,preco:360,unid:'un',label:'50un Pasta com orelha - Verniz total'},
+        {qtd:100,preco:590,unid:'un',label:'100un Pasta com orelha - Verniz total'},
+        {qtd:250,preco:1150,unid:'un',label:'250un Pasta com orelha - Verniz total'},
+        {qtd:500,preco:1780,unid:'un',label:'500un Pasta com orelha - Verniz total'}
       ]}
     ]
   },
   pastaBolso:{
     nome:'Pasta com bolso',
     icone:'🗂️',
-    desc:'Verniz total ou Laminação fosca',
+    desc:'Verniz total ou Sem verniz',
     subgrupos:[
-      {nome:'Verniz total',opcoes:[
-        {qtd:25,preco:240,unid:'un',label:'25un Pasta com bolso - Verniz total'},
-        {qtd:50,preco:440,unid:'un',label:'50un Pasta com bolso - Verniz total'},
-        {qtd:100,preco:778,unid:'un',label:'100un Pasta com bolso - Verniz total'},
-        {qtd:250,preco:1340,unid:'un',label:'250un Pasta com bolso - Verniz total'}
+      {nome:'Sem verniz',opcoes:[
+        {qtd:25,preco:320,unid:'un',label:'25un Pasta com bolso - Sem verniz'},
+        {qtd:50,preco:460,unid:'un',label:'50un Pasta com bolso - Sem verniz'},
+        {qtd:100,preco:770,unid:'un',label:'100un Pasta com bolso - Sem verniz'},
+        {qtd:250,preco:1470,unid:'un',label:'250un Pasta com bolso - Sem verniz'},
+        {qtd:500,preco:2470,unid:'un',label:'500un Pasta com bolso - Sem verniz'}
       ]},
-      {nome:'Laminação fosca',opcoes:[
-        {qtd:25,preco:260,unid:'un',label:'25un Pasta com bolso - Laminação fosca'},
-        {qtd:50,preco:460,unid:'un',label:'50un Pasta com bolso - Laminação fosca'},
-        {qtd:100,preco:820,unid:'un',label:'100un Pasta com bolso - Laminação fosca'},
-        {qtd:250,preco:1670,unid:'un',label:'250un Pasta com bolso - Laminação fosca'}
+      {nome:'Verniz total',opcoes:[
+        {qtd:25,preco:350,unid:'un',label:'25un Pasta com bolso - Verniz total'},
+        {qtd:50,preco:490,unid:'un',label:'50un Pasta com bolso - Verniz total'},
+        {qtd:100,preco:780,unid:'un',label:'100un Pasta com bolso - Verniz total'},
+        {qtd:250,preco:1380,unid:'un',label:'250un Pasta com bolso - Verniz total'},
+        {qtd:500,preco:2320,unid:'un',label:'500un Pasta com bolso - Verniz total'}
       ]}
     ]
   },
@@ -2403,7 +2413,13 @@ const TAB_ORC={
 
       // Vetorização
       {id:'vetor_marca_1',nome:'Vetorização da marca 1',valor:100,grupo:'Vetorização'},
-      {id:'vetor_marca_2',nome:'Vetorização da marca 2',valor:200,grupo:'Vetorização'}
+      {id:'vetor_marca_2',nome:'Vetorização da marca 2',valor:200,grupo:'Vetorização'},
+      {id:'vetor_marca_3',nome:'Vetorização da marca 3',valor:350,grupo:'Vetorização'},
+
+      // Pacote de Identidade Visual
+      {id:'pacote_essencial',nome:'Pacote Essencial de identidade visual',valor:749,grupo:'Pacote de Identidade Visual'},
+      {id:'pacote_premium',nome:'Pacote Premium de identidade visual',valor:949,grupo:'Pacote de Identidade Visual'},
+      {id:'pacote_premium_plus',nome:'Pacote Premium Plus de identidade visual',valor:1539,grupo:'Pacote de Identidade Visual'}
     ]
   }
 };
@@ -2432,7 +2448,7 @@ const KITS_PADROES={
       {catKey:'blocoA5',label:'2 blocos A5 - Receituário especial',detalhe:'(200 folhas)',preco:170},
       {catKey:'blocoA5',label:'1 bloco A5 - Atestado',detalhe:'(100 folhas)',preco:100},
       {catKey:'blocoA5',label:'1 bloco A5 - Solicitação de exames',detalhe:'(100 folhas)',preco:100},
-      {catKey:'pastaBolso',label:'50un Pasta com bolso - Verniz total',detalhe:'',preco:460}
+      {catKey:'pastaBolso',label:'50un Pasta com bolso - Verniz total',detalhe:'',preco:490}
     ]
   }
 };
@@ -2662,36 +2678,64 @@ function confirmarTaxaArtes(){
   }
   var nomes=taxaArtesSelecionadas.map(function(d){return d.nome;}).join(', ');
 
+  // Verificar se tem pacote IV entre os selecionados
+  var temPacoteIV=taxaArtesSelecionadas.some(function(d){
+    return d.grupo==='Pacote de Identidade Visual';
+  });
+
   // Verificar se tem vetorização entre os selecionados
   var temVetor=taxaArtesSelecionadas.some(function(d){
     return d.grupo==='Vetorização'||d.nome.toLowerCase().indexOf('vetori')>=0;
   });
 
-  var labelFinal=temVetor
-    ?'Taxa para vetorização da marca + produção das artes dos documentos'
-    :'Taxa para produzir as artes';
+  // Separar pacotes IV dos demais itens
+  var pacotesIVSel=taxaArtesSelecionadas.filter(function(d){return d.grupo==='Pacote de Identidade Visual';});
+  var outrosSel=taxaArtesSelecionadas.filter(function(d){return d.grupo!=='Pacote de Identidade Visual';});
 
-  var detalhe=temVetor
-    ?'('+taxaArtesSelecionadas.length+' item'+(taxaArtesSelecionadas.length>1?'s':'')+')'
-    :'('+taxaArtesSelecionadas.length+' documento'+(taxaArtesSelecionadas.length>1?'s':'')+')'
+  // Remove taxa de artes existente
+  orcCart=orcCart.filter(function(it){return it.catKey!=='taxaArtes'&&it.catKey!=='pacoteIV';});
 
-  // Remove se já existir uma taxa de artes no carrinho (substitui)
-  orcCart=orcCart.filter(function(it){return it.catKey!=='taxaArtes';});
-
-  orcCart.push({
-    id:'oc_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
-    catKey:'taxaArtes',
-    catNome:'Taxa para produzir as artes',
-    label:labelFinal,
-    detalhe:detalhe,
-    preco:total,
-    docsInclusos:taxaArtesSelecionadas.slice(),
-    docsNomes:nomes
+  // Adicionar pacotes IV como itens separados
+  pacotesIVSel.forEach(function(pac){
+    orcCart.push({
+      id:'oc_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
+      catKey:'pacoteIV',
+      catNome:'Pacote de Identidade Visual',
+      label:pac.nome,
+      grupo:'Pacote de Identidade Visual',
+      detalhe:'',
+      preco:pac.valor,
+      docsInclusos:[pac],
+      docsNomes:pac.nome
+    });
   });
+
+  // Adicionar taxa de artes para os demais (se houver)
+  if(outrosSel.length>0){
+    var totalOutros=outrosSel.reduce(function(s,d){return s+(d.valor||0);},0);
+    var nomesOutros=outrosSel.map(function(d){return d.nome;}).join(', ');
+    var labelFinal=temVetor
+      ?'Taxa para vetorização da marca + produção das artes dos documentos'
+      :'Taxa para produzir as artes';
+    var detalhe=temVetor
+      ?'('+outrosSel.length+' item'+(outrosSel.length>1?'s':'')+')'
+      :'('+outrosSel.length+' documento'+(outrosSel.length>1?'s':'')+')'
+
+    orcCart.push({
+      id:'oc_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),
+      catKey:'taxaArtes',
+      catNome:'Taxa para produzir as artes',
+      label:labelFinal,
+      detalhe:detalhe,
+      preco:totalOutros,
+      docsInclusos:outrosSel,
+      docsNomes:nomesOutros
+    });
+  }
 
   renderCarrinho();
   closeMo('mo-orc-cat');
-  alrt('✓ Taxa de artes adicionada ('+taxaArtesSelecionadas.length+' item'+(taxaArtesSelecionadas.length>1?'s':'')+')','ok');
+  alrt('✓ '+taxaArtesSelecionadas.length+' item'+(taxaArtesSelecionadas.length>1?'s':'')+' adicionado'+(taxaArtesSelecionadas.length>1?'s':'')+'!','ok');
 }
 
 function adicionarAoCarrinho(catKey,subgrupo,opcao){
@@ -2865,14 +2909,33 @@ function atualizarTextoOrcamento(){
   var nomeCli=document.getElementById('orc-cliente-nome').value.trim();
   var texto='';
   if(nomeCli)texto+='Segue o orçamento '+nomeCli+':\n\n';
-  texto+='• Kit de papelaria impressa:\n';
-  orcCart.forEach(function(it){
-    var linha=it.label+' - R$'+it.preco.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-    if(it.detalhe)linha+=' '+it.detalhe;
-    texto+=linha+'\n';
+
+  var itensIV=orcCart.filter(function(it){return it.catKey==='pacoteIV';});
+  var itensPapelaria=orcCart.filter(function(it){return it.catKey!=='pacoteIV';});
+
+  // Pacotes IV — linha destacada separada
+  itensIV.forEach(function(it){
+    texto+='• '+it.label+' '+fmtRS(it.preco)+'\n\n';
   });
+
+  // Itens de papelaria/taxa
+  if(itensPapelaria.length>0){
+    // Se só tem taxa de artes sozinha, não precisa do "Kit de papelaria"
+    var soPapelaria=itensPapelaria.filter(function(it){return it.catKey!=='taxaArtes';});
+    var somenteArtes=itensPapelaria.length===1&&itensPapelaria[0].catKey==='taxaArtes'&&soPapelaria.length===0;
+
+    if(!somenteArtes)texto+='• Kit de papelaria impressa:\n';
+    itensPapelaria.forEach(function(it){
+      var linha=it.label+' - '+fmtRS(it.preco);
+      if(it.detalhe)linha+=' '+it.detalhe;
+      if(somenteArtes)linha='• '+linha;
+      texto+=linha+'\n';
+    });
+    texto+='\n';
+  }
+
   var total=orcCart.reduce(function(s,it){return s+it.preco;},0);
-  texto+='\n➡️ *Valor total: '+fmtRS(total)+'*';
+  texto+='➡️ *Valor total: '+fmtRS(total)+'*';
   if(orcMensagemFinal)texto+='\n\n'+orcMensagemFinal;
   document.getElementById('orc-texto-final').value=texto;
 }
