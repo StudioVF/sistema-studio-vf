@@ -1027,6 +1027,8 @@ async function init(){
     if(!c||!c.length)await fbSet('costs',costs);
     const b=await fbGetTimeout('brindes');brindes=b||[];
     const g=await fbGetTimeout('gastos');gastos=g||[];
+    // ── Gastos fixos mensais automáticos ──
+    await garantirGastosFixos();
     fbListen('orders',function(d){orders=d||[];debounce('kanban',function(){refreshKanban();},250);});
     fbListen('brindes',function(d){brindes=d||[];popBrd();});
     fbListen('gastos',function(d){gastos=d||[];});
@@ -1809,6 +1811,65 @@ async function salvarDataEntrega(id,novaData){
   alrt('✓ Data de entrega atualizada!','ok');
   renderPeds();refreshKanban();
 }
+// ── GASTOS FIXOS MENSAIS ──
+const GASTOS_FIXOS=[
+  {desc:'Internet',cat:'Software',val:100},
+  {desc:'BotConversa',cat:'Software',val:199},
+  {desc:'Illustrator',cat:'Software',val:135},
+  {desc:'Internet celular',cat:'Software',val:55}
+];
+
+async function garantirGastosFixos(){
+  // Apenas meses que já têm pedidos ou gastos manuais
+  var meses=new Set();
+  orders.forEach(function(o){var d=o.dataCompra||o.data;if(d)meses.add(d.substring(0,7));});
+  gastos.filter(function(g){return !g.fixo;}).forEach(function(g){if(g.data)meses.add(g.data.substring(0,7));});
+
+  // Sempre incluir o mês atual
+  var hoje=new Date();
+  var mesAtual=hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0');
+  meses.add(mesAtual);
+
+  var alterou=false;
+  meses.forEach(function(mes){
+    GASTOS_FIXOS.forEach(function(gf){
+      var jaExiste=gastos.some(function(g){
+        return g.data&&g.data.startsWith(mes)&&g.desc===gf.desc&&g.val===gf.val&&g.fixo===true;
+      });
+      if(!jaExiste){
+        gastos.push({
+          id:'fixo_'+mes+'_'+gf.desc.replace(/\s/g,'_'),
+          cat:gf.cat,
+          desc:gf.desc,
+          data:mes+'-01',
+          val:gf.val,
+          fixo:true
+        });
+        alterou=true;
+      }
+    });
+  });
+
+  // Remover gastos fixos de meses sem pedidos nem gastos manuais (exceto mês atual)
+  var gastosManuaisMeses=new Set();
+  orders.forEach(function(o){var d=o.dataCompra||o.data;if(d)gastosManuaisMeses.add(d.substring(0,7));});
+  gastos.filter(function(g){return !g.fixo;}).forEach(function(g){if(g.data)gastosManuaisMeses.add(g.data.substring(0,7));});
+  gastosManuaisMeses.add(mesAtual);
+
+  var antes=gastos.length;
+  gastos=gastos.filter(function(g){
+    if(!g.fixo)return true;
+    var mes=g.data?g.data.substring(0,7):'';
+    return gastosManuaisMeses.has(mes);
+  });
+  if(gastos.length!==antes)alterou=true;
+
+  if(alterou){
+    gastos.sort(function(a,b){return b.data>a.data?1:b.data<a.data?-1:0;});
+    await savG();
+  }
+}
+
 async function lancarGasto(){
   var cat=document.getElementById('g-cat').value,desc=document.getElementById('g-desc').value.trim(),data=document.getElementById('g-data').value,val=parseFloat(document.getElementById('g-val').value)||0;
   if(!data){alrt('Informe a data do gasto.','err');return;}if(val<=0){alrt('Informe um valor válido.','err');return;}
@@ -1833,7 +1894,9 @@ function renderFin(){
   gf=gf.slice().sort(function(a,b){if(!a.data&&!b.data)return 0;if(!a.data)return 1;if(!b.data)return -1;return a.data>b.data?-1:1;});
   var totalGastos=gf.reduce(function(s,g){return s+g.val;},0);
   if(!gf.length){tbG.innerHTML='<tr><td colspan="5" style="text-align:center;padding:18px;color:#888">Nenhum gasto lançado</td></tr>';}
-  else{gf.forEach(function(g){var clr=gastoColor(g.cat);var tr=document.createElement('tr');tr.innerHTML='<td><span class="bdg" style="background:'+clr.bg+';color:'+clr.color+'">'+g.cat+'</span></td><td>'+g.desc+'</td><td>'+dt(g.data)+'</td><td style="color:#C0392B;font-weight:500">− R$ '+g.val.toFixed(2)+'</td><td><button class="btn s d" onclick="delGasto(\''+g.id+'\')">✕</button></td>';tbG.appendChild(tr);});}
+  else{gf.forEach(function(g){var clr=gastoColor(g.cat);var tr=document.createElement('tr');
+    var fixoTag=g.fixo?'<span style="font-size:10px;background:#E0F0FF;color:#1E6B9E;padding:1px 5px;border-radius:10px;margin-left:4px">fixo</span>':'';
+    tr.innerHTML='<td><span class="bdg" style="background:'+clr.bg+';color:'+clr.color+'">'+g.cat+'</span></td><td>'+g.desc+fixoTag+'</td><td>'+dt(g.data)+'</td><td style="color:#C0392B;font-weight:500">− R$ '+g.val.toFixed(2)+'</td><td>'+(g.fixo?'<span style="font-size:11px;color:#aaa">automático</span>':'<button class="btn s d" onclick="delGasto(\''+g.id+'\')">✕</button>')+'</td>';tbG.appendChild(tr);});}
   // Pedidos
   var tb=document.getElementById('tb-fin');var tv=0,tc=0;tb.innerHTML='';
   var of2=orders.filter(function(o){var d=o.dataCompra||o.data;var okM=!filtroMes||(d&&d.indexOf(filtroMes)===0);var okT=!filtroTipo||o.tipo===filtroTipo;return okM&&okT;}).sort(function(a,b){var da=a.dataCompra||a.data||'';var db=b.dataCompra||b.data||'';if(!da&&!db)return 0;if(!da)return 1;if(!db)return -1;return da<db?1:da>db?-1:0;});
