@@ -882,8 +882,27 @@ firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore();
 
 async function fbGet(col){const s=await db.collection('studio_vf').doc(col).get();return s.exists?s.data().data:null;}
-async function fbSet(col,data){let t=0;while(t<3){try{await db.collection('studio_vf').doc(col).set({data});return;}catch(e){t++;if(t===3){alrt('⚠ Erro ao salvar. Verifique sua conexão.','err');throw e;}await new Promise(r=>setTimeout(r,800*t));}}}
-const _dt={};function debounce(k,fn,ms){clearTimeout(_dt[k]);_dt[k]=setTimeout(fn,ms||300);}
+async function fbSet(col,data){
+  var tam=JSON.stringify(data).length;
+  console.log('fbSet: '+col+' ('+Math.round(tam/1000)+'KB)');
+  if(tam>900000){
+    alrt('⚠ Dados grandes demais ('+Math.round(tam/1000)+'KB). Remova arquivos das Atividades e tente novamente.','err');
+    throw new Error('Documento muito grande');
+  }
+  var t=0;
+  while(t<3){
+    try{
+      await db.collection('studio_vf').doc(col).set({data});
+      console.log('✓ Salvo: '+col);
+      return;
+    }catch(e){
+      t++;
+      console.error('fbSet erro tentativa '+t+' ('+col+'):',e.code,e.message);
+      if(t===3){alrt('⚠ Erro ao salvar ('+col+'): '+e.message,'err');throw e;}
+      await new Promise(function(r){setTimeout(r,800*t);});
+    }
+  }
+}const _dt={};function debounce(k,fn,ms){clearTimeout(_dt[k]);_dt[k]=setTimeout(fn,ms||300);}
 const _unsubs=[];
 function fbListen(col,cb){const u=db.collection('studio_vf').doc(col).onSnapshot(s=>{if(s.exists)cb(s.data().data);},e=>console.error(col,e));_unsubs.push(u);}
 function cancelarListeners(){_unsubs.forEach(u=>u());_unsubs.length=0;}
@@ -1987,7 +2006,28 @@ async function loadAtividades(){
   fbListen('atv_cards',function(d){atvCards=d||[];if(document.getElementById('pg-atividades').classList.contains('on'))renderAtividades();});
 }
 async function savAtvColunas(){await fbSet('atv_colunas',atvColunas);}
-async function savAtvCards(){await fbSet('atv_cards',atvCards);}
+async function savAtvCards(){
+  // Salvar sem os dados base64 das imagens (muito pesados)
+  // As imagens ficam apenas em memória durante a sessão
+  var cardsParaSalvar=atvCards.map(function(c){
+    return Object.assign({},c,{
+      arquivos:(c.arquivos||[]).map(function(a){
+        if(a.tipo==='img'||a.tipo==='pdf'){
+          // Manter apenas metadados, não o base64
+          return {nome:a.nome,tipo:a.tipo,tam:a.data?a.data.length:0};
+        }
+        return a;
+      })
+    });
+  });
+  var tam=JSON.stringify(cardsParaSalvar).length;
+  if(tam>500000){
+    // Se ainda muito grande, salvar sem arquivos
+    cardsParaSalvar=atvCards.map(function(c){return Object.assign({},c,{arquivos:[]});});
+    alrt('⚠ Arquivos das atividades muito grandes. Salvando sem arquivos.','err');
+  }
+  await fbSet('atv_cards',cardsParaSalvar);
+}
 
 var atvDragId=null;
 
