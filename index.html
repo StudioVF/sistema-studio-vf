@@ -1586,6 +1586,13 @@ function openMoPed(id,kanbanType){
     html+='</div>';
   }
   // Observações
+  // Editar nome da cliente
+  html+='<div class="stl">Nome da cliente</div>';
+  html+='<div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;flex-wrap:wrap">';
+  html+='<input id="modal-nome-cliente" value="'+(o.cliente||'').replace(/"/g,'&quot;')+'" style="flex:1;font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:8px 10px;background:#fff;color:#333;min-width:180px">';
+  html+='<button class="btn s p" onclick="salvarNomeCliente()">Salvar nome</button>';
+  html+='</div>';
+  // Observações
   html+='<div class="stl">Observações do pedido</div><textarea id="obs-card-input" style="width:100%;min-height:60px;font-family:inherit;font-size:14px;border:.5px solid rgba(138,158,123,.32);border-radius:8px;padding:8px 10px;resize:vertical;color:#333" placeholder="Anotações internas...">'+(o.obsCard||'')+'</textarea><div style="text-align:right;margin-top:6px"><button class="btn s p" onclick="salvarObs()">Salvar obs.</button></div>';
   // Checklist
   html+='<div class="stl">Itens do pedido</div><div class="pb"><div class="pf" style="width:'+pct+'%"></div></div><div style="font-size:12px;color:#888;margin-bottom:8px">'+done+'/'+tot+' itens · '+pct+'%</div>';
@@ -1623,8 +1630,29 @@ function openMoPed(id,kanbanType){
     brindes.forEach(function(b,i){html+='<option value="'+i+'">'+b.nome+(b.custo>0?' — R$ '+parseFloat(b.custo).toFixed(2):'')+' </option>';});
     html+='</select><button class="btn p s" onclick="addBrindeModal(\''+kanbanType+'\')">+ Adicionar</button></div>';
   }
-  // Endereço
-  if(o.end&&o.tipo!=='iv'){var e=o.end;html+='<div class="stl">Endereço</div><div class="ab"><strong style="font-weight:500">'+(e.nome||o.cliente)+'</strong>'+(e.cpf?' · CPF: '+e.cpf:'')+'<br>'+e.rua+(e.num?', '+e.num:'')+(e.comp?' — '+e.comp:'')+'<br>'+e.bairro+' · '+e.cidade+'/'+e.uf+' · CEP '+e.cep+'</div>';}
+  // Endereço editável
+  if(o.end&&o.tipo!=='iv'){
+    var e=o.end;
+    html+='<div class="stl">Endereço</div>';
+    html+='<div class="g2" style="margin-bottom:6px">';
+    html+='<div class="fg"><label style="font-size:11px;color:var(--pl);font-weight:500">Destinatário</label><input id="ed-nome" value="'+(e.nome||'').replace(/"/g,'&quot;')+'" style="font-family:inherit;font-size:13px;border:.5px solid rgba(138,158,123,.32);border-radius:6px;padding:6px 9px;width:100%"></div>';
+    html+='<div class="fg"><label style="font-size:11px;color:var(--pl);font-weight:500">CPF</label><input id="ed-cpf" value="'+(e.cpf||'').replace(/"/g,'&quot;')+'" style="font-family:inherit;font-size:13px;border:.5px solid rgba(138,158,123,.32);border-radius:6px;padding:6px 9px;width:100%"></div>';
+    html+='</div>';
+    html+='<div class="g2" style="margin-bottom:6px">';
+    html+='<div class="fg"><label style="font-size:11px;color:var(--pl);font-weight:500">CEP</label><input id="ed-cep" value="'+(e.cep||'').replace(/"/g,'&quot;')+'" style="font-family:inherit;font-size:13px;border:.5px solid rgba(138,158,123,.32);border-radius:6px;padding:6px 9px;width:100%"></div>';
+    html+='<div class="fg"><label style="font-size:11px;color:var(--pl);font-weight:500">Logradouro</label><input id="ed-rua" value="'+(e.rua||'').replace(/"/g,'&quot;')+'" style="font-family:inherit;font-size:13px;border:.5px solid rgba(138,158,123,.32);border-radius:6px;padding:6px 9px;width:100%"></div>';
+    html+='</div>';
+    html+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px">';
+    html+='<div class="fg"><label style="font-size:11px;color:var(--pl);font-weight:500">Número</label><input id="ed-num" value="'+(e.num||'').replace(/"/g,'&quot;')+'" style="font-family:inherit;font-size:13px;border:.5px solid rgba(138,158,123,.32);border-radius:6px;padding:6px 9px;width:100%"></div>';
+    html+='<div class="fg"><label style="font-size:11px;color:var(--pl);font-weight:500">Complemento</label><input id="ed-comp" value="'+(e.comp||'').replace(/"/g,'&quot;')+'" style="font-family:inherit;font-size:13px;border:.5px solid rgba(138,158,123,.32);border-radius:6px;padding:6px 9px;width:100%"></div>';
+    html+='<div class="fg"><label style="font-size:11px;color:var(--pl);font-weight:500">Bairro</label><input id="ed-bairro" value="'+(e.bairro||'').replace(/"/g,'&quot;')+'" style="font-family:inherit;font-size:13px;border:.5px solid rgba(138,158,123,.32);border-radius:6px;padding:6px 9px;width:100%"></div>';
+    html+='</div>';
+    html+='<div class="g2" style="margin-bottom:8px">';
+    html+='<div class="fg"><label style="font-size:11px;color:var(--pl);font-weight:500">Cidade</label><input id="ed-cidade" value="'+(e.cidade||'').replace(/"/g,'&quot;')+'" style="font-family:inherit;font-size:13px;border:.5px solid rgba(138,158,123,.32);border-radius:6px;padding:6px 9px;width:100%"></div>';
+    html+='<div class="fg"><label style="font-size:11px;color:var(--pl);font-weight:500">Estado</label><input id="ed-uf" value="'+(e.uf||'').replace(/"/g,'&quot;')+'" style="font-family:inherit;font-size:13px;border:.5px solid rgba(138,158,123,.32);border-radius:6px;padding:6px 9px;width:100%"></div>';
+    html+='</div>';
+    html+='<div style="text-align:right"><button class="btn s p" onclick="salvarEndereco()">Salvar endereço</button></div>';
+  }
   // Etapa
   var ets=o.tipo==='iv'?ETS_IV:ETS_PP;
   html+='<div class="stl">Etapa de produção</div><select class="ssel" style="font-size:14px;padding:9px 12px;border-radius:8px;width:100%" onchange="updSmo(this.value,\''+kanbanType+'\')"><option value="">Selecione</option>';
@@ -1637,6 +1665,42 @@ function openMoPed(id,kanbanType){
   document.getElementById('mo-ped').classList.add('on');
 }
 async function salvarData(){var o=orders.find(function(x){return x.id===modalOrderId;});if(!o)return;o.data=document.getElementById('modal-data').value;await savO();alrt('✓ Data atualizada!','ok');}
+async function salvarNomeCliente(){
+  var o=orders.find(function(x){return x.id===modalOrderId;});if(!o)return;
+  var novoNome=document.getElementById('modal-nome-cliente').value.trim();
+  if(!novoNome){alrt('Informe o nome.','err');return;}
+  o.cliente=novoNome;
+  // Sincronizar com o nome do destinatário no endereço
+  if(o.end)o.end.nome=novoNome;
+  // Atualizar campo do destinatário se estiver visível
+  var edNome=document.getElementById('ed-nome');
+  if(edNome)edNome.value=novoNome;
+  await savO();alrt('✓ Nome atualizado!','ok');
+  document.getElementById('mo-tit').textContent=novoNome;
+  refreshKanban();
+}
+async function salvarEndereco(){
+  var o=orders.find(function(x){return x.id===modalOrderId;});if(!o)return;
+  if(!o.end)o.end={};
+  o.end.nome=document.getElementById('ed-nome').value.trim();
+  o.end.cpf=document.getElementById('ed-cpf').value.trim();
+  o.end.cep=document.getElementById('ed-cep').value.trim();
+  o.end.rua=document.getElementById('ed-rua').value.trim();
+  o.end.num=document.getElementById('ed-num').value.trim();
+  o.end.comp=document.getElementById('ed-comp').value.trim();
+  o.end.bairro=document.getElementById('ed-bairro').value.trim();
+  o.end.cidade=document.getElementById('ed-cidade').value.trim();
+  o.end.uf=document.getElementById('ed-uf').value.trim();
+  // Sincronizar nome da cliente com o destinatário
+  if(o.end.nome){
+    o.cliente=o.end.nome;
+    document.getElementById('mo-tit').textContent=o.end.nome;
+    var inputNome=document.getElementById('modal-nome-cliente');
+    if(inputNome)inputNome.value=o.end.nome;
+    refreshKanban();
+  }
+  await savO();alrt('✓ Endereço atualizado!','ok');
+}
 async function salvarObs(){var o=orders.find(function(x){return x.id===modalOrderId;});if(!o)return;o.obsCard=document.getElementById('obs-card-input').value;await savO();alrt('✓ Observação salva!','ok');refreshKanban();}
 function recalcCusto(o){var custoBrindes=(o.brindes||[]).reduce(function(s,b){return s+parseFloat(b.custo||0);},0);var custoItens=o.items.reduce(function(s,i){return s+(i.cost||0);},0);o.custo=custoItens+custoBrindes;}
 async function salvarItensModal(){
@@ -3232,6 +3296,7 @@ window.tipo=tipo;window.switchE=switchE;window.buscaCep=buscaCep;window.updValor
 window.addBrinde=addBrinde;window.removeBrindeSel=removeBrindeSel;
 window.parsearTexto=parsearTexto;window.handlePDF=handlePDF;window.addItem=addItem;window.limpar=limpar;
 window.salvar=salvar;window.salvarIV=salvarIV;window.pg=pg;
+window.salvarNomeCliente=salvarNomeCliente;window.salvarEndereco=salvarEndereco;
 window.openMoPed=openMoPed;window.salvarData=salvarData;window.salvarObs=salvarObs;
 window.salvarItensModal=salvarItensModal;window.addItemModal=addItemModal;window.removeItemModal=removeItemModal;
 window.chkItem=chkItem;window.updSmo=updSmo;window.setDesigner=setDesigner;
