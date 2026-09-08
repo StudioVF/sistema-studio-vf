@@ -889,6 +889,33 @@ async function fbSet(col,data){
     alrt('⚠ Dados grandes demais ('+Math.round(tam/1000)+'KB). Remova arquivos das Atividades e tente novamente.','err');
     throw new Error('Documento muito grande');
   }
+  // Proteção contra sobrescrita perigosa + backup automático (arrays como orders, orcamentos, etc.)
+  if(Array.isArray(data)){
+    try{
+      var snapAtual=await db.collection('studio_vf').doc(col).get({source:'server'});
+      if(snapAtual.exists){
+        var atual=snapAtual.data().data;
+        if(Array.isArray(atual)){
+          // Backup diário do estado ANTES de sobrescrever (1 por dia, por coleção)
+          try{
+            var hojeStr=new Date().toISOString().slice(0,10);
+            await db.collection('studio_vf_backups').doc(col+'_'+hojeStr).set({data:atual,qtd:atual.length,ts:Date.now()});
+          }catch(eBak){console.warn('Backup automático falhou ('+col+'):',eBak);}
+          // Bloqueia se a nova lista tiver menos da metade dos itens que já existem salvos
+          if(atual.length>5&&data.length<atual.length*0.5){
+            var okContinuar=confirm('⚠ ATENÇÃO — POSSÍVEL PERDA DE DADOS\n\nVocê está prestes a salvar '+data.length+' item(ns) em "'+col+'", mas o banco atualmente tem '+atual.length+'.\n\nIsso pode apagar dados de outros lançamentos feitos em outro dispositivo/aba.\n\nRecarregue a página (Ctrl+Shift+R) antes de continuar, a não ser que tenha certeza absoluta.\n\nDeseja salvar mesmo assim?');
+            if(!okContinuar){
+              alrt('⚠ Salvamento cancelado para proteger os dados. Recarregue a página.','err');
+              throw new Error('CANCELADO_PROTECAO_DADOS');
+            }
+          }
+        }
+      }
+    }catch(eCheck){
+      if(eCheck&&eCheck.message==='CANCELADO_PROTECAO_DADOS')throw eCheck;
+      console.warn('Verificação/backup de segurança falhou ('+col+'):',eCheck);
+    }
+  }
   var t=0;
   while(t<3){
     try{
@@ -906,6 +933,24 @@ async function fbSet(col,data){
 const _unsubs=[];
 function fbListen(col,cb){const u=db.collection('studio_vf').doc(col).onSnapshot(s=>{if(s.exists)cb(s.data().data);},e=>console.error(col,e));_unsubs.push(u);}
 function cancelarListeners(){_unsubs.forEach(u=>u());_unsubs.length=0;}
+// Ferramentas de emergência (usar pelo Console do navegador — F12):
+// listarBackups() → mostra os backups disponíveis
+// restaurarBackup('orders','2026-09-08') → restaura o backup daquela data para aquela coleção
+window.listarBackups=async function(){
+  var snap=await db.collection('studio_vf_backups').get();
+  if(snap.empty){console.log('Nenhum backup encontrado ainda.');return;}
+  var linhas=[];
+  snap.forEach(function(doc){var d=doc.data();linhas.push(doc.id+' — '+(d.qtd!=null?d.qtd+' itens':'?')+' — '+new Date(d.ts).toLocaleString('pt-BR'));});
+  console.log('=== BACKUPS DISPONÍVEIS ===\n'+linhas.join('\n'));
+};
+window.restaurarBackup=async function(col,dataStr){
+  if(!confirm('Isso vai SUBSTITUIR os dados atuais de "'+col+'" pelo backup de '+dataStr+'. Essa ação não pode ser desfeita. Tem certeza?'))return;
+  var doc=await db.collection('studio_vf_backups').doc(col+'_'+dataStr).get();
+  if(!doc.exists){console.error('Backup não encontrado para '+col+' em '+dataStr);alert('Backup não encontrado para essa data.');return;}
+  var dados=doc.data().data;
+  await db.collection('studio_vf').doc(col).set({data:dados});
+  alert('✓ Restaurado! Agora pressione Ctrl+Shift+R para recarregar a página.');
+};
 function gerarId(){return Date.now()+'_'+Math.random().toString(36).substr(2,9);}
 function checarTamanho(){const t=JSON.stringify(orders).length;if(t>800000)alrt('⚠ Banco de dados próximo do limite. Entre em contato com suporte.','err');}
 
